@@ -33,7 +33,7 @@ public class WebSocketServiceImpl{
 	@Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 	
-	final private static String USER_PREFIX = WebSocketConstants.Type.USER.getClientDestination();
+	final private static String USER_PREFIX = WebSocketConstants.Type.USER_TOPIC.getClientDestination();
 	
 	@Async(ResourceConfigConstants.APP_WEB_SOCKET_TASK_EXECUTOR)
 	public void sendUserMessage(MessageDTO msg , String... usrIds) {

@@ -9,10 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.varsql.core.sql.SqlExecuteManager;
 import com.varsql.web.app.database.service.SQLServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.constants.HttpParamConstants;
 import com.varsql.web.dto.db.SqlExecuteDTO;
 import com.varsql.web.dto.sql.SqlGridDownloadInfo;
 import com.varsql.web.util.VarsqlUtils;
@@ -98,5 +101,30 @@ public class SQLController extends AbstractController  {
 	public void gridDownload(SqlGridDownloadInfo sqlGridDownloadInfo, HttpServletRequest req ,HttpServletResponse response) throws Exception {
 		sqlServiceImpl.gridDownload(sqlGridDownloadInfo, req, response);
 	}
-
+	
+	
+	/**
+	 * 실행중인 request sql 취소
+	 * 
+	 * @param requestUid
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value =  "/requestCancel", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseResult requestCancel(@RequestParam(value = HttpParamConstants.REQ_UID, required = true) String requestUid) throws Exception {
+		// 전체 취소
+		if("all".equals(requestUid)) {
+			SqlExecuteManager.getInstance().allCancel();
+			return VarsqlUtils.getResponseResultItemOne("");
+		}
+		
+		String [] reqUid = requestUid.split(",");
+		
+		for (int i = 0; i < reqUid.length; i++) {
+			SqlExecuteManager.getInstance().cancelStatementInfo(reqUid[i]);
+		}
+		
+		return VarsqlUtils.getResponseResultItemOne("");
+	}
 }

@@ -1,5 +1,6 @@
 package com.varsql.core.sql.util;
 
+import java.sql.BatchUpdateException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,17 +9,28 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import com.varsql.core.common.constants.SqlDataConstants;
+import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.db.datatype.DataType;
+import com.varsql.core.db.datatype.DataTypeFactory;
+import com.varsql.core.db.valueobject.ColumnInfo;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
+import com.varsql.core.exception.BatchException;
 import com.varsql.core.sql.SqlExecuteManager;
 import com.varsql.core.sql.StatementSetter;
+import com.varsql.core.sql.beans.ExecuteStatementInfo;
+import com.varsql.core.sql.beans.ExportColumnInfo;
+import com.varsql.core.sql.beans.GenQueryInfo;
 import com.varsql.core.sql.beans.GridColumnInfo;
+import com.varsql.core.sql.beans.SqlExecuteBean;
 import com.varsql.core.sql.builder.SqlSource;
+import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
 import com.varsql.core.sql.builder.VarsqlStatementType;
 import com.varsql.core.sql.executor.handler.SelectExecutorHandler;
@@ -27,6 +39,7 @@ import com.varsql.core.sql.mapping.ParameterMode;
 import com.varsql.core.sql.type.SQLCommandType;
 import com.varsql.core.sql.type.SQLDataType;
 import com.vartech.common.utils.StringUtils;
+import com.vartech.common.utils.VartechUtils;
 
 /**
  *
@@ -112,6 +125,65 @@ public final class SQLUtils {
 		return reqQuerySb.toString();
 	}
 	
+	public static GenQueryInfo generateInsertQuery(String tableName, List<ExportColumnInfo> columns, DBVenderType dbType) {
+		return generateInsertQuery(tableName, columns, MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl());
+	}
+	
+	public static GenQueryInfo generateInsertQuery(String tableName, List<ExportColumnInfo> columns, DataTypeFactory dataTypeFactory) {
+		
+		StringBuffer querySb = new StringBuffer();
+
+		querySb.append("insert into ").append(tableName).append(" (");
+
+		StringBuilder paramSb =new StringBuilder();
+		boolean firstFlag = true;
+		
+		
+		List<ExportColumnInfo> newColumnList = new LinkedList<ExportColumnInfo>();
+		for (ExportColumnInfo eci : columns) {
+			
+			if(dataTypeFactory.getDataType(eci.getTypeCode(), eci.getType()).isExcludeImportColumn()) {
+				continue;
+			}
+			
+			newColumnList.add(eci);
+			if(firstFlag) {
+				querySb.append(eci.getName());
+				paramSb.append("?");
+				firstFlag = false;
+			}else {
+				querySb.append(", ").append(eci.getName());
+				paramSb.append(", ?");
+			}
+		}
+
+		querySb.append(") values ( ").append(paramSb.toString()).append(") ") ;
+		
+		return new GenQueryInfo(querySb.toString(), newColumnList);
+	}
+	
+	/**
+	 * truncate 쿼리
+	 * 
+	 * @param tableName
+	 * @param dataTypeFactory
+	 * @return
+	 */
+	public static String generateTruncateQuery(String tableName, DataTypeFactory dataTypeFactory) {
+		return String.format("truncate table %s", tableName);
+	}
+	
+	/**
+	 * 삭제 쿼리
+	 * 
+	 * @param tableName
+	 * @param dataTypeFactory
+	 * @return
+	 */
+	public static String generateDeleteQuery(String tableName, DataTypeFactory dataTypeFactory) {
+		return String.format("delete from %s", tableName);
+	}
+	
 	/**
 	 * 
 	 * @method  : getSqlExecute
@@ -125,19 +197,23 @@ public final class SQLUtils {
 	 * @return
 	 * @throws SQLException
 	 */
-	public static SqlSourceResultVO getSqlExecute(SqlStatementInfo sqlExecuteInfo, Connection conn, SqlSource tmpSqlSource, boolean gridKeyAlias) throws SQLException {
-		return getSqlExecute(sqlExecuteInfo, conn, tmpSqlSource, gridKeyAlias, null); 
+	public static SqlSourceResultVO sqlExecute(SqlStatementInfo sqlExecuteInfo, Connection conn, SqlSource tmpSqlSource, boolean gridKeyAlias) throws SQLException {
+		return sqlExecute(sqlExecuteInfo, conn, tmpSqlSource, gridKeyAlias, null); 
 	}
-	public static SqlSourceResultVO getSqlExecute(SqlStatementInfo sqlExecuteInfo, Connection conn, SqlSource tmpSqlSource, boolean gridKeyAlias, SelectExecutorHandler selectExecutorHandler) throws SQLException {
+	public static SqlSourceResultVO sqlExecute(SqlStatementInfo sqlExecuteInfo, Connection conn, SqlSource tmpSqlSource, boolean gridKeyAlias, SelectExecutorHandler selectExecutorHandler) throws SQLException {
 		Statement stmt = null;
 		ResultSet rs  = null;
 		SqlSourceResultVO ssrv = tmpSqlSource.getResult();
+		
+		int fetchSize = sqlExecuteInfo.getLimit(); 
 
 		int maxRow = sqlExecuteInfo.getLimit();
 
 		String requid = sqlExecuteInfo.getRequid$$();
 		
 		String executeQuery = tmpSqlSource.getQuery();
+		
+		SqlExecuteBean seb = SqlExecuteBean.builder().reqUid(requid).ip(sqlExecuteInfo.getIp()).build();
 		
 		StatementSetter statementSetter = MetaControlFactory.getDbInstanceFactory(DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType())).getStatementSetter();
 		
@@ -146,10 +222,10 @@ public final class SQLUtils {
 			if(VarsqlStatementType.STATEMENT.equals(tmpSqlSource.getStatementType())){
 				stmt  = conn.createStatement();
 				
-				JdbcUtils.setStatementFetchSize(stmt, sqlExecuteInfo.getLimit());
+				JdbcUtils.setStatementFetchSize(stmt, fetchSize);
 				
 				// request 실행 취소 정보 추가
-				SqlExecuteManager.getInstance().addStatementInfo(requid, stmt);
+				SqlExecuteManager.getInstance().addStatementInfo(seb, ExecuteStatementInfo.builder().statement(stmt).sql(executeQuery).build());
 				
 				statementSetter.setMaxRow(stmt, maxRow, tmpSqlSource);
 				hasResults = stmt.execute(executeQuery);
@@ -157,7 +233,7 @@ public final class SQLUtils {
 				CallableStatement callStatement = conn.prepareCall(executeQuery);
 
 				// request 실행 취소 정보 추가
-				SqlExecuteManager.getInstance().addStatementInfo(requid, callStatement);
+				SqlExecuteManager.getInstance().addStatementInfo(seb, ExecuteStatementInfo.builder().statement(callStatement).sql(executeQuery).build());
 				
 		        SQLParamUtils.setCallableParameter(callStatement, tmpSqlSource);
 		        statementSetter.setMaxRow(callStatement, maxRow, tmpSqlSource);
@@ -233,8 +309,8 @@ public final class SQLUtils {
 				PreparedStatement pstmt = conn.prepareStatement(executeQuery);
 				
 				// request 실행 취소 정보 추가
-				SqlExecuteManager.getInstance().addStatementInfo(requid, pstmt);
-				JdbcUtils.setStatementFetchSize(pstmt, sqlExecuteInfo.getLimit());
+				SqlExecuteManager.getInstance().addStatementInfo(seb, ExecuteStatementInfo.builder().statement(pstmt).sql(executeQuery).build());
+				JdbcUtils.setStatementFetchSize(pstmt, fetchSize);
 				
  				SQLParamUtils.setSqlParameter(pstmt, tmpSqlSource);
  				statementSetter.setMaxRow(pstmt, maxRow, tmpSqlSource);
@@ -273,4 +349,302 @@ public final class SQLUtils {
 	    
 	    return ssrv;
 	}
+	
+	/**
+	 * 쿼리 실행.
+	 * 
+	 * @param sqlExecuteInfo
+	 * @return
+	 * @throws SQLException
+	 */
+	public static List<Map> executeQuery(SqlStatementInfo sqlExecuteInfo) throws SQLException {
+		ResultSet rs  = null;
+		
+		String requid = StringUtils.isBlank(sqlExecuteInfo.getRequid$$()) ? VartechUtils.generateUUID() : sqlExecuteInfo.getRequid$$();
+		
+		String executeQuery = sqlExecuteInfo.getSql();
+		
+		DBVenderType dbType = DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType());
+		
+		SqlSource sqlSource = SqlSourceBuilder.getSqlSource(executeQuery, sqlExecuteInfo.getSqlParam(), dbType);
+		
+		try(Connection conn = ConnectionFactory.getInstance().getConnection(sqlExecuteInfo.getDatabaseInfo().getVconnid());
+				PreparedStatement stmt  = conn.prepareStatement(executeQuery)){
+			
+			// request 실행 취소 정보 추가
+			SqlExecuteManager.getInstance().addStatementInfo(SqlExecuteBean.builder().reqUid(requid).ip(sqlExecuteInfo.getIp()).build(), ExecuteStatementInfo.builder().statement(stmt).sql(executeQuery).build());
+			
+			SQLParamUtils.setSqlParameter(stmt, sqlSource);
+			rs = stmt.executeQuery();
+			
+			return SQLResultSetUtils.resultList(rs, dbType, false);
+			
+		}catch(SQLException e){
+			throw e;
+		} finally {
+			SqlExecuteManager.getInstance().removeStatementInfo(requid);
+			JdbcUtils.close(rs);
+		}
+	}
+	
+	public static List<Map> executeQuery(SqlStatementInfo sqlExecuteInfo, Connection conn) throws SQLException {
+		ResultSet rs  = null;
+		
+		String requid = StringUtils.isBlank(sqlExecuteInfo.getRequid$$()) ? VartechUtils.generateUUID() : sqlExecuteInfo.getRequid$$();
+		
+		String executeQuery = sqlExecuteInfo.getSql();
+		
+		DBVenderType dbType = DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType());
+		
+		SqlSource sqlSource = SqlSourceBuilder.getSqlSource(executeQuery, sqlExecuteInfo.getSqlParam(), dbType);
+		
+		try(PreparedStatement stmt  = conn.prepareStatement(executeQuery)){
+			
+			// request 실행 취소 정보 추가
+			SqlExecuteManager.getInstance().addStatementInfo(SqlExecuteBean.builder().reqUid(requid).ip(sqlExecuteInfo.getIp()).build(), ExecuteStatementInfo.builder().statement(stmt).sql(executeQuery).build());
+			
+			SQLParamUtils.setSqlParameter(stmt, sqlSource);
+			rs = stmt.executeQuery();
+			
+			return SQLResultSetUtils.resultList(rs, dbType, false);
+			
+		}catch(SQLException e){
+			throw e;
+		} finally {
+			SqlExecuteManager.getInstance().removeStatementInfo(requid);
+			JdbcUtils.close(rs);
+		}
+	}
+	
+	/**
+	 * 하나의 item 만 실행.
+	 * 
+	 * @param sqlExecuteInfo
+	 * @return
+	 * @throws SQLException
+	 */
+	public static Map executeQueryOneItem(SqlStatementInfo sqlExecuteInfo) throws SQLException {
+		ResultSet rs  = null;
+		
+		String requid = StringUtils.isBlank(sqlExecuteInfo.getRequid$$()) ? VartechUtils.generateUUID() : sqlExecuteInfo.getRequid$$();
+		
+		String executeQuery = sqlExecuteInfo.getSql();
+		
+		DBVenderType dbType = DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType());
+		
+		SqlSource sqlSource = SqlSourceBuilder.getSqlSource(executeQuery, sqlExecuteInfo.getSqlParam(), dbType);
+		
+		try(Connection conn = ConnectionFactory.getInstance().getConnection(sqlExecuteInfo.getDatabaseInfo().getVconnid());
+				PreparedStatement stmt  = conn.prepareStatement(executeQuery)){
+			
+			// request 실행 취소 정보 추가
+			SqlExecuteManager.getInstance().addStatementInfo(SqlExecuteBean.builder().reqUid(requid).ip(sqlExecuteInfo.getIp()).build(), ExecuteStatementInfo.builder().statement(stmt).sql(executeQuery).build());
+			
+			SQLParamUtils.setSqlParameter(stmt, sqlSource);
+			rs = stmt.executeQuery();
+			
+			return SQLResultSetUtils.resultOne(rs, dbType, false);
+			
+		}catch(SQLException e){
+			throw e;
+		} finally {
+			SqlExecuteManager.getInstance().removeStatementInfo(requid);
+			JdbcUtils.close(rs);
+		}
+	}
+	
+	public static Map executeQueryOneItem(SqlStatementInfo sqlExecuteInfo, Connection conn) throws SQLException {
+		ResultSet rs  = null;
+		
+		String requid = StringUtils.isBlank(sqlExecuteInfo.getRequid$$()) ? VartechUtils.generateUUID() : sqlExecuteInfo.getRequid$$();
+		
+		String executeQuery = sqlExecuteInfo.getSql();
+		
+		DBVenderType dbType = DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType());
+		
+		SqlSource sqlSource = SqlSourceBuilder.getSqlSource(executeQuery, sqlExecuteInfo.getSqlParam(), dbType);
+		
+		try(PreparedStatement stmt  = conn.prepareStatement(executeQuery)){
+			
+			// request 실행 취소 정보 추가
+			SqlExecuteManager.getInstance().addStatementInfo(SqlExecuteBean.builder().reqUid(requid).ip(sqlExecuteInfo.getIp()).build(), ExecuteStatementInfo.builder().statement(stmt).sql(executeQuery).build());
+			
+			SQLParamUtils.setSqlParameter(stmt, sqlSource);
+			rs = stmt.executeQuery();
+			
+			return SQLResultSetUtils.resultOne(rs, dbType, false);
+		}catch(SQLException e){
+			throw e;
+		} finally {
+			SqlExecuteManager.getInstance().removeStatementInfo(requid);
+			JdbcUtils.close(rs);
+		}
+	}
+	
+	/**
+	 * json string list parameter 를 map 파라미터로 변환.
+	 * 
+	 * @param param
+	 * @return
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static Map stringParamListToMap(String param) {
+		ArrayList paramList = VartechUtils.jsonStringToObject(param, ArrayList.class);
+		
+		Map returnParam = new HashMap();
+		
+		paramList.forEach(item->{
+			Map paramItem = (Map)item;
+			returnParam.put(paramItem.get("key"), paramItem.get("value"));
+		});
+		
+		return returnParam; 
+	}
+	
+	/**
+	 * json string parameter map 을 hashmap으로 변환.
+	 * @param param
+	 * @return
+	 */
+	public static Map stringParamMapToMap(String param) {
+		return  VartechUtils.jsonStringToObject(param, HashMap.class);
+	}
+	
+	public static void executeBatch(Statement statement, long totalCount, int batchCount) throws SQLException {
+		
+		try {
+			statement.executeBatch();
+			statement.clearBatch();
+		} catch (BatchUpdateException bue) {
+			int[] updateCounts = bue.getUpdateCounts();
+			
+			if (updateCounts != null) {
+				int failIdx = 1;
+				int idx =0 ; 
+				int failCount = 0;
+				boolean firstFailFlag = true; 
+				for (int uc : updateCounts) {
+					if(uc == Statement.EXECUTE_FAILED) {
+						++failCount;
+						if(firstFailFlag) {
+							failIdx = idx; 
+							firstFailFlag = false; 
+						}
+						break; 
+					}
+					
+					idx++;
+				}
+				throw new BatchException(bue.getMessage(), bue, totalCount - batchCount +  failIdx, failCount);
+			}
+			throw bue;
+		} catch (SQLException se) {
+			throw se;
+		}
+	}
+	
+	/**
+	 * 테이블 데이터 체크 쿼리
+	 * 
+	 * @param target
+	 * @param tableRowKey
+	 * @param dataTypeFactory
+	 * @return
+	 */
+	public static String generateSelectConditionQuery(String target, List<ColumnInfo> tableRowKey,
+			DataTypeFactory dataTypeFactory) {
+		StringBuilder reqQuerySb = new StringBuilder().append("select count(1) cnt from ").append(target).append(" where 1=1 ");
+
+		if (tableRowKey.size() > 0) {
+			tableRowKey.forEach(item->{
+				reqQuerySb.append(" and ").append(item.getName()).append(" = ? ");
+			});
+		}
+
+		return reqQuerySb.toString();
+	}
+	
+	/**
+	 * 데이터 데이터 삭제 쿼리.
+	 * 
+	 * @param target
+	 * @param tableRowKey
+	 * @param dataTypeFactory
+	 * @return
+	 */
+	public static String generateDeleteConditionQuery(String target, List<ColumnInfo> tableRowKey,
+			DataTypeFactory dataTypeFactory) {
+		StringBuilder reqQuerySb = new StringBuilder().append("delete from ").append(target).append(" where 1=1 ");
+
+		if (tableRowKey.size() > 0) {
+			tableRowKey.forEach(item->{
+				reqQuerySb.append(" and ").append(item.getName()).append(" = ? ");
+			});
+		}
+
+		return reqQuerySb.toString();
+	}
+	
+	
+	public static void setStatementParameter(PreparedStatement statement, DataType dataType, int idx, Map rowInfo, String columnName) throws SQLException {
+		try {
+			dataType.getStatementHandler().setParameter(statement, idx, rowInfo.get(columnName));
+		} catch (Exception e) {
+			statement.setObject(idx, rowInfo.get(columnName));
+		}
+	}
+
+	public static GenQueryInfo generateUpdateConditionQuery(String target, List<ExportColumnInfo> columns,
+			List<ColumnInfo> tableRowKey, DataTypeFactory dataTypeFactory) {
+		StringBuffer querySb = new StringBuffer();
+
+		querySb.append("update ").append(target).append(" set ");
+
+		StringBuilder paramSb =new StringBuilder();
+		boolean firstFlag = true;
+		
+		List<ExportColumnInfo> newColumnList = new LinkedList<ExportColumnInfo>();
+		for (ExportColumnInfo eci : columns) {
+			
+			if(dataTypeFactory.getDataType(eci.getTypeCode(), eci.getType()).isExcludeImportColumn()) {
+				continue;
+			}
+			
+			ColumnInfo columnInfo = tableRowKey.stream()
+			        .filter(item -> item.getName().equals(eci.getName()))
+			        .findFirst()
+			        .orElse(null);
+			
+			if(columnInfo != null) continue;
+			
+			newColumnList.add(eci);
+			
+			querySb.append(firstFlag ? " ":", ").append(eci.getName()).append(" = ? ");
+			
+			if(firstFlag) {
+				firstFlag = false;
+			}
+		}
+		
+		tableRowKey.forEach(item->{
+			newColumnList.add(ExportColumnInfo.toColumnInfo(item));
+		});
+		
+		firstFlag = true;
+		for (ColumnInfo ci : tableRowKey) {
+			querySb.append(firstFlag ?" where " : " and ").append(ci.getName()).append(" = ? ") ;
+			
+			if(firstFlag) {
+				firstFlag = false;
+			}
+		}
+		
+		return new GenQueryInfo(querySb.toString(), newColumnList);
+	}
 }
+
+
+
+
+
+

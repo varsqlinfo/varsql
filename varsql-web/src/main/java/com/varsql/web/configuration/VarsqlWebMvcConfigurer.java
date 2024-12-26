@@ -1,9 +1,16 @@
 package com.varsql.web.configuration;
 
+import java.io.File;
+
 import javax.annotation.PostConstruct;
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -14,25 +21,24 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.format.FormatterRegistry;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.multipart.support.MultipartFilter;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.web.common.interceptor.DatabaseAuthInterceptor;
 import com.varsql.web.common.interceptor.DatabaseBoardAuthInterceptor;
 import com.varsql.web.common.interceptor.LanguageInterceptor;
 import com.varsql.web.constants.ResourceConfigConstants;
+import com.varsql.web.constants.SecurityConstants;
 import com.varsql.web.util.VarsqlUtils;
-import com.vartech.common.constants.ViewResourceConstants;
 
 /**
  *
@@ -165,13 +171,42 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
         return localeResolver;
     }
 
-    @Bean
+    @Bean(MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
     public MultipartResolver multipartResolver() {
+    	
        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
        multipartResolver.setMaxUploadSize(com.varsql.core.configuration.Configuration.getInstance().getFileUploadSize());
        multipartResolver.setMaxUploadSizePerFile(com.varsql.core.configuration.Configuration.getInstance().getFileUploadSizePerFile());
        multipartResolver.setDefaultEncoding(VarsqlConstants.CHAR_SET);
        multipartResolver.setMaxInMemorySize(com.varsql.core.configuration.Configuration.getInstance().getFileUploadMaxInMemorySize());
        return multipartResolver;
+    }
+    
+    /*
+    @Bean
+    public MultipartConfigElement multipartConfigElement() {
+        MultipartConfigFactory mcf = new MultipartConfigFactory();
+        
+        if(!new File(VarsqlConstants.UPLOAD_TEMP_PATH).exists()) {
+        	new File(VarsqlConstants.UPLOAD_TEMP_PATH).mkdir();
+        }
+        mcf.setLocation(VarsqlConstants.UPLOAD_TEMP_PATH);
+        mcf.setFileSizeThreshold(DataSize.ofBytes(com.varsql.core.configuration.Configuration.getInstance().getFileUploadMaxInMemorySize()));
+        mcf.setMaxFileSize(DataSize.ofBytes(com.varsql.core.configuration.Configuration.getInstance().getFileUploadSizePerFile()));
+        mcf.setMaxRequestSize(DataSize.ofBytes(com.varsql.core.configuration.Configuration.getInstance().getFileUploadSize()));
+        return mcf.createMultipartConfig();
+    }
+    */
+    
+    @Bean
+    public ServletContextInitializer servletContextInitializer() {
+        return new ServletContextInitializer() {
+            @Override
+            public void onStartup(ServletContext servletContext) throws ServletException {
+            	servletContext.getSessionCookieConfig().setHttpOnly(true);
+            	//servletContext.getSessionCookieConfig().setSecure(true);
+                servletContext.getSessionCookieConfig().setName(SecurityConstants.JSESSION_ID_COOKIE_NAME);
+            }
+        };
     }
 }

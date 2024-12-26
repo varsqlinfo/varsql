@@ -20,7 +20,7 @@ public interface WebSocketConstants {
 	
 	//final String DESTINATION_PREFIX = 
 	enum Type{
-		USER("user")
+		USER_TOPIC("topic")
 		,DATABASE("database");
 		//,FILE("file");
 		
@@ -29,25 +29,9 @@ public interface WebSocketConstants {
 		String destMatcher;
 		
 		Type(String dest){
-			this(dest, dest);
-		}
-		
-		Type(String dest, String endPoint){
-			this(dest, endPoint, dest);
-		}
-		
-		Type(String dest, String endPoint, String destMatcher){
 			this.clientDestination =  String.format("%s/%s", USER_DESTINATION_PREFIX, dest);
-			
-			if(endPoint != null) {
-				this.endPoint = String.format("%s/%s", ENDPOINT_PREFIX, dest);
-			}
-			
-			if(dest.equals(destMatcher)) {
-				this.destMatcher = String.format("%s/%s%s", USER_DESTINATION_PREFIX, destMatcher, "/**");
-			}else {
-				this.destMatcher = String.format("%s/%s", USER_DESTINATION_PREFIX, destMatcher);
-			}
+			this.endPoint = String.format("%s/%s", ENDPOINT_PREFIX, dest);
+			this.destMatcher = String.format("%s/%s%s", USER_DESTINATION_PREFIX, dest, "/**");
 		}
 
 		public String getClientDestination() {

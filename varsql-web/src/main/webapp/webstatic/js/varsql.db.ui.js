@@ -537,7 +537,7 @@ _ui.headerMenu ={
 
 							VARSQLUI.popup.open(VARSQL.getContextPathUrl('/database/preferences/main?conuid='+_g_options.param.conuid), {
 								name : 'preferencesMain'+_g_options.param.conuid
-								,viewOption : 'width=1000,height=710,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0'
+								,viewOption : 'width=1200,height=710,scrollbars=1,resizable=1,status=0,toolbar=0,menubar=0,location=0'
 							});
 
 							break;
@@ -1355,7 +1355,7 @@ _ui.dbSchemaObject ={
 				,data : param
 				,success:function (resData){
 					resData.refreshFlag = false;
-					callMethod.call(_self,resData);
+					callMethod.call(_self, resData, param);
 					_g_cache.setCacheSchemaObject($contentId, resData); // object cache
 				}
 			});
@@ -1711,7 +1711,7 @@ _ui.addDbServiceObject({
 							{header: "title", "key": "contextTitle"}
 							,{divider:true}
 							,{key : "copy" , "name": "Copy", hotkey :'Ctrl+C'}
-							,{key : "sql_create", "name": "sql생성"
+							,{key : "sql_create", "name": "sql"
 								,subMenu: [
 									{ key : "selectStar","name": "select *" , mode: "selectStar"}
 									,{ key : "select","name": "select column" ,mode:"select"}
@@ -2313,10 +2313,10 @@ _ui.addODbServiceObjectMetadata({
 		}
 		
 		var contextItems =[
-			{key : "copy" , "name": "Copy", hotkey :'Ctrl+C'}
-			,{ key : "add_editor","name": "Ediotr 컬럼명 넣기"}
+			{key : "copy" , "name": VARSQL.message('copy'), hotkey :'Ctrl+C'}
+			,{ key : "add_editor","name": VARSQL.message('column.name.add')}
 			,{divider:true}
-			,{key : "sql_create", "name": "sql생성"
+			,{key : "sql_create", "name": "sql"
 				,subMenu: [
 					{ key : "create_select","name": "select" ,mode:"select"}
 					,{ key : "create_selectWhere","name": "selectWhere" ,mode:"selectWhere"}
@@ -3203,6 +3203,11 @@ _ui.SQL = {
 	}
 	// add editor hint 
 	,addEditorHint: function (schema, type, objectInfo){
+		
+		if(!VARSQL.isArray(objectInfo)){
+			objectInfo =[objectInfo];
+		}
+		
 		this.sqlMainEditor.addSuggestionInfo(_g_options.schema == schema?"":schema, type, objectInfo);		
 	}
 	// 실행 취소
@@ -3995,8 +4000,8 @@ _ui.SQL = {
 			
 			if(result.length >0 ){
 				var item = result[0]; 
-				_self.sqlMainEditor.setSelection({startLineNumber :item.startLine ,startColumn :item.startCharPos-1
-					,endLineNumber :item.endLine ,endColumn : item.endCharPos
+				_self.sqlMainEditor.setSelection({startLineNumber :item.startLine+1 ,startColumn :item.startCharPos
+					,endLineNumber :item.endLine+1 ,endColumn : item.endCharPos+1
 				});
 				executeSql = item.statement;
 			}
@@ -4494,6 +4499,7 @@ _ui.sqlDataArea =  {
 			var errorMessage;
 			var errQuery = '';
 			var resItem = resultData.item || {};
+			var customMap = resultData.customMap||{}; 
 			var msgItemResult = resItem.result || {};
 			var errQuery = resItem.query;
 			
@@ -4505,8 +4511,7 @@ _ui.sqlDataArea =  {
 			}else{
 				errorMessage = resultData.message;
 			}
-			
-			var logValEle = $('<div><div class="error"><span class="log-end-time">'+VARSQLUtils.millitimeToFormat(msgItemResult.endtime,VARSQLCont.timestampFormat)+' </span>#resultMsg#</div></div>'.replace('#resultMsg#' , '<span class="error-message">'+errorMessage+'</span><br/>sql line : <span class="error-line">['+resultData.customMap.errorLine+']</span> query: <span class="log-query"></span>'));
+			var logValEle = $('<div><div class="error"><span class="log-end-time">'+VARSQLUtils.millitimeToFormat(msgItemResult.endtime,VARSQLCont.timestampFormat)+' </span>#resultMsg#</div></div>'.replace('#resultMsg#' , '<span class="error-message">'+errorMessage+'</span><br/>sql line : <span class="error-line">['+customMap.errorLine+']</span> query: <span class="log-query"></span>'));
 			logValEle.find('.log-query').text(errQuery);
 
 			resultMsg.push(logValEle.html());
@@ -4604,16 +4609,16 @@ _ui.sqlDataArea =  {
 			items: [
 				{key : "copy" , "name": "Copy"}
 				,{divider : true}
-				,{key : "select_col" , "name": "컬럼명"
+				,{key : "select_col" , "name": VARSQL.message('column.name') // 컬럼명
 					,subMenu : [
-						{ key : "select_col_copy","name": "컬럼명 Copy"}
-						,{ key : "select_col_editor","name": "컬럼명 넣기"}
-						,{ key : "select_col_val_editor","name": "컬럼명 & 값 넣기"}
+						{ key : "select_col_copy","name": VARSQL.message('column.name.copy')} // 컬럼명 복사
+						,{ key : "select_col_editor","name": VARSQL.message('column.name.add')} // 컬럼명 추가
+						,{ key : "select_col_val_editor","name": VARSQL.message('column.name.value.add')} // 컬럼명 & 값 추가
 					]
 				}
 				,{divider : true}
-				,{key : "detail" , "name": "상세보기"}
-				,{key : "download" , "name": "다운로드"
+				,{key : "detail" , "name": VARSQL.message('detail.view')}
+				,{key : "download" , "name": VARSQL.message('download')
 					,subMenu : [
 						{checkbox : true , name:'selet data' , key:'sqlGridResultSelect'}
 						,{divider : true}
@@ -5259,8 +5264,6 @@ function generateSQL(scriptInfo){
 			}
 		}
 		
-		console.log(keyStr.length)
-
 		if(keyStr.length > 0) reval.push(VARSQLCont.constants.newline+'where '+keyStr.join(' and '));
 
 	}
@@ -5372,6 +5375,7 @@ function addTextChangeFormat(colInfo){
 	var headerArr = VARSQL.isArray(colInfo.header) ?colInfo.header : [colInfo.header];
 	var dataArr = VARSQL.isArray(colInfo.data) ? colInfo.data : (VARSQL.isUndefined(colInfo.data) ? [] : [colInfo.data]);
 	var revalStr = [];
+	var dataLength = dataArr.length; 
 
 	for(var i =0; i < headerArr.length; i++){
 		var headerItem = headerArr[i];
@@ -5382,21 +5386,35 @@ function addTextChangeFormat(colInfo){
 		if(templateItem.addValueFlag !== false && headerItem.lob !== true){
 			var addValue = [];
 			var dupChkVal = [];
-			for (var j = 0; j < dataArr.length; j++) {
+			var addCount = 0;
+			for (var j = 0; j < dataLength; j++) {
 				var dataItem = dataArr[j];
 				var val = dataItem[headerItem.key];
 				if(val && VARSQL.inArray(dupChkVal, val)==-1){
+					
+					if(addCount > 0){
+						addValue.push(',');
+					}
+					
 					if(headerItem.number){
 						addValue.push(val);
 					}else {
 						addValue.push('\''+val +'\'');
 					}
+					
+					++addCount;
+
+					if(addCount % 20 ==0){ //줄바꿈 추가
+						addValue.push('\n')
+					}
+					
 					dupChkVal.push(val);
+					
 				}
 			}
 
 			if(addValue.length > 1 && templateItem.multipleFormat){
-				addVal = addValue.join(',');
+				addVal = addValue.join('');
 				formatStr += templateItem.multipleFormat;
 			}else{
 				addVal = addValue[0];

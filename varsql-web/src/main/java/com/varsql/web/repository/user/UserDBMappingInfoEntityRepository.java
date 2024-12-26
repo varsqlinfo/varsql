@@ -27,6 +27,7 @@ import com.varsql.web.model.entity.db.QDBTypeDriverProviderEntity;
 import com.varsql.web.repository.DefaultJpaRepository;
 import com.varsql.web.security.User;
 import com.varsql.web.util.ConvertUtils;
+import com.vartech.common.utils.StringUtils;
 
 import lombok.Getter;
 
@@ -84,26 +85,31 @@ public interface UserDBMappingInfoEntityRepository extends DefaultJpaRepository,
 			List<DatabaseInfo> result =new ArrayList<>();
 			query.fetch().forEach(item->{
 				
+				DBConnectionEntity dbConnEntity = item.getConnection();
+				
 				DatabaseInfo.DatabaseInfoBuilder databaseInfoBuilder= DatabaseInfo.builder()
-					.vconnid(item.getConnection().getVconnid())
-					.name(item.getConnection().getVname())
-					.schema(item.getConnection().getVdbschema())
-					.basetableYn(item.getConnection().getBasetableYn())
-					.lazyLoad(item.getConnection().getLazyloadYn())
-					.version(item.getConnection().getVdbversion())
-					.schemaViewYn(item.getConnection().getSchemaViewYn())
-					.maxSelectCount(ConvertUtils.intValue(item.getConnection().getMaxSelectCount()))
-					.databaseName(item.getConnection().getVdatabasename());
+					.vconnid(dbConnEntity.getVconnid())
+					.name(dbConnEntity.getVname())
+					.basetableYn(dbConnEntity.getBasetableYn())
+					.lazyLoad(dbConnEntity.getLazyloadYn())
+					.version(dbConnEntity.getVdbversion())
+					.schemaViewYn(dbConnEntity.getSchemaViewYn())
+					.maxSelectCount(ConvertUtils.intValue(dbConnEntity.getMaxSelectCount()));
 				
 				if(item.getProvider() != null) {
-					databaseInfoBuilder.type(item.getProvider().getDbType());
+					if(StringUtils.isBlank(item.getProvider().getDbType()) && tmpAuthority.equals(AuthorityTypeImpl.ADMIN)) {
+						databaseInfoBuilder.name("(Driver not found)-"+ dbConnEntity.getVname());
+						databaseInfoBuilder.type("");
+					}else {
+						databaseInfoBuilder.type(item.getProvider().getDbType());
+					}
 					result.add(databaseInfoBuilder.build());
 				}else {
 					if(tmpAuthority.equals(AuthorityTypeImpl.ADMIN)) {
-						databaseInfoBuilder.name("(Driver not found)-"+ item.getConnection().getVname());
+						databaseInfoBuilder.name("(Driver not found)-"+ dbConnEntity.getVname());
 						databaseInfoBuilder.type("");
+						result.add(databaseInfoBuilder.build());
 					}
-					result.add(databaseInfoBuilder.build());
 				}
 			});
 			

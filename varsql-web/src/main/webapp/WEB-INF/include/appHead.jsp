@@ -14,7 +14,6 @@
 <link href="${pageContextPath}/webstatic/css/varsql.app.min.css?v=${varsqlfn:staticResourceVersion('')}" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/js/plugins/dara/dara.form.min.css" rel="stylesheet">
 
-<script src="${pageContextPath}/webstatic/js/plugins/polyfill/polyfill.min.js"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/filesaver/FileSaver.min.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/jquery-3.7.1.min.js"></script>

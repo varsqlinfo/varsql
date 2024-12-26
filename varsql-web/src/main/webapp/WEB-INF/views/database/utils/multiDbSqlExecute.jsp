@@ -455,7 +455,7 @@ function initVue(){
 					    loadSelector : getResultTabSelector(conuid)
 					    ,disableResultCheck : true
 					    ,enableLoadSelectorBtn : true 
-					    ,url:{type:VARSQL.uri.sql, url:'/base/sqlData'}
+					    ,url:{type:VARSQL.uri.sql, url:'/base/execute'}
 					    ,data:params
 					    ,success:function (resData){
 					    	_this.viewResult(conuid, resData)

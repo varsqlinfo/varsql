@@ -79,7 +79,7 @@ public class VarsqlCommonController extends AbstractController {
 	 */
 	@RequestMapping(value = "/common/helpPage", method= RequestMethod.GET)
 	public ModelAndView helpPage(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
-		return getModelAndView("/help/mainHelp", VIEW_PAGE.COMMONPAGE);
+		return getModelAndView("/help/mainHelp", VIEW_PAGE.COMMON);
 	}
 
 }

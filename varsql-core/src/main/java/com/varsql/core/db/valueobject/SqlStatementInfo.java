@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.varsql.core.common.code.VarsqlFileType;
+import com.varsql.core.sql.util.SQLUtils;
 
 /**
  *
@@ -22,6 +23,8 @@ import com.varsql.core.common.code.VarsqlFileType;
 public class SqlStatementInfo{
 	private String requid$$;
 	
+	private String ip;
+	
 	// sql
 	private String sql;
 	
@@ -32,7 +35,7 @@ public class SqlStatementInfo{
 	private int limit;
 
 	// sql parameer
-	private String sqlParam;
+	private Map sqlParam;
 	
 	// db object name
 	private String objectName;
@@ -83,11 +86,15 @@ public class SqlStatementInfo{
 		this.limit =limit;
 	}
 
-	public String getSqlParam() {
+	public Map getSqlParam() {
 		return sqlParam;
 	}
 
 	public void setSqlParam(String sqlParam) {
+		this.sqlParam = SQLUtils.stringParamMapToMap(sqlParam);
+	}
+	
+	public void setSqlParamMap(Map sqlParam) {
 		this.sqlParam = sqlParam;
 	}
 
@@ -170,6 +177,14 @@ public class SqlStatementInfo{
 
 	public void setFormatValue(boolean isFormatValue) {
 		this.isFormatValue = isFormatValue;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 
 	@Override

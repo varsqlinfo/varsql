@@ -18,9 +18,9 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.db.valueobject.ddl.DDLTemplateParam;
-import com.varsql.core.sql.SQLTemplateCode;
+import com.varsql.core.sql.DDLTemplateCode;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
-import com.varsql.core.sql.template.SQLTemplateFactory;
+import com.varsql.core.sql.template.DDLTemplateFactory;
 import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.utils.VartechUtils;
 
@@ -65,9 +65,9 @@ public class TiberoDDLScript extends AbstractDDLScript {
 						.commentsList(sqlSession.selectList("tableColumnComments",dataParamInfo))
 					.build();
 					
-					param.setSourceText(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.constraintKey, param));
+					param.setSourceText(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.TABLE.constraintKey, param));
 					
-					ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.create, param));
+					ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.TABLE.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -115,7 +115,7 @@ public class TiberoDDLScript extends AbstractDDLScript {
 					.commentsList(sqlSession.selectList("tableColumnComments",dataParamInfo))
 				.build();
 	
-				ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.VIEW.create, param), dbType));
+				ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.VIEW.create, param), dbType));
 				reval.add(ddlInfo);
 			}
 		}
@@ -145,7 +145,7 @@ public class TiberoDDLScript extends AbstractDDLScript {
 					.sourceText(StringUtils.trim(sqlSession.selectOne("indexScriptSource", dataParamInfo)))
 				.build();
 	
-				ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.INDEX.create, param), dbType));
+				ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.INDEX.create, param), dbType));
 				reval.add(ddlInfo);
 			}
 		}
@@ -184,7 +184,7 @@ public class TiberoDDLScript extends AbstractDDLScript {
 						.sourceText(sourceSb.toString())
 					.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.FUNCTION.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.FUNCTION.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -224,7 +224,7 @@ public class TiberoDDLScript extends AbstractDDLScript {
 					}
 					param.setSourceText(sourceSb.toString());
 					
-					ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PROCEDURE.create, param));
+					ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.PROCEDURE.create, param));
 				} else if (StringUtils.contains(objType, "PACKAGE")) {
 					DataMap sourceInfo = new DataMap();
 					
@@ -245,7 +245,7 @@ public class TiberoDDLScript extends AbstractDDLScript {
 					sourceInfo.put("packageBody", sourceSb.toString());
 					
 					param.setItem(sourceInfo);
-					ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PACKAGE.create, param));
+					ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.PACKAGE.create, param));
 				}
 				
 				reval.add(ddlInfo);
@@ -296,7 +296,7 @@ public class TiberoDDLScript extends AbstractDDLScript {
 						.sourceText(sourceSb.toString())
 					.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TRIGGER.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.TRIGGER.create, param));
 				
 				reval.add(ddlInfo);
 			}

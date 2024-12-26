@@ -15,8 +15,8 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.db.valueobject.ddl.DDLTemplateParam;
-import com.varsql.core.sql.SQLTemplateCode;
-import com.varsql.core.sql.template.SQLTemplateFactory;
+import com.varsql.core.sql.DDLTemplateCode;
+import com.varsql.core.sql.template.DDLTemplateFactory;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.varsql.web.util.SecurityUtil;
 import com.vartech.common.app.beans.DataMap;
@@ -77,7 +77,7 @@ public class DatabaseSourceGenImpl{
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		
 		DDLInfo ddlInfo = new DDLInfo();
-		ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(DBVenderType.getDBType(convertDb), SQLTemplateCode.TABLE.create, ddlTemplateParam));
+		ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(DBVenderType.getDBType(convertDb), DDLTemplateCode.TABLE.create, ddlTemplateParam));
 		reval.add(ddlInfo);
 		
 		return reval;

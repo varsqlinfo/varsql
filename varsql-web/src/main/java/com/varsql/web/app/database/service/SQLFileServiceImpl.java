@@ -1,5 +1,6 @@
 package com.varsql.web.app.database.service;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.StringUtils;
+import com.vartech.common.utils.VartechUtils;
 
 /**
  *
@@ -40,6 +42,9 @@ public class SQLFileServiceImpl{
 
 	@Autowired
 	private SqlFileTabEntityRepository sqlFileTabEntityRepository;
+	
+	private int MAX_SQL_PARAM_TOTAL_SIZE = 20000;
+	private int MAX_SQL_PARAM_UNIT_SIZE = 2000;
 
 	/**
 	 * 쿼리 저장.
@@ -97,12 +102,18 @@ public class SQLFileServiceImpl{
 
 				sqlFileInfo = sqlFileEntityRepository.findOne(SqlFileSpec.detailSqlFile(sqlFileRequestDTO.getVconnid(), sqlFileRequestDTO.getSqlId())).orElse(null);
 				if(sqlFileInfo != null) {
+					setSqlParam(sqlFileRequestDTO.getSqlParam(), sqlFileInfo, result);
 					if(sqlFileRequestDTO.getSqlCont() !=null) sqlFileInfo.setSqlCont(sqlFileRequestDTO.getSqlCont());
-					if(sqlFileRequestDTO.getSqlParam() !=null) sqlFileInfo.setSqlParam(sqlFileRequestDTO.getSqlParam());
 					if(sqlFileRequestDTO.getSqlTitle() !=null) sqlFileInfo.setSqlTitle(sqlFileRequestDTO.getSqlTitle());
 					if(sqlFileRequestDTO.getEditorCursor() !=null) sqlFileInfo.setEditorCursor(sqlFileRequestDTO.getEditorCursor());
-
-					sqlFileInfo = sqlFileEntityRepository.save(sqlFileInfo);
+					
+					try {
+						sqlFileInfo = sqlFileEntityRepository.save(sqlFileInfo);
+					}catch(RuntimeException e) {
+						logger.error("message : {}, param : {}", e.getMessage(), sqlFileRequestDTO.getSqlParam());
+						sqlFileInfo.setSqlParam("{}");
+						sqlFileInfo = sqlFileEntityRepository.save(sqlFileInfo);
+					}
 				}
 
 				if("query_del".equals(mode)){
@@ -116,6 +127,56 @@ public class SQLFileServiceImpl{
 		result.setItemOne(sqlFileRequestDTO);
 
 		return result;
+	}
+	
+	/**
+	 * sql param size 체크. 
+	 * 파라미터 value 의 400으로 한정함 사이즈를 체크해서 추가함.  
+	 * 
+	 * @param sqlParamString
+	 * @param sqlFileInfo
+	 * @param result 
+	 */
+	private void setSqlParam(String sqlParamString, SqlFileEntity sqlFileInfo, ResponseResult result) {
+		if(sqlParamString ==null) {
+			return ; 
+		}
+		
+		if(sqlParamString.length() > MAX_SQL_PARAM_TOTAL_SIZE) {
+			
+			HashMap sqlParam = VartechUtils.jsonStringToObject(sqlParamString, HashMap.class);
+			int sqlParamSize = 0;
+			
+			HashMap newSqlParam = new HashMap();
+			for(Object key : sqlParam.keySet()) {
+				Object value = sqlParam.get(key);
+				
+				if(value !=null) {
+					String paramValue = value.toString(); 
+					int len = paramValue.length();
+					
+					if(len > MAX_SQL_PARAM_UNIT_SIZE) {
+						paramValue = paramValue.substring(0, MAX_SQL_PARAM_UNIT_SIZE);
+						len = paramValue.length();
+					}
+					
+					sqlParamSize +=len + String.valueOf(key).length();
+					
+					if(sqlParamSize > MAX_SQL_PARAM_TOTAL_SIZE) {
+						if(result!=null) {
+							result.setMessage("The maximum size of the parameter is ["+MAX_SQL_PARAM_UNIT_SIZE+"]");
+						}
+						break; 
+					}
+					
+					newSqlParam.put(key, paramValue);
+				}
+			}
+			sqlFileInfo.setSqlParam(VartechUtils.objectToJsonString(newSqlParam));
+		}else {
+			sqlFileInfo.setSqlParam(sqlParamString);
+		}
+		
 	}
 
 	/**
@@ -144,7 +205,8 @@ public class SQLFileServiceImpl{
 			if(sfe == null) continue;
 
 			sfe.setSqlId(sqlId);
-			sfe.setSqlParam(String.valueOf(customParam.get(sqlId+"_param")));
+			
+			setSqlParam(String.valueOf(customParam.get(sqlId+"_param")), sfe, null);
 			sfe.setSqlCont(String.valueOf(customParam.get(sqlId)));
 			sfe.setEditorCursor(String.valueOf(customParam.get(sqlId+"_cursor")));
 

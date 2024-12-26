@@ -64,7 +64,7 @@ public class DDLBackupMgmtController extends AbstractController {
 		model.addAttribute("selectMenu", "jobMgmt");
 		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
 		
-		return getModelAndView("/ddlBackupMgmt", VIEW_PAGE.MANAGER,model);
+		return getModelAndView("/ddlBackupMgmt", VIEW_PAGE.MANAGER_SCHEDULER, model);
 	}
 	
 	/**

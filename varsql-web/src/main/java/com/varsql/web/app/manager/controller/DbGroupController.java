@@ -68,7 +68,7 @@ public class DbGroupController extends AbstractController {
 	public ModelAndView dbGroupMgmt(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "dbGroupMgmt");
-		return getModelAndView("/dbGroupMgmt", VIEW_PAGE.MANAGER,model);
+		return getModelAndView("/dbGroupMgmt", VIEW_PAGE.MANAGER_GROUP,model);
 	}
 
 	/**
@@ -190,7 +190,7 @@ public class DbGroupController extends AbstractController {
 	public ModelAndView dbUserMgmt(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("selectMenu", "dbGroupMgmt");
-		return getModelAndView("/dbGroupUserMgmt", VIEW_PAGE.MANAGER,model);
+		return getModelAndView("/dbGroupUserMgmt", VIEW_PAGE.MANAGER_GROUP,model);
 	}
 
 	/**

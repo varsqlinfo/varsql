@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE templateConfig SYSTEM  "ddlTemplate.dtd">
+
+<templateConfig>
+	<!-- 테이블 생성-->
+	<table>
+		<create>
+		<![CDATA[
+{{~#if ddlOpt.addDropClause}}/* DROP TABLE {{objectName}}; */{{/if}}
+CREATE TABLE {{objectName}}(
+{{#columnList}}
+	{{addChar @index "" ","}} {{name}} {{ddlTableValue 'typeAndLength' this dbType}} {{{ddlTableValue 'default' this dbType}}} {{{ddlTableValue 'nullable' this dbType}}}
+{{/columnList}}
+);
+
+{{sourceText}}
+
+{{#commentsList}}
+{{#xif type '==' 'TBL'}}EXEC sp_addextendedproperty 'MS_Description', '{{{comment}}}', 'SCHEMA', {{../schema}}, 'TABLE', {{../objectName}};{{/xif}}
+{{~#xif type '==' 'COL'}}EXEC sp_addextendedproperty 'MS_Description', '{{{comment}}}', 'SCHEMA', {{../schema}}, 'TABLE', {{../objectName}}, 'COLUMN', {{name}};{{/xif}}
+{{/commentsList}}
+		]]>
+		</create>
+		
+		<!-- 테이블명 수정 추가-->
+		<rename><![CDATA[
+			rename table  {{TABLE_NAME}} as  {{NEW_TABLE_NAME}}
+		]]></rename>
+		
+		<!-- 컬럼 추가-->
+		<columnAdd>
+alter table {{TABLE_NAME}} add column {{COLUMN_NAME}} {{TYPE_NAME}} {{DEFAULT_VALUE}}
+		</columnAdd>
+		
+		<!-- 컬럼명 수정 추가-->
+		<columnRename>
+alter table {{TABLE_NAME}} rename column {{COLUMN_NAME}} as {{NEW_COLUMN_NAME}}
+		</columnRename>
+		
+		<!-- 컬럼 수정 추가-->
+		<columnModify>
+alter table {{TABLE_NAME}} modify {{COLUMN_NAME}} {{TYPE_NAME}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} {{DEFAULT_VALUE}}
+		</columnModify>
+		
+		<!-- 컬럼 삭제-->
+		<columnDrop>
+alter table {{TABLE_NAME}} drop  {{COLUMN_NAME}}
+		</columnDrop>
+		
+		<!-- 컬럼 주석 추가 -->
+		<columnAddComment>
+EXEC sp_addextendedproperty 'MS_Description', '{{{comment}}}', 'SCHEMA', dbo, 'TABLE', {{TABLE_NAME}}, 'COLUMN', {{COLUMN_NAME}}
+		</columnAddComment>
+	
+		<!-- 컬럼 주석 수정-->
+		<columnModifyComment>
+EXEC sp_updateextendedproperty 'MS_Description', '{{{comment}}}', 'SCHEMA', dbo, 'TABLE', {{TABLE_NAME}}, 'COLUMN', {{COLUMN_NAME}}
+		</columnModifyComment>
+	
+		<!-- 컬럼 주석 삭제-->
+		<columnDropComment>
+EXEC sp_dropextendedproperty 'MS_Description', 'SCHEMA', dbo, 'TABLE', {{TABLE_NAME}}, 'COLUMN ' , {{COLUMN_NAME}}
+		</columnDropComment>
+		
+		<constraintKey>
+{{#ddlTableKey keyList objectName dbType}}
+  {{~#xif type '==' 'PK'}}
+	{{~#each constList}}
+ALTER TABLE {{../objectName}} ADD CONSTRAINT {{@key}} PRIMARY KEY ({{~#this}}{{addChar @index "" ", "}}{{columnName}}{{/this}});
+	{{/each~}}
+  {{/xif~}}
+  
+  {{~#xif type '==' 'FK'}}
+	{{~#each constList}}
+ALTER TABLE {{../objectName}} ADD CONSTRAINT {{@key}} FOREIGN KEY ({{~#this}}{{addChar @index "" ", "}}{{columnName}}{{/this}}) REFERENCES {{#this}}{{#if @first}}{{referencedTableName}}{{/if}}{{/this}}({{~#this}}{{addChar @index "" ", "}}{{referencedColumnName}}{{/this}});
+	{{/each~}}
+  {{/xif~}}
+  
+  {{~#xif type '==' 'UQ'}}
+	{{~#each constList}}
+CREATE UNIQUE INDEX {{@key}} ON {{../objectName}} ({{~#this}}{{addChar @index "" ", "}}{{columnName}}{{/this}});
+	{{/each~}}
+  {{/xif~}}
+  
+{{/ddlTableKey}}
+		</constraintKey>
+		
+	</table>
+
+	
+	<!-- view 생성-->
+    <view>
+        <create>
+{{~#if ddlOpt.addDropClause}}/* DROP VIEW {{objectName}}; */{{/if}}
+
+{{{sourceText}}}
+;
+{{#commentsList}}
+{{#xif type '==' 'TBL'}}EXEC sp_addextendedproperty 'MS_Description', '{{{comment}}}', 'SCHEMA', {{../schema}}, 'TABLE', {{../objectName}};{{/xif}}
+{{~#xif type '==' 'COL'}}EXEC sp_addextendedproperty 'MS_Description', '{{{comment}}}', 'SCHEMA', {{../schema}}, 'TABLE', {{../objectName}}, 'COLUMN', {{name}};{{/xif}}
+{{/commentsList}}
+        </create>
+    </view>
+
+    <!-- function 생성-->
+    <function>
+        <create>
+{{#if ddlOpt.addDropClause}}/* DROP FUNCTION {{objectName}}; */{{/if}}
+
+{{{sourceText}}}
+        </create>
+    </function>
+
+    <!-- procedure 생성-->
+    <procedure>
+        <create>
+{{#if ddlOpt.addDropClause}}/* DROP PROCEDURE {{objectName}}; */{{/if}}
+
+{{{sourceText}}}
+        </create>
+    </procedure>
+
+    <!-- trigger 생성-->
+    <trigger>
+        <create>
+{{#if ddlOpt.addDropClause}}/* DROP TRIGGER {{objectName}}; */{{/if}}
+
+{{{sourceText}}}
+        </create>
+    </trigger>
+    
+
+	<!-- index 생성-->
+	<index>
+		<create>
+{{#if ddlOpt.addDropClause}}/* DROP INDEX {{objectName}}; */{{/if}}
+
+{{#with items.[0]}}
+create {{ddlIndexKeyword 'unique' this}} index {{objectName}}
+on
+{{../schema}}.{{tableName}}
+{{/with~}}
+({{~#items}}{{addChar @index "" ","}}{{columnName}} {{ddlIndexKeyword 'ascDesc' this}}{{/items}})
+		</create>
+	</index>
+	
+
+	<!-- sequence 생성-->
+	<sequence>
+		<create>
+{{#if ddlOpt.addDropClause}}/* DROP SEQUENCE {{objectName}}; */{{/if}}
+
+CREATE SEQUENCE {{objectName}}
+START WITH 1
+INCREMENT BY {{item.increment}}
+MINVALUE {{item.minValue}}
+MAXVALUE {{item.maxValue}}
+		</create>
+	</sequence>
+	
+</templateConfig>

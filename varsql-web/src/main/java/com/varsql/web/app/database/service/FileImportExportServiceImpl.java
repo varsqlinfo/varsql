@@ -20,9 +20,9 @@ import com.varsql.core.common.beans.ProgressInfo;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.code.VarsqlFileType;
 import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.common.job.JobExecuteResult;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.sql.executor.FileImportExecutor;
-import com.varsql.core.sql.executor.SQLExecuteResult;
 import com.varsql.core.sql.executor.UpdateExecutor;
 import com.varsql.core.sql.executor.handler.UpdateExecutorHandler;
 import com.varsql.core.sql.executor.handler.UpdateInfo;
@@ -96,22 +96,22 @@ public class FileImportExportServiceImpl{
 			try {
 				fileImportResult.setFileId(fileInfo.getFileId());
 				fileImportResult.setFileName(fileInfo.getFileName());
-				SQLExecuteResult ser =null;
+				JobExecuteResult jer =null;
 				if("sql".equals(importType)) {
-					ser = sqlImport(fileInfo, conuid, progressInfo);
+					jer = sqlImport(fileInfo, conuid, progressInfo);
 				}else if("xml".equals(importType)) {
-					ser = xmlImport(fileInfo, conuid, progressInfo);
+					jer = xmlImport(fileInfo, conuid, progressInfo);
 				}else if("json".equals(importType)) {
-					ser = jsonImport(fileInfo, conuid, progressInfo);
+					jer = jsonImport(fileInfo, conuid, progressInfo);
 				}else if("csv".equals(importType)) {
-					ser = csvImport(fileInfo, conuid, progressInfo);
+					jer = csvImport(fileInfo, conuid, progressInfo);
 				}
 
-				if(ser.getResultCode() != null) {
-					fileImportResult.setResultCode(ser.getResultCode());
+				if(jer.getResultCode() != null) {
+					fileImportResult.setResultCode(jer.getResultCode());
 				}
-				fileImportResult.setResultCount(ser.getExecuteCount());
-				fileImportResult.setMessage(ser.getMessage());
+				fileImportResult.setResultCount(jer.getExecuteCount());
+				fileImportResult.setMessage(jer.getMessage());
 
 			} catch (IOException | SQLException e) {
 				fileImportResult.setResultCode(VarsqlAppCode.ERROR);
@@ -144,7 +144,7 @@ public class FileImportExportServiceImpl{
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	private SQLExecuteResult sqlImport(FileInfoEntity fileInfo, String conuid, ProgressInfo progressInfo) throws IOException, SQLException {
+	private JobExecuteResult sqlImport(FileInfoEntity fileInfo, String conuid, ProgressInfo progressInfo) throws IOException, SQLException {
 		SqlStatementInfo ssi = new SqlStatementInfo();
 		ssi.setDatabaseInfo(SecurityUtil.userDBInfo(conuid));
 		ssi.setSqlParam("{}");
@@ -152,7 +152,7 @@ public class FileImportExportServiceImpl{
 		String insertQuery = FileUtils.readFileToString(FileServiceUtils.getFileInfoToFile(fileInfo));
 		ssi.setSql(insertQuery);
 
-		SQLExecuteResult ser =new UpdateExecutor().execute(ssi, new UpdateExecutorHandler() {
+		JobExecuteResult jer =new UpdateExecutor().execute(ssi, new UpdateExecutorHandler() {
 			private int idx =0; 
 			@Override
 			public boolean handle(UpdateInfo sqlResultVO) {
@@ -162,7 +162,7 @@ public class FileImportExportServiceImpl{
 			}
 		});
 
-		return ser;
+		return jer;
 	}
 
 	/**
@@ -175,7 +175,7 @@ public class FileImportExportServiceImpl{
 	 * @return
 	 * @throws IOException
 	 */
-	private SQLExecuteResult csvImport(FileInfoEntity fileInfo, String conuid, ProgressInfo progressInfo) throws IOException {
+	private JobExecuteResult csvImport(FileInfoEntity fileInfo, String conuid, ProgressInfo progressInfo) throws IOException {
 
 
 		try(LineIterator it = org.apache.commons.io.FileUtils.lineIterator(FileServiceUtils.getFileInfoToFile(fileInfo), VarsqlConstants.CHAR_SET);) {
@@ -188,14 +188,14 @@ public class FileImportExportServiceImpl{
 	}
 
 
-	private SQLExecuteResult jsonImport(FileInfoEntity fileInfo, String conuid, ProgressInfo progressInfo) throws SQLException {
+	private JobExecuteResult jsonImport(FileInfoEntity fileInfo, String conuid, ProgressInfo progressInfo) throws SQLException {
 
 		SqlStatementInfo ssi = new SqlStatementInfo();
 		ssi.setDatabaseInfo(SecurityUtil.userDBInfo(conuid));
 		ssi.setExportType(VarsqlFileType.JSON.name());
 		ssi.addCustom(FileImportExecutor.IMPORT_FILE_PARAM_NAME, FileServiceUtils.getPath(fileInfo.getFilePath()).toUri());
 
-		SQLExecuteResult ser =new FileImportExecutor().execute(ssi, new UpdateExecutorHandler() {
+		JobExecuteResult jer =new FileImportExecutor().execute(ssi, new UpdateExecutorHandler() {
 			private int idx =0; 
 			@Override
 			public boolean handle(UpdateInfo sqlResultVO) {
@@ -204,16 +204,16 @@ public class FileImportExportServiceImpl{
 				return true;
 			}
 		});
-		return ser;
+		return jer;
 	}
 
-	private SQLExecuteResult xmlImport(FileInfoEntity fileInfo, String conuid, ProgressInfo progressInfo) throws SQLException {
+	private JobExecuteResult xmlImport(FileInfoEntity fileInfo, String conuid, ProgressInfo progressInfo) throws SQLException {
 		SqlStatementInfo ssi = new SqlStatementInfo();
 		ssi.setDatabaseInfo(SecurityUtil.userDBInfo(conuid));
 		ssi.setExportType(VarsqlFileType.XML.name());
 		ssi.addCustom(FileImportExecutor.IMPORT_FILE_PARAM_NAME, FileServiceUtils.getPath(fileInfo.getFilePath()).toUri());
 
-		SQLExecuteResult ser =new FileImportExecutor().execute(ssi, new UpdateExecutorHandler() {
+		JobExecuteResult jer =new FileImportExecutor().execute(ssi, new UpdateExecutorHandler() {
 			private int idx =0; 
 			@Override
 			public boolean handle(UpdateInfo sqlResultVO) {
@@ -222,7 +222,7 @@ public class FileImportExportServiceImpl{
 				return true;
 			}
 		});
-		return ser;
+		return jer;
 	}
 
 

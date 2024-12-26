@@ -27,42 +27,41 @@ public enum DBColumnMetaInfo {
 		@Override
 		public String typeAndLength(int precision, int scale) {
 			if(precision < 1) return "";
-			return "(" + precision+ (scale != 0 ? "," + scale :"") +")";
+			return "(" + precision+ (scale > 0 ? "," + scale :"") +")";
 		}
 	})
 	,DOUBLE(1, true, new ColumnMetaHandler(){
 		@Override
 		public String typeAndLength(int precision, int scale) {
 			if(precision < 1) return "";
-			return "(" + precision+ (scale != 0 ? "," + scale :"") +")";
+			return "(" + precision+ (scale > 0 ? "," + scale :"") +")";
 		}
 	})
 	,NUMERIC(1, true, new ColumnMetaHandler(){
 		@Override
 		public String typeAndLength(int precision, int scale) {
 			if(precision < 1) return "";
-			return "(" + precision+ (scale != 0 ? "," + scale :"") +")";
+			return "(" + precision+ (scale > 0 ? "," + scale :"") +")";
 		}
 	})
 	,BIGDECIMAL(1, true, new ColumnMetaHandler(){
 		@Override
 		public String typeAndLength(int precision, int scale) {
 			if(precision < 1) return "";
-			return "(" + precision+ (scale != 0 ? "," + scale :"") +")";
+			return "(" + precision+ (scale > 0 ? "," + scale :"") +")";
 		}
 	})
 	,DECIMAL(1, true, new ColumnMetaHandler(){
 		@Override
 		public String typeAndLength(int precision, int scale) {
 			if(precision < 1) return "";
-			return "(" + precision+ (scale != 0 ? "," + scale :"") +")";
+			return "(" + precision+ (scale > 0 ? "," + scale :"") +")";
 		}
 	})
 	,STRING(2, true)
 	,DATE(3, false)
 	,TIME(3, false)
 	,TIMESTAMP(3, false)
-	,CLOB(5, true)
 	,BINARY(6, true)
 	,ARRAY(7, true)
 	,BLOB(8, true)

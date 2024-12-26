@@ -5,18 +5,19 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.code.VarsqlAppCode;
+import com.varsql.core.common.job.JobExecuteResult;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.sql.SqlExecuteManager;
+import com.varsql.core.sql.beans.ExecuteStatementInfo;
+import com.varsql.core.sql.beans.SqlExecuteBean;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.executor.handler.SelectExecutorHandler;
@@ -25,7 +26,6 @@ import com.varsql.core.sql.util.JdbcUtils;
 import com.varsql.core.sql.util.SQLParamUtils;
 import com.varsql.core.sql.util.SQLResultSetUtils;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.utils.VartechUtils;
 
 /**
  * -----------------------------------------------------------------------------
@@ -44,16 +44,14 @@ public class SelectExecutor implements Executor{
 	private final Logger logger = LoggerFactory.getLogger(SelectExecutor.class);
 
 	@Override
-	public SQLExecuteResult execute(SqlStatementInfo statementInfo) throws SQLException {
+	public JobExecuteResult execute(SqlStatementInfo statementInfo) throws SQLException {
 		return execute(statementInfo, null);
 	}
 
-	public SQLExecuteResult execute(SqlStatementInfo statementInfo, SelectExecutorHandler resultHandler) throws SQLException {
-		SQLExecuteResult result = new SQLExecuteResult();
+	public JobExecuteResult execute(SqlStatementInfo statementInfo, SelectExecutorHandler resultHandler) throws SQLException {
+		JobExecuteResult result = new JobExecuteResult();
 
-		Map sqlParamMap = VartechUtils.jsonStringToObject(statementInfo.getSqlParam(), HashMap.class);
-
-		ResponseResult parseInfo = SqlSourceBuilder.parseResponseResult(statementInfo.getSql(), sqlParamMap, DBVenderType.getDBType(statementInfo.getDatabaseInfo().getType()));
+		ResponseResult parseInfo = SqlSourceBuilder.parseResponseResult(statementInfo.getSql(), statementInfo.getSqlParam(), DBVenderType.getDBType(statementInfo.getDatabaseInfo().getType()));
 
 		List<SqlSource> sqlList = parseInfo.getList();
 
@@ -71,16 +69,17 @@ public class SelectExecutor implements Executor{
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
+			String executeQuery = tmpSqlSource.getQuery();
 			conn = ConnectionFactory.getInstance().getConnection(statementInfo.getDatabaseInfo().getVconnid());
 
-			logger.debug("execute query: {}", tmpSqlSource.getQuery());
+			logger.debug("execute query: {}", executeQuery);
 			
 			conn.setAutoCommit(false);
 			
-			pstmt = conn.prepareStatement(tmpSqlSource.getQuery());
+			pstmt = conn.prepareStatement(executeQuery);
 			
 			// request 실행 취소 정보 추가
-			SqlExecuteManager.getInstance().addStatementInfo(requid, pstmt);
+			SqlExecuteManager.getInstance().addStatementInfo(SqlExecuteBean.builder().reqUid(requid).ip("select-executor").build(), ExecuteStatementInfo.builder().statement(pstmt).sql(executeQuery).build());
 			
 			if(statementInfo.getLimit() > 0) {
 				pstmt.setMaxRows(statementInfo.getLimit());

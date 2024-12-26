@@ -78,6 +78,7 @@ public final class ValidateUtils {
 	public static String getValidFileName(String fileName) {
 		fileName = fileName.replace("../", "");
 		fileName = fileName.replace("..\\", "");
+		fileName = com.vartech.common.utils.StringUtils.removeSpecialCharacter(fileName);
 		
 		return fileName; 
 	}

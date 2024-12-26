@@ -78,13 +78,15 @@
 <entry key="manager.menu.dbcomparemgmt">数据库比较</entry>
 <entry key="manager.menu.sqllogmgmt">SQL统计</entry>
 <entry key="manager.menu.sqllog">SQL日志</entry>
+<entry key="manager.menu.executestat">执行 SQL 统计</entry>
 <entry key="manager.menu.userlogmgmt">用户日志统计</entry>
 <entry key="manager.menu.scheduler">调度器</entry>
 <entry key="manager.menu.databackupgmgmt">数据备份管理</entry>
 <entry key="manager.menu.ddlbackupmgmt">DDL备份管理</entry>
-<entry key="manager.menu.sqljobmgmt">SQL任务</entry>
+<entry key="manager.menu.taskjobmgmt">SQL任务</entry>
 <entry key="manager.menu.task">Task</entry>
 <entry key="manager.menu.sqltaskmgmt">SQL Task</entry>
+<entry key="manager.menu.datamigtaskmgmt">数据迁移任务</entry>
 
 <!-- 用户菜单 -->
 <entry key="user.prefernces.menu.general">个人资料修改</entry>

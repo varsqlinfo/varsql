@@ -1,5 +1,5 @@
 /*!
-* dara-form  v0.0.11
+* dara-form  v0.0.12
 * Copyright 2023-2024 darainfo and other contributors; 
 * Licensed MIT
 */
@@ -29,7 +29,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 const tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.mjs");
-const utils_1 = tslib_1.__importDefault(__webpack_require__(/*! ./util/utils */ "./src/util/utils.ts"));
+const utils = tslib_1.__importStar(__webpack_require__(/*! ./util/utils */ "./src/util/utils.ts"));
 const Lanauage_1 = tslib_1.__importDefault(__webpack_require__(/*! ./util/Lanauage */ "./src/util/Lanauage.ts"));
 const stringValidator_1 = __webpack_require__(/*! ./rule/stringValidator */ "./src/rule/stringValidator.ts");
 const numberValidator_1 = __webpack_require__(/*! ./rule/numberValidator */ "./src/rule/numberValidator.ts");
@@ -43,11 +43,16 @@ const defaultOptions = {
     valueWidth: 9,
     position: "left-right"
   },
+  mode: "new",
+  useTypeValue: true,
+  autoCreate: true,
   notValidMessage: "This form is not valid.",
   fields: []
 };
 // all instance
 const allInstance = {};
+const SEQ_ATTR_KEY = "data-form-uid";
+let DARA_FORM_SEQ = 0;
 /**
  * DaraForm class
  *
@@ -55,8 +60,18 @@ const allInstance = {};
  * @typedef {DaraForm}
  */
 class DaraForm {
-  constructor(selector, options, message) {
+  constructor(formElement, options, message) {
+    var _a;
     this.formValue = {};
+    /**
+     * change mode
+     *
+     * @param mode form_mode default new
+     */
+    this.changeMode = mode => {
+      this.options.mode = mode;
+      this.formElement.setAttribute("data-df-mode", mode);
+    };
     /**
      * 폼 데이터 reset
      */
@@ -64,7 +79,7 @@ class DaraForm {
       const fieldMap = this.fieldInfoMap.getAllFieldInfo();
       for (const seq in fieldMap) {
         const fieldInfo = fieldMap[seq];
-        const renderInfo = fieldInfo.$renderer;
+        const renderInfo = fieldInfo.$instance;
         if (renderInfo && typeof renderInfo.reset === "function") {
           renderInfo.reset();
         }
@@ -77,7 +92,7 @@ class DaraForm {
      * @param fieldName 필드명
      */
     this.resetField = fieldName => {
-      this.fieldInfoMap.getFieldName(fieldName).$renderer.reset();
+      this.fieldInfoMap.getFieldName(fieldName).$instance.reset();
       this.formValue[fieldName] = "";
       this.conditionCheck();
     };
@@ -90,7 +105,7 @@ class DaraForm {
     this.getFieldValue = fieldName => {
       const field = this.fieldInfoMap.getFieldName(fieldName);
       if (field) {
-        return field.$renderer.getValue();
+        return field.$instance.getValue();
       }
       return null;
     };
@@ -109,8 +124,10 @@ class DaraForm {
      * 폼 필드 value 셋팅
      * @param values
      */
-    this.setValue = values => {
-      this.resetForm();
+    this.setValue = (values, dataClear) => {
+      if (dataClear !== false) {
+        this.resetForm();
+      }
       Object.keys(values).forEach(fieldName => {
         this._setFieldValue(fieldName, values[fieldName]);
       });
@@ -123,7 +140,7 @@ class DaraForm {
     this.setFieldItems = (fieldName, values) => {
       const field = this.fieldInfoMap.getFieldName(fieldName);
       if (field) {
-        return field.$renderer.setValueItems(values);
+        return field.$instance.setValueItems(values);
       }
     };
     /**
@@ -146,8 +163,8 @@ class DaraForm {
       const element = this.getFieldElement(fieldName);
       if (element != null) {
         (_a = element.closest(".df-row")) === null || _a === void 0 ? void 0 : _a.remove();
-        this.fieldInfoMap.removeFieldInfo(fieldName);
       }
+      this.fieldInfoMap.removeFieldInfo(fieldName);
     };
     /**
      * 폼 유효성 검증 여부
@@ -170,28 +187,28 @@ class DaraForm {
       const fieldMap = this.fieldInfoMap.getAllFieldInfo();
       for (const fieldKey in fieldMap) {
         const fieldInfo = fieldMap[fieldKey];
-        const renderInfo = fieldInfo.$renderer;
-        let fieldValid = renderInfo.valid();
+        let fieldValid = this.fieldInfoMap.getFieldValidation(fieldInfo, autoFocusFlag);
         if (fieldValid !== true) {
-          if (autoFocusFlag) {
-            renderInfo.focus();
-            autoFocusFlag = false;
+          autoFocusFlag = false;
+          if (utils.isGridType(fieldInfo)) {
+            validResult = validResult.concat(fieldValid);
+          } else {
+            if (firstFlag) {
+              this.validTabCheck(fieldInfo);
+              firstFlag = false;
+            }
+            validResult.push(fieldValid);
           }
-          if (firstFlag) {
-            this.validTabCheck(fieldInfo);
-            firstFlag = false;
-          }
-          validResult.push(fieldValid);
         }
       }
       return validResult;
     };
     this.isValidField = fieldName => {
       const fieldInfo = this.fieldInfoMap.getFieldName(fieldName);
-      if (utils_1.default.isUndefined(fieldInfo)) {
+      if (utils.isUndefined(fieldInfo)) {
         throw new Error(`Field name [${fieldName}] not found`);
       }
-      const renderInfo = fieldInfo.$renderer;
+      const renderInfo = fieldInfo.$instance;
       if (renderInfo) {
         return renderInfo.valid() === true;
       }
@@ -207,7 +224,7 @@ class DaraForm {
       this.formElement.className = this.orginFormStyleClass;
       this.formElement.replaceChildren();
       for (const key in this) {
-        if (utils_1.default.hasOwnProp(this, key)) {
+        if (utils.hasOwnProp(this, key)) {
           delete this[key];
           delete allInstance[this.selector];
         }
@@ -227,31 +244,36 @@ class DaraForm {
       this.options.fields = fields;
       this.createForm(fields);
     };
-    this.options = {};
-    Object.assign(this.options, defaultOptions, options);
+    this.options = utils.merge({}, defaultOptions, options);
     Lanauage_1.default.set(message);
-    const formElement = document.querySelector(selector);
     if (formElement) {
       this.orginFormStyleClass = formElement.className;
       formElement.classList.add("dara-form");
+      this.selector = `df_${++DARA_FORM_SEQ}`;
+      formElement.setAttribute(SEQ_ATTR_KEY, this.selector);
       if (this.options.style.width) {
         formElement.setAttribute("style", `width:${this.options.style.width};`);
       }
-      this.selector = selector;
       this.formElement = formElement;
+      this.changeMode((_a = this.options.mode) !== null && _a !== void 0 ? _a : "new");
       this.createForm(this.options.fields);
-      allInstance[selector] = this;
+      if (this.options.autoCreate !== false) {
+        allInstance[this.selector] = this;
+      }
     } else {
-      throw new Error(`${selector} form selector not found`);
+      throw new Error(`${formElement} form selector not found`);
     }
   }
   static setMessage(message) {
     Lanauage_1.default.set(message);
   }
   createForm(fields) {
-    this.fieldInfoMap = new FieldInfoMap_1.default(this.selector);
-    this.formElement.innerHTML = "";
+    this.fieldInfoMap = new FieldInfoMap_1.default(this.selector, this);
+    //this.formElement.innerHTML = "";
     this.formTemplate = new FormTemplate_1.default(this, this.formElement, this.fieldInfoMap);
+    if (this.options.autoCreate === false) {
+      return;
+    }
     fields.forEach(field => {
       this.formTemplate.addRow(field);
     });
@@ -268,8 +290,8 @@ class DaraForm {
    */
   getFieldElement(fieldName) {
     const field = this.fieldInfoMap.getFieldName(fieldName);
-    if (field === null || field === void 0 ? void 0 : field.$renderer) {
-      return field.$renderer.getElement();
+    if (field === null || field === void 0 ? void 0 : field.$instance) {
+      return field.$instance.getElement();
     }
     return null;
   }
@@ -280,13 +302,13 @@ class DaraForm {
     this.formValue[fieldName] = value;
     const fieldInfo = this.fieldInfoMap.getFieldName(fieldName);
     if (fieldInfo) {
-      fieldInfo.$renderer.setValue(value);
+      fieldInfo.$instance.setValue(value);
     }
   }
   validTabCheck(fieldInfo) {
     if (fieldInfo.$parent) {
       if (fieldInfo.$parent.renderType == "tab") {
-        fieldInfo.$parent.$renderer.setActive(fieldInfo.$key);
+        fieldInfo.$parent.$instance.setActive(fieldInfo.$key);
       }
       this.validTabCheck(fieldInfo.$parent);
     }
@@ -296,7 +318,7 @@ class DaraForm {
   }
   setFieldDisabled(fieldName, flag) {
     const fieldInfo = this.fieldInfoMap.getFieldName(fieldName);
-    fieldInfo.$renderer.setDisabled(flag);
+    fieldInfo.$instance.setDisabled(flag);
   }
   /**
    * 설명 추가
@@ -307,20 +329,31 @@ class DaraForm {
    */
   setFieldDescription(fieldName, desc) {
     const fieldInfo = this.fieldInfoMap.getFieldName(fieldName);
-    fieldInfo.$renderer.setDescription(desc);
+    fieldInfo.$instance.setDescription(desc);
   }
-  static instance(selector) {
-    if (utils_1.default.isUndefined(selector) || utils_1.default.isBlank(selector)) {
+  static instance(ele) {
+    let element;
+    if (utils.isString(ele)) {
+      element = document.querySelector(ele);
+    } else {
+      element = ele;
+    }
+    element = element;
+    let selector = element.getAttribute(SEQ_ATTR_KEY);
+    if (utils.isUndefined(selector) || utils.isBlank(selector)) {
       const keys = Object.keys(allInstance);
       if (keys.length > 1) {
         throw new Error(`selector empty : [${selector}]`);
       }
       selector = keys[0];
+      return allInstance[selector];
     }
-    return allInstance[selector];
+  }
+  getFieldInfoMap() {
+    return this.fieldInfoMap;
   }
 }
-DaraForm.VERSION = `${"0.0.11"}`;
+DaraForm.VERSION = `${"0.0.12"}`;
 DaraForm.validator = {
   string: (value, field) => {
     return (0, stringValidator_1.stringValidator)(value, field);
@@ -355,14 +388,15 @@ const tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6
 const constants_1 = __webpack_require__(/*! src/constants */ "./src/constants.ts");
 const renderFactory_1 = __webpack_require__(/*! ./util/renderFactory */ "./src/util/renderFactory.ts");
 const Lanauage_1 = tslib_1.__importDefault(__webpack_require__(/*! ./util/Lanauage */ "./src/util/Lanauage.ts"));
-const utils_1 = tslib_1.__importDefault(__webpack_require__(/*! ./util/utils */ "./src/util/utils.ts"));
+const utils = tslib_1.__importStar(__webpack_require__(/*! ./util/utils */ "./src/util/utils.ts"));
 class FieldInfoMap {
-  constructor(selector) {
+  constructor(selector, form) {
     this.fieldIdx = 0;
     this.allFieldInfo = {};
     this.keyNameMap = {};
     this.conditionFields = [];
-    this.fieldPrefix = `${constants_1.FIELD_PREFIX}_${utils_1.default.getHashCode(selector)}`;
+    this.fieldPrefix = `${constants_1.FIELD_PREFIX}_${utils.getHashCode(selector)}`;
+    this.form = form;
   }
   /**
    * add Field 정보
@@ -371,11 +405,14 @@ class FieldInfoMap {
    * @param {FormField} field 폼필드 정보
    */
   addField(field) {
+    var _a;
+    utils.replaceXssField(field);
     this.fieldIdx += 1;
     field.$key = `${this.fieldPrefix}_${this.fieldIdx}`;
-    this.keyNameMap[field.name] = field.$key;
+    field.$validName = (_a = field.name) !== null && _a !== void 0 ? _a : field.label;
+    this.keyNameMap[field.$validName] = field.$key;
     this.allFieldInfo[field.$key] = field;
-    field.$renderer = (0, renderFactory_1.getRenderer)(field);
+    field.$renderType = (0, renderFactory_1.getRenderer)(field);
     if (field.conditional) {
       this.conditionFields.push(field.$key);
     }
@@ -439,31 +476,26 @@ class FieldInfoMap {
    * @returns {*}
    */
   getAllFieldValue(formValue, validationCheck) {
+    const useTypeValue = this.form.getOptions().useTypeValue;
     if (validationCheck !== true) {
       for (let [key, fieldInfo] of Object.entries(this.allFieldInfo)) {
-        formValue[fieldInfo.name] = fieldInfo.$renderer.getValue();
+        formValue = addFormValue(formValue, fieldInfo, useTypeValue);
       }
       return formValue;
     }
     return new Promise((resolve, reject) => {
       for (let [key, fieldInfo] of Object.entries(this.allFieldInfo)) {
-        if (!this.isValueFieldCheck(fieldInfo)) {
+        if (!fieldInfo.$instance.isEnableView()) {
           continue;
         }
-        const renderInfo = fieldInfo.$renderer;
-        let fieldValid = renderInfo.valid();
+        let fieldValid = this.getFieldValidation(fieldInfo, true);
         if (fieldValid !== true) {
-          renderInfo.focus();
-          fieldValid = fieldValid;
-          if (utils_1.default.isUndefined(fieldValid.message)) {
-            fieldValid.message = Lanauage_1.default.validMessage(fieldInfo, fieldValid)[0];
-          }
           reject(new Error(fieldValid.message, {
             cause: fieldValid
           }));
           return;
         }
-        formValue[fieldInfo.name] = renderInfo.getValue();
+        formValue = addFormValue(formValue, fieldInfo, useTypeValue);
       }
       resolve(formValue);
     });
@@ -475,7 +507,7 @@ class FieldInfoMap {
         reval.set(key, value);
       }
       for (let [key, fieldInfo] of Object.entries(this.allFieldInfo)) {
-        addFieldFormData(reval, fieldInfo, fieldInfo.$renderer.getValue());
+        addFieldFormData(reval, fieldInfo, fieldInfo.$instance.getValue());
       }
       return reval;
     }
@@ -485,23 +517,17 @@ class FieldInfoMap {
         reval.set(key, value);
       }
       for (let [key, fieldInfo] of Object.entries(this.allFieldInfo)) {
-        if (!this.isValueFieldCheck(fieldInfo)) {
+        if (!fieldInfo.$instance.isEnableView()) {
           continue;
         }
-        const renderInfo = fieldInfo.$renderer;
-        let fieldValid = renderInfo.valid();
+        let fieldValid = this.getFieldValidation(fieldInfo, true);
         if (fieldValid !== true) {
-          renderInfo.focus();
-          fieldValid = fieldValid;
-          if (utils_1.default.isUndefined(fieldValid.message)) {
-            fieldValid.message = Lanauage_1.default.validMessage(fieldInfo, fieldValid)[0];
-          }
           reject(new Error(fieldValid.message, {
             cause: fieldValid
           }));
           return;
         }
-        addFieldFormData(reval, fieldInfo, renderInfo.getValue());
+        addFieldFormData(reval, fieldInfo, fieldInfo.$instance.getValue());
       }
       resolve(reval);
     });
@@ -512,7 +538,7 @@ class FieldInfoMap {
    * @param field
    * @returns
    */
-  isValueFieldCheck(field) {
+  isConditionFieldCheck(field) {
     let parent = field;
     while (typeof parent !== "undefined") {
       if (!this.isConditionField(parent)) {
@@ -539,7 +565,7 @@ class FieldInfoMap {
       if (field.conditional.field) {
         const condField = this.getFieldName(field.conditional.field);
         if (condField) {
-          if (field.conditional.eq == condField.$renderer.getValue()) {
+          if (field.conditional.eq == condField.$instance.getValue()) {
             condFlag = true;
           }
         }
@@ -557,25 +583,96 @@ class FieldInfoMap {
       const fieldInfo = this.allFieldInfo[fieldKey];
       let condFlag = this.isConditionField(fieldInfo);
       if (condFlag) {
-        fieldInfo.$renderer.show();
+        fieldInfo.$instance.show();
       } else {
-        fieldInfo.$renderer.hide();
+        fieldInfo.$instance.hide();
       }
     });
   }
+  /**
+   * field validation check
+   *
+   * @param fieldInfo FormField
+   * @returns boolean true or ValidResult
+   */
+  getFieldValidation(fieldInfo, focusFlag) {
+    if (!this.isConditionFieldCheck(fieldInfo)) {
+      return true;
+    }
+    const renderInfo = fieldInfo.$instance;
+    let fieldValid = renderInfo.valid();
+    if (fieldValid === true) return true;
+    if (focusFlag) {
+      renderInfo.focus();
+    }
+    fieldValid = fieldValid;
+    if (utils.isUndefined(fieldValid.message)) {
+      fieldValid.message = Lanauage_1.default.validMessage(fieldInfo, fieldValid)[0];
+    }
+    return fieldValid;
+  }
 }
 exports["default"] = FieldInfoMap;
-function addFieldFormData(formData, fieldInfo, fieldValue) {
+/**
+ * add form value
+ * @param formData {Object} return Object value
+ * @param fieldInfo {FormField} field info
+ * @param fieldValue {any} form value
+ */
+function addFormValue(formData, fieldInfo, useTypeValue) {
+  if (utils.ignoreValueField(fieldInfo)) {
+    return formData;
+  }
+  const fieldValue = fieldInfo.$instance.getValue();
   if (fieldInfo.renderType === "file") {
     const uploadFiles = fieldValue["uploadFile"];
-    formData.delete(fieldInfo.name);
-    for (let uploadFile of uploadFiles) {
-      formData.append(fieldInfo.name, uploadFile);
-    }
-    formData.set(fieldInfo.name + "RemoveIds", fieldValue["removeIds"]);
+    formData[fieldInfo.$validName] = uploadFiles;
+    formData[fieldInfo.$validName + "RemoveIds"] = fieldValue["removeIds"];
   } else {
-    formData.set(fieldInfo.name, fieldValue);
+    if (useTypeValue !== true) {
+      if (utils.isTabType(fieldInfo)) {
+        for (let [key, value] of Object.entries(fieldValue)) {
+          formData[key] = value;
+        }
+      } else {
+        if (!utils.isEmpty(fieldInfo.name)) {
+          formData[fieldInfo.name] = fieldValue;
+        }
+      }
+    } else {
+      formData[fieldInfo.$validName] = fieldValue;
+    }
   }
+  return formData;
+}
+function addFieldFormData(formData, fieldInfo, useTypeValue) {
+  if (utils.ignoreValueField(fieldInfo)) {
+    return formData;
+  }
+  const fieldValue = fieldInfo.$instance.getValue();
+  if (fieldInfo.renderType === "file") {
+    const uploadFiles = fieldValue["uploadFile"];
+    formData.delete(fieldInfo.$validName);
+    for (let uploadFile of uploadFiles) {
+      formData.append(fieldInfo.$validName, uploadFile);
+    }
+    formData.set(fieldInfo.$validName + "RemoveIds", fieldValue["removeIds"]);
+  } else {
+    if (useTypeValue !== true) {
+      if (utils.isTabType(fieldInfo)) {
+        for (let [key, value] of Object.entries(fieldValue)) {
+          formData.set(key, value);
+        }
+      } else {
+        if (!utils.isEmpty(fieldInfo.name)) {
+          formData.set(fieldInfo.$validName, fieldValue);
+        }
+      }
+    } else {
+      formData.set(fieldInfo.$validName, fieldValue);
+    }
+  }
+  return formData;
 }
 
 /***/ }),
@@ -592,9 +689,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 const tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.mjs");
-const utils_1 = tslib_1.__importDefault(__webpack_require__(/*! ./util/utils */ "./src/util/utils.ts"));
+const utils = tslib_1.__importStar(__webpack_require__(/*! ./util/utils */ "./src/util/utils.ts"));
 const styleUtils_1 = tslib_1.__importDefault(__webpack_require__(/*! ./util/styleUtils */ "./src/util/styleUtils.ts"));
-const TabRender_1 = tslib_1.__importDefault(__webpack_require__(/*! ./renderer/TabRender */ "./src/renderer/TabRender.ts"));
 /**
  * form template
  *
@@ -619,15 +715,7 @@ class FormTemplate {
       return;
     }
     this.addRowFields = [];
-    let template = this.rowTemplate(field);
-    this.formElement.insertAdjacentHTML("beforeend", template); // Append the element
-    this.addRowFields.forEach(fieldSeq => {
-      const fileldInfo = this.fieldInfoMap.get(fieldSeq);
-      fileldInfo.$xssName = utils_1.default.unFieldName(fileldInfo.name);
-      const fieldRowElement = this.formElement.querySelector(`#${fileldInfo.$key}`);
-      fileldInfo.$renderer = new fileldInfo.$renderer(fileldInfo, fieldRowElement, this.daraform);
-      fieldRowElement === null || fieldRowElement === void 0 ? void 0 : fieldRowElement.removeAttribute("id");
-    });
+    this.addRowTemplate(field);
   }
   /**
    * 그룹 템플릿
@@ -635,43 +723,28 @@ class FormTemplate {
    * @param {FormField} field
    * @returns {string} row template
    */
-  rowTemplate(field) {
+  addRowTemplate(field) {
     var _a;
     let labelHideFlag = this.isLabelHide(field);
     let fieldStyle = styleUtils_1.default.fieldStyle(this.options, field, null, labelHideFlag);
-    let fieldTemplate = this.getTemplate(field, fieldStyle);
-    return `
+    this.addRowFieldInfo(field);
+    const rowElement = utils.templateToElement(`
         <div class="df-row form-group ${fieldStyle.fieldClass}" id="${field.$key}">
           ${labelHideFlag ? "" : `<div class="df-label ${fieldStyle.labelClass} ${fieldStyle.labelAlignClass}" title="${(_a = field.label) !== null && _a !== void 0 ? _a : ""}" style="${fieldStyle.labelStyle}">${this.getLabelTemplate(field)}</div>`}
 
-          <div class="df-field-container ${fieldStyle.valueClass} ${field.required ? "required" : ""}" style="${fieldStyle.valueStyle}">
-              ${fieldTemplate}
-          </div>
+          <div class="df-field-container ${fieldStyle.valueClass} ${field.required ? "required" : ""}" style="${fieldStyle.valueStyle}"></div>
         </div>
-    `;
-  }
-  /**
-   * template 얻기
-   *
-   * @param {FormField} field
-   * @param {FieldStyle} fieldStyle
-   * @returns {string}
-   */
-  getTemplate(field, fieldStyle) {
-    let fieldTemplate = "";
-    if (this.isTabType(field)) {
-      fieldTemplate = this.tabTemplate(field);
-    } else if (field.children) {
-      if (!utils_1.default.isUndefined(field.name)) {
-        fieldTemplate = this.getFieldTempate(field);
-      } else {
-        this.addRowFieldInfo(field);
+    `);
+    if (rowElement) {
+      this.createField(field, rowElement);
+      this.formElement.append(rowElement);
+      if (field.children) {
+        this.childTemplate(field, fieldStyle);
       }
-      fieldTemplate += this.childTemplate(field, fieldStyle);
-    } else {
-      fieldTemplate = this.getFieldTempate(field);
     }
-    return fieldTemplate;
+  }
+  createField(field, element) {
+    field.$instance = new field.$renderType(field, element, this.daraform);
   }
   /**
    * child template
@@ -681,17 +754,26 @@ class FormTemplate {
    * @returns {*}
    */
   childTemplate(field, parentFieldStyle) {
-    var _a;
-    const template = [];
+    var _a, _b;
     let beforeField = null;
     let firstFlag = true;
     let isEmptyLabel = false;
-    template.push(`<div class="df-row ${parentFieldStyle.rowStyleClass}">`);
+    if (!field.$renderType.isChildrenCreate()) {
+      return;
+    }
+    const rowElement = document.createElement("div");
+    rowElement.classList.add("df-row", (_a = parentFieldStyle.rowStyleClass) !== null && _a !== void 0 ? _a : "");
+    let idx = 0;
     for (const childField of field.children) {
+      if (utils.isEmpty(childField)) {
+        throw new Error(`parent field :[${field.$validName}], children index ${idx},  empty [${childField}]`);
+      }
       childField.$parent = field;
+      ++idx;
       if (this.checkHiddenField(childField)) {
         continue;
       }
+      this.addRowFieldInfo(childField);
       if (firstFlag) {
         beforeField = childField;
       }
@@ -703,25 +785,25 @@ class FormTemplate {
         labelTemplate = isEmptyLabel ? `<span class="df-label empty ${childFieldStyle.labelClass}" style="${childFieldStyle.labelStyle}"></span>` : "";
       } else {
         childFieldStyle = styleUtils_1.default.fieldStyle(this.options, childField, beforeField, false);
-        labelTemplate = `<span class="df-label ${childFieldStyle.labelClass} ${childFieldStyle.labelAlignClass}" title="${(_a = childField.label) !== null && _a !== void 0 ? _a : ""}" style="${childFieldStyle.labelStyle}">${this.getLabelTemplate(childField)}</span>`;
+        labelTemplate = `<span class="df-label ${childFieldStyle.labelClass} ${childFieldStyle.labelAlignClass}" title="${(_b = childField.label) !== null && _b !== void 0 ? _b : ""}" style="${childFieldStyle.labelStyle}">${this.getLabelTemplate(childField)}</span>`;
       }
-      let childFieldTempate = "";
-      if (childField.children) {
-        childFieldTempate = this.getTemplate(childField, childFieldStyle);
-      } else {
-        childFieldTempate = this.getTemplate(childField, parentFieldStyle);
-      }
-      template.push(`<div class="form-group ${childFieldStyle.fieldClass}" style="${childFieldStyle.fieldStyle}" id="${childField.$key}">
+      const groupElement = utils.templateToElement(`<div class="form-group ${childFieldStyle.fieldClass}" style="${childFieldStyle.fieldStyle}" id="${childField.$key}">
         ${labelTemplate}
-        <span class="df-field-container ${childFieldStyle.valueClass} ${childField.required ? "required" : ""}" style="${childFieldStyle.valueStyle}">${childFieldTempate}</span>
+        <span class="df-field-container ${childFieldStyle.valueClass} ${childField.required ? "required" : ""}" style="${childFieldStyle.valueStyle}"></span>
       </div>`);
+      if (groupElement) {
+        this.createField(childField, groupElement);
+        rowElement.append(groupElement);
+        if (childField.children) {
+          this.childTemplate(childField, childField.children ? childFieldStyle : parentFieldStyle);
+        }
+      }
       if (!labelHideFlag) {
         isEmptyLabel = true;
       }
       firstFlag = false;
     }
-    template.push("</div>");
-    return template.join("");
+    field.$instance.addChildField(rowElement);
   }
   /**
    * label template
@@ -732,21 +814,8 @@ class FormTemplate {
   getLabelTemplate(field) {
     var _a;
     const requiredTemplate = field.required ? `<span class="required"></span>` : "";
-    const tooltipTemplate = utils_1.default.isBlank(field.tooltip) ? "" : `<span class="df-tooltip">?<span class="tooltip">${field.tooltip}</span></span>`;
+    const tooltipTemplate = utils.isBlank(field.tooltip) ? "" : `<span class="df-tooltip">?<span class="tooltip">${field.tooltip}</span></span>`;
     return `${(_a = field.label) !== null && _a !== void 0 ? _a : ""} ${tooltipTemplate} ${requiredTemplate}`;
-  }
-  /**
-   * tab render type check
-   *
-   * @param {FormField} field
-   * @returns {boolean} tab type 인지 여부
-   */
-  isTabType(field) {
-    return field.renderType === "tab";
-  }
-  tabTemplate(field) {
-    this.addRowFieldInfo(field);
-    return TabRender_1.default.template(field, this, this.options);
   }
   /**
    * label 숨김 여부
@@ -756,26 +825,12 @@ class FormTemplate {
    */
   isLabelHide(field) {
     var _a;
-    return ((_a = field.style) === null || _a === void 0 ? void 0 : _a.labelHide) || utils_1.default.isUndefined(field.label);
-  }
-  /**
-   * field tempalte 구하기
-   *
-   * @param {FormField} field
-   * @returns {string}
-   */
-  getFieldTempate(field) {
-    if (!utils_1.default.isBlank(field.name) && this.fieldInfoMap.hasFieldName(field.name)) {
-      throw new Error(`Duplicate field name "${field.name}"`);
-    }
-    this.addRowFieldInfo(field);
-    return field.$renderer.template(field);
+    return ((_a = field.style) === null || _a === void 0 ? void 0 : _a.labelHide) || utils.isUndefined(field.label);
   }
   checkHiddenField(field) {
-    const isHidden = utils_1.default.isHiddenField(field);
-    if (isHidden) {
+    if (utils.isHiddenField(field)) {
       this.fieldInfoMap.addField(field);
-      field.$renderer = new field.$renderer(field, null, this.daraform);
+      field.$instance = new field.$renderType(field, null, this.daraform);
       return true;
     }
     return false;
@@ -786,7 +841,9 @@ class FormTemplate {
    * @param {FormField} field
    */
   addRowFieldInfo(field) {
-    utils_1.default.replaceXssField(field);
+    if (!utils.isBlank(field.name) && this.fieldInfoMap.hasFieldName(field.name)) {
+      throw new Error(`Duplicate field name "${field.name}"`);
+    }
     this.fieldInfoMap.addField(field);
     this.addRowFields.push(field.$key);
   }
@@ -823,6 +880,7 @@ const ButtonRender_1 = tslib_1.__importDefault(__webpack_require__(/*! ./rendere
 const RangeRender_1 = tslib_1.__importDefault(__webpack_require__(/*! ./renderer/RangeRender */ "./src/renderer/RangeRender.ts"));
 const DateRender_1 = tslib_1.__importDefault(__webpack_require__(/*! ./renderer/DateRender */ "./src/renderer/DateRender.ts"));
 const TabRender_1 = tslib_1.__importDefault(__webpack_require__(/*! ./renderer/TabRender */ "./src/renderer/TabRender.ts"));
+const GridRender_1 = tslib_1.__importDefault(__webpack_require__(/*! ./renderer/GridRender */ "./src/renderer/GridRender.ts"));
 exports.RULES = {
   NAN: "nan",
   MIN: "minimum",
@@ -858,7 +916,8 @@ exports.RENDER_TEMPLATE = {
   datemonth: DateRender_1.default,
   date: DateRender_1.default,
   datetime: DateRender_1.default,
-  tab: TabRender_1.default
+  tab: TabRender_1.default,
+  grid: GridRender_1.default
 };
 exports.ALIGN = {
   left: "left",
@@ -899,42 +958,42 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.customChangeEventCall = exports.dropdownChangeEvent = exports.numberInputEvent = exports.inputEvent = void 0;
 const tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.mjs");
-const utils_1 = tslib_1.__importDefault(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
+const utils = tslib_1.__importStar(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
 const inputEvent = (field, element, renderInfo) => {
-  element.addEventListener('input', e => {
-    (0, exports.customChangeEventCall)(field, e, renderInfo);
+  element.addEventListener("input", e => {
+    (0, exports.customChangeEventCall)(field, e, renderInfo, renderInfo.getValue());
     renderInfo.valid();
   });
 };
 exports.inputEvent = inputEvent;
 const numberInputEvent = (field, element, renderInfo) => {
-  element.addEventListener('keyup', e => {
+  element.addEventListener("keyup", e => {
     const val = e.target.value;
-    if (!utils_1.default.isNumber(val)) {
+    if (!utils.isNumber(val)) {
       element.value = val.replace(/[^0-9\.\-\+]/g, "");
       e.preventDefault();
     }
-    (0, exports.customChangeEventCall)(field, e, renderInfo);
+    (0, exports.customChangeEventCall)(field, e, renderInfo, renderInfo.getValue());
     renderInfo.valid();
   });
   /*
-  element.addEventListener('input', (e: any) => {
-      customChangeEventCall(field, e, renderInfo);
-      renderInfo.valid();
-  })
-  */
+    element.addEventListener('input', (e: any) => {
+        customChangeEventCall(field, e, renderInfo);
+        renderInfo.valid();
+    })
+    */
 };
 
 exports.numberInputEvent = numberInputEvent;
 const dropdownChangeEvent = (field, element, renderInfo) => {
-  element.addEventListener('change', e => {
-    (0, exports.customChangeEventCall)(field, e, renderInfo);
+  element.addEventListener("change", e => {
+    (0, exports.customChangeEventCall)(field, e, renderInfo, renderInfo.getValue());
     renderInfo.valid();
   });
 };
 exports.dropdownChangeEvent = dropdownChangeEvent;
-const customChangeEventCall = (field, e, renderInfo) => {
-  renderInfo.changeEventCall(field, e, renderInfo);
+const customChangeEventCall = (field, e, renderInfo, value) => {
+  renderInfo.changeEventCall(field, e, renderInfo, value);
 };
 exports.customChangeEventCall = customChangeEventCall;
 
@@ -985,8 +1044,10 @@ class ButtonRender extends Render_1.default {
   static isDataRender() {
     return false;
   }
-  static template(field) {
-    return `
+  createField() {
+    const field = this.field;
+    const fieldContainerElement = this.rowElement.querySelector(".df-field-container");
+    fieldContainerElement.innerHTML = `
       <button type="button" id="${field.$key}" class="df-btn">${field.label}</button> ${Render_1.default.getDescriptionTemplate(field)}
      `;
   }
@@ -1021,7 +1082,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 const tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.mjs");
 const Render_1 = tslib_1.__importDefault(__webpack_require__(/*! ./Render */ "./src/renderer/Render.ts"));
-const utils_1 = tslib_1.__importDefault(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
+const utils = tslib_1.__importStar(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
 const constants_1 = __webpack_require__(/*! src/constants */ "./src/constants.ts");
 const validUtils_1 = __webpack_require__(/*! src/util/validUtils */ "./src/util/validUtils.ts");
 const renderEvents_1 = __webpack_require__(/*! src/event/renderEvents */ "./src/event/renderEvents.ts");
@@ -1032,14 +1093,20 @@ class CheckboxRender extends Render_1.default {
     this.defaultCheckValue = [];
     this.defaultCheckValue = [];
     let initDefaultValue = [];
-    if (!utils_1.default.isUndefined(field.defaultValue)) {
-      if (utils_1.default.isArray(field.defaultValue)) {
+    if (!utils.isUndefined(field.defaultValue)) {
+      if (utils.isArray(field.defaultValue)) {
         initDefaultValue = field.defaultValue;
       } else {
         initDefaultValue = [field.defaultValue];
       }
     }
     const valueKey = CheckboxRender.valuesValueKey(field);
+    if (utils.isUndefined(this.field.listItem)) {
+      this.setValueItems([{
+        label: "",
+        value: "Y"
+      }]);
+    }
     let initDefaultValueFlag = false;
     (_b = (_a = this.field.listItem) === null || _a === void 0 ? void 0 : _a.list) === null || _b === void 0 ? void 0 : _b.forEach(item => {
       let itemValue = item[valueKey];
@@ -1053,13 +1120,16 @@ class CheckboxRender extends Render_1.default {
     this.defaultCheckValue = initDefaultValueFlag ? initDefaultValue : this.defaultCheckValue;
     this.mounted();
     this.setDefaultOption();
-    this.setValue(this.defaultCheckValue);
+    this.setValue(this.defaultCheckValue, false);
   }
   mounted() {
+    this.initEvent();
+  }
+  initEvent() {
     const checkboxes = this.rowElement.querySelectorAll(this.getSelector());
     checkboxes.forEach(ele => {
       ele.addEventListener("change", e => {
-        (0, renderEvents_1.customChangeEventCall)(this.field, e, this);
+        (0, renderEvents_1.customChangeEventCall)(this.field, e, this, this.getValue());
         this.valid();
       });
     });
@@ -1067,26 +1137,28 @@ class CheckboxRender extends Render_1.default {
   getSelector() {
     return `input[type="checkbox"][name="${this.field.$xssName}"]`;
   }
-  static template(field) {
+  createField() {
     var _a, _b;
+    const field = this.field;
+    const fieldContainerElement = this.rowElement.querySelector(".df-field-container");
     const templates = [];
-    const fieldName = field.name;
-    const labelKey = this.valuesLabelKey(field);
-    const valueKey = this.valuesValueKey(field);
+    const fieldName = field.$xssName;
+    const labelKey = Render_1.default.valuesLabelKey(field);
+    const valueKey = Render_1.default.valuesValueKey(field);
     templates.push(` <div class="df-field"><div class="field-group">`);
     (_b = (_a = field.listItem) === null || _a === void 0 ? void 0 : _a.list) === null || _b === void 0 ? void 0 : _b.forEach(val => {
       const checkVal = val[valueKey];
       templates.push(`
           <span class="field ${field.listItem.orientation == "vertical" ? "vertical" : "horizontal"}">
               <label>
-                  <input type="checkbox" name="${fieldName}" value="${checkVal ? utils_1.default.replace(checkVal) : ""}" class="form-field checkbox" ${val.selected ? "checked" : ""} ${val.disabled ? "disabled" : ""}  />
-                  ${this.valuesLabelValue(labelKey, val)}
+                  <input type="checkbox" name="${fieldName}" value="${checkVal ? utils.replaceXss(checkVal) : ""}" class="form-field checkbox" ${val.selected ? "checked" : ""} ${val.disabled ? "disabled" : ""}  />
+                  ${Render_1.default.valuesLabelValue(labelKey, val)}
               </label>
           </span>
       `);
     });
     templates.push(`<i class="dara-icon help-icon"></i></div></div> ${Render_1.default.getDescriptionTemplate(field)}<div class="help-message"></div>`);
-    return templates.join("");
+    fieldContainerElement.innerHTML = templates.join("");
   }
   setValueItems(items) {
     const containerEle = this.rowElement.querySelector(".df-field-container");
@@ -1098,8 +1170,12 @@ class CheckboxRender extends Render_1.default {
           list: items
         };
       }
-      containerEle.innerHTML = CheckboxRender.template(this.field);
-      this.mounted();
+      this.createField();
+      if (!utils.isBlank(this.field.$value)) {
+        const currentValue = this.field.$value;
+        this.field.$value = "";
+        this.setValue(currentValue);
+      }
     }
   }
   getValue() {
@@ -1121,7 +1197,10 @@ class CheckboxRender extends Render_1.default {
       return checkElement.value ? "" : false;
     }
   }
-  setValue(value) {
+  setValue(value, changeCheckFlag) {
+    if (changeCheckFlag !== false && this.changeEventCall(this.field, null, this, value) === false) {
+      value = this.field.$value;
+    }
     this.field.$value = value;
     if (value === true) {
       this.rowElement.querySelector(`[name="${this.field.$xssName}"]`).checked = true;
@@ -1149,9 +1228,9 @@ class CheckboxRender extends Render_1.default {
   reset() {
     var _a, _b;
     if (((_b = (_a = this.field.listItem) === null || _a === void 0 ? void 0 : _a.list) === null || _b === void 0 ? void 0 : _b.length) == 1 && this.defaultCheckValue.length == 1) {
-      this.setValue(true);
+      this.setValue(true, false);
     } else {
-      this.setValue(this.defaultCheckValue);
+      this.setValue(this.defaultCheckValue, false);
     }
     this.setDisabled(false);
     (0, validUtils_1.resetRowElementStyleClass)(this.rowElement);
@@ -1159,10 +1238,16 @@ class CheckboxRender extends Render_1.default {
   getElement() {
     return this.rowElement.querySelectorAll(`[name="${this.field.$xssName}"]`);
   }
+  focus() {
+    const elements = this.getElement();
+    if (elements && elements.length > 0) {
+      this.getElement()[0].focus();
+    }
+  }
   valid() {
     const value = this.getValue();
     let validResult = true;
-    if (this.field.required && utils_1.default.isArray(value)) {
+    if (this.field.required && utils.isArray(value)) {
       if (value.length < 1) {
         validResult = {
           name: this.field.name,
@@ -1193,7 +1278,7 @@ Object.defineProperty(exports, "__esModule", ({
 const tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.mjs");
 const Render_1 = tslib_1.__importDefault(__webpack_require__(/*! ./Render */ "./src/renderer/Render.ts"));
 const validUtils_1 = __webpack_require__(/*! src/util/validUtils */ "./src/util/validUtils.ts");
-const utils_1 = tslib_1.__importDefault(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
+const utils = tslib_1.__importStar(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
 const stringValidator_1 = __webpack_require__(/*! src/rule/stringValidator */ "./src/rule/stringValidator.ts");
 class CustomRender extends Render_1.default {
   constructor(field, rowElement, daraForm) {
@@ -1215,14 +1300,15 @@ class CustomRender extends Render_1.default {
   static isDataRender() {
     return false;
   }
-  static template(field) {
-    if (field.template) {
-      const fieldTempate = utils_1.default.isString(field.template) ? field.template : field.template();
-      return ` <div class="df-field">${fieldTempate}</div>
+  createField() {
+    const field = this.field;
+    const fieldTemplate = utils.isEmpty(field.template) ? "" : utils.isString(field.template) ? field.template : field.template();
+    const fieldContainerElement = this.rowElement.querySelector(".df-field-container");
+    fieldContainerElement.innerHTML = ` <div class="df-field">
+        ${fieldTemplate}
+        </div>
           ${Render_1.default.getDescriptionTemplate(field)}
-      <div class="help-message"></div>`;
-    }
-    return "";
+        <div class="help-message"></div>`;
   }
   getValue() {
     if (this.customFunction.getValue) {
@@ -1230,11 +1316,14 @@ class CustomRender extends Render_1.default {
     }
     return "";
   }
-  setValue(value) {
-    this.field.$value = value;
+  setValue(value, changeCheckFlag) {
     if (this.customFunction.setValue) {
+      if (changeCheckFlag !== false && this.changeEventCall(this.field, null, this, value) === false) {
+        value = this.field.$value;
+      }
       this.customFunction.setValue.call(this, value, this.field, this.rowElement);
     }
+    this.field.$value = value;
   }
   reset() {
     this.setDefaultInfo();
@@ -1255,6 +1344,14 @@ class CustomRender extends Render_1.default {
     const validResult = (0, stringValidator_1.stringValidator)(this.getValue(), this.field);
     (0, validUtils_1.invalidMessage)(this.field, this.rowElement, validResult);
     return validResult;
+  }
+  /**
+   * focus
+   */
+  focus() {
+    if (this.customFunction.focus) {
+      this.customFunction.focus.call(this, this.field, this.rowElement);
+    }
   }
 }
 exports["default"] = CustomRender;
@@ -1278,11 +1375,10 @@ const stringValidator_1 = __webpack_require__(/*! src/rule/stringValidator */ ".
 const validUtils_1 = __webpack_require__(/*! src/util/validUtils */ "./src/util/validUtils.ts");
 const dara_datetimepicker_1 = __webpack_require__(/*! dara-datetimepicker */ "./node_modules/dara-datetimepicker/dist/index.js");
 __webpack_require__(/*! dara-datetimepicker/dist/dara.datetimepicker.min.css */ "./node_modules/dara-datetimepicker/dist/dara.datetimepicker.min.css");
-const utils_1 = tslib_1.__importDefault(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
+const utils = tslib_1.__importStar(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
 class DateRender extends Render_1.default {
   constructor(field, rowElement, daraForm) {
     super(daraForm, field, rowElement);
-    this.element = rowElement.querySelector(`[name="${field.$xssName}"]`);
     this.mounted();
     this.setDefaultOption();
     this.setDefaultInfo();
@@ -1293,7 +1389,7 @@ class DateRender extends Render_1.default {
     if (typeof this.field.customOptions.onSelect !== "undefined") {
       dateOnSelectEvent = typeof this.field.customOptions.onSelect;
     }
-    if (utils_1.default.isUndefined(this.field.customOptions.mode)) {
+    if (utils.isUndefined(this.field.customOptions.mode)) {
       if (this.field.renderType == "datemonth" || this.field.renderType == "datehour") {
         this.field.customOptions.mode = this.field.renderType.replace("date", "");
       } else {
@@ -1305,23 +1401,29 @@ class DateRender extends Render_1.default {
         dateOnSelectEvent.call(null, dt, e);
       }
       this.setValue(dt);
-      this.changeEventCall(this.field, e, this);
     };
     this.dateObj = new dara_datetimepicker_1.DateTimePicker(this.element, this.field.customOptions, {});
   }
-  static template(field) {
-    return `
+  createField() {
+    const field = this.field;
+    const fieldContainerElement = this.rowElement.querySelector(".df-field-container");
+    fieldContainerElement.innerHTML = `
     <div class="df-field">
-      <input type="text" name="${field.name}" class="form-field text help-icon" autocomplete="off"/>
+      <input type="text" name="${field.$xssName}" class="form-field text help-icon" autocomplete="off"/>
      </div>
      ${Render_1.default.getDescriptionTemplate(field)}
      <div class="help-message"></div>
      `;
+    this.element = fieldContainerElement.querySelector(`[name="${field.$xssName}"]`);
   }
   getValue() {
     return this.element.value;
   }
-  setValue(value) {
+  setValue(value, changeCheckFlag) {
+    if (changeCheckFlag !== false && this.changeEventCall(this.field, null, this, value) === false) {
+      this.element.value = this.field.$value;
+      return;
+    }
     this.field.$value = value;
     this.element.value = value;
   }
@@ -1359,14 +1461,14 @@ const Render_1 = tslib_1.__importDefault(__webpack_require__(/*! ./Render */ "./
 const constants_1 = __webpack_require__(/*! src/constants */ "./src/constants.ts");
 const validUtils_1 = __webpack_require__(/*! src/util/validUtils */ "./src/util/validUtils.ts");
 const renderEvents_1 = __webpack_require__(/*! src/event/renderEvents */ "./src/event/renderEvents.ts");
-const utils_1 = tslib_1.__importDefault(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
+const utils = tslib_1.__importStar(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
+const Lanauage_1 = tslib_1.__importDefault(__webpack_require__(/*! src/util/Lanauage */ "./src/util/Lanauage.ts"));
 class DropdownRender extends Render_1.default {
   constructor(field, rowElement, daraForm) {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
     super(daraForm, field, rowElement);
-    this.element = rowElement.querySelector(`[name="${field.$xssName}"]`);
     let initDefaultValue = "";
-    if (!utils_1.default.isUndefined(field.defaultValue)) {
+    if (!utils.isUndefined(field.defaultValue)) {
       initDefaultValue = field.defaultValue;
     }
     const valueKey = DropdownRender.valuesValueKey(field);
@@ -1374,35 +1476,40 @@ class DropdownRender extends Render_1.default {
     (_b = (_a = this.field.listItem) === null || _a === void 0 ? void 0 : _a.list) === null || _b === void 0 ? void 0 : _b.forEach(item => {
       let itemValue = item[valueKey];
       if (item.selected) {
-        this.defaultCheckValue = itemValue;
+        this.defaultSelected = itemValue;
       }
       if (itemValue == initDefaultValue) {
         initDefaultValueFlag = true;
       }
     });
     if (initDefaultValueFlag) {
-      this.defaultCheckValue = initDefaultValue;
-    } else if (!this.defaultCheckValue) {
-      this.defaultCheckValue = ((_d = (_c = this.field.listItem) === null || _c === void 0 ? void 0 : _c.list) === null || _d === void 0 ? void 0 : _d.length) > 0 ? this.field.listItem.list[0][valueKey] || "" : "";
+      this.defaultSelected = initDefaultValue;
+    } else if (!this.defaultSelected) {
+      if (((_c = field.customOptions) === null || _c === void 0 ? void 0 : _c.disableDefaultOption) === true) {
+        this.defaultSelected = ((_e = (_d = this.field.listItem) === null || _d === void 0 ? void 0 : _d.list) === null || _e === void 0 ? void 0 : _e.length) > 0 ? this.field.listItem.list[0][valueKey] || "" : "";
+      }
     }
-    if (utils_1.default.isUndefined(this.defaultCheckValue)) {
-      this.defaultCheckValue = "";
+    if (utils.isUndefined(this.defaultSelected)) {
+      this.defaultSelected = "";
     }
     this.mounted();
     this.setDefaultOption();
-    this.setValue(this.defaultCheckValue);
+    this.setValue(this.defaultSelected, false);
   }
   mounted() {
     (0, renderEvents_1.dropdownChangeEvent)(this.field, this.element, this);
   }
-  static template(field) {
-    let template = ` <div class="df-field"><select name="${field.name}" class="form-field dropdown">
-          ${DropdownRender.dropdownValuesTemplate(field)}
+  createField() {
+    const field = this.field;
+    const fieldContainerElement = this.rowElement.querySelector(".df-field-container");
+    let template = ` <div class="df-field"><select name="${field.$xssName}" class="form-field dropdown">
+          ${this.dropdownValuesTemplate(field)}
           </select> <i class="help-icon"></i></div>
                 ${Render_1.default.getDescriptionTemplate(field)}
       <div class="help-message"></div>
     `;
-    return template;
+    fieldContainerElement.innerHTML = template;
+    this.element = fieldContainerElement.querySelector(`[name="${field.$xssName}"]`);
   }
   setValueItems(items) {
     if (this.field.listItem) {
@@ -1412,17 +1519,26 @@ class DropdownRender extends Render_1.default {
         list: items
       };
     }
-    this.element.innerHTML = DropdownRender.dropdownValuesTemplate(this.field);
+    this.element.innerHTML = this.dropdownValuesTemplate(this.field);
+    if (!utils.isBlank(this.field.$value)) {
+      const currentValue = this.field.$value;
+      this.field.$value = "";
+      this.setValue(currentValue);
+    }
   }
   getValue() {
     return this.element.value;
   }
-  setValue(value) {
+  setValue(value, changeCheckFlag) {
+    if (changeCheckFlag !== false && this.changeEventCall(this.field, null, this, value) === false) {
+      this.element.value = this.field.$value;
+      return;
+    }
     this.field.$value = value;
     this.element.value = value;
   }
   reset() {
-    this.setValue(this.defaultCheckValue);
+    this.setValue(this.defaultSelected, false);
     this.setDisabled(false);
     (0, validUtils_1.resetRowElementStyleClass)(this.rowElement);
   }
@@ -1444,17 +1560,20 @@ class DropdownRender extends Render_1.default {
     (0, validUtils_1.invalidMessage)(this.field, this.rowElement, validResult);
     return validResult;
   }
-  static dropdownValuesTemplate(field) {
-    var _a, _b;
-    const labelKey = this.valuesLabelKey(field);
-    const valueKey = this.valuesValueKey(field);
+  dropdownValuesTemplate(field) {
+    var _a, _b, _c;
+    const labelKey = Render_1.default.valuesLabelKey(field);
+    const valueKey = Render_1.default.valuesValueKey(field);
     let template = "";
-    (_b = (_a = field.listItem) === null || _a === void 0 ? void 0 : _a.list) === null || _b === void 0 ? void 0 : _b.forEach(val => {
+    if (((_a = field.customOptions) === null || _a === void 0 ? void 0 : _a.disableDefaultOption) !== true) {
+      template += `<option value="">${Lanauage_1.default.getMessage("selection")}</option>`;
+    }
+    (_c = (_b = field.listItem) === null || _b === void 0 ? void 0 : _b.list) === null || _c === void 0 ? void 0 : _c.forEach(val => {
       const attr = `${val.selected ? "selected" : ""} ${val.disabled ? "disabled" : ""}`;
-      if (utils_1.default.isUndefined(val[valueKey]) && val.label) {
+      if (utils.isUndefined(val[valueKey]) && val.label) {
         template += `<option value="${val.value || ""}" ${attr}>${val.label}</option>`;
       } else {
-        template += `<option value="${val[valueKey]}" ${attr}>${this.valuesLabelValue(labelKey, val)}</option>`;
+        template += `<option value="${val[valueKey]}" ${attr}>${Render_1.default.valuesLabelValue(labelKey, val)}</option>`;
       }
     });
     return template;
@@ -1481,6 +1600,7 @@ const validUtils_1 = __webpack_require__(/*! src/util/validUtils */ "./src/util/
 const fileValidator_1 = __webpack_require__(/*! src/rule/fileValidator */ "./src/rule/fileValidator.ts");
 const Lanauage_1 = tslib_1.__importDefault(__webpack_require__(/*! src/util/Lanauage */ "./src/util/Lanauage.ts"));
 const renderEvents_1 = __webpack_require__(/*! src/event/renderEvents */ "./src/event/renderEvents.ts");
+const utils = tslib_1.__importStar(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
 class FileRender extends Render_1.default {
   constructor(field, rowElement, daraForm) {
     var _a;
@@ -1505,13 +1625,32 @@ class FileRender extends Render_1.default {
         }
         this.addFiles(fileList);
       }
-      (0, renderEvents_1.customChangeEventCall)(this.field, e, this);
+      (0, renderEvents_1.customChangeEventCall)(this.field, e, this, this.fileList);
       this.valid();
     });
     this.fileList.forEach(file => {
       file.$seq = this.fileSeq += 1;
     });
     this.setFileList(this.fileList);
+  }
+  createField() {
+    const field = this.field;
+    const fieldContainerElement = this.rowElement.querySelector(".df-field-container");
+    fieldContainerElement.innerHTML = `
+    <div class="df-field">
+      <span class="file-wrapper">
+        <label class="file-label">
+          <input type="file" name="${field.$xssName}" class="form-field file" multiple />
+          ${Lanauage_1.default.getMessage("fileButton")}
+        </label>
+        <i class="dara-icon help-icon"></i>
+      </span>
+    </div>
+    ${Render_1.default.getDescriptionTemplate(field)}
+    <div class="dara-file-list"></div>
+    <div class="help-message"></div>
+    `;
+    this.element = fieldContainerElement.querySelector(`[name="${field.$xssName}"]`);
   }
   addFiles(files) {
     let addFlag = false;
@@ -1618,22 +1757,6 @@ class FileRender extends Render_1.default {
       });
     }
   }
-  static template(field) {
-    return `
-    <div class="df-field">
-      <span class="file-wrapper">
-        <label class="file-label">
-          <input type="file" name="${field.name}" class="form-field file" multiple />
-          ${Lanauage_1.default.getMessage("fileButton")}
-        </label>
-        <i class="dara-icon help-icon"></i>
-      </span>
-    </div>
-    ${Render_1.default.getDescriptionTemplate(field)}
-    <div class="dara-file-list"></div>
-    <div class="help-message"></div>
-    `;
-  }
   getValue() {
     return {
       uploadFile: Object.values(this.uploadFiles),
@@ -1651,8 +1774,10 @@ class FileRender extends Render_1.default {
     this.setFileList(this.fileList, true);
   }
   setValue(value) {
+    if (utils.isArray(value)) {
+      this.setValueItems(value);
+    }
     this.element.value = "";
-    this.field.$value = value;
   }
   reset() {
     this.setValue("");
@@ -1669,6 +1794,249 @@ class FileRender extends Render_1.default {
   }
 }
 exports["default"] = FileRender;
+
+/***/ }),
+
+/***/ "./src/renderer/GridRender.ts":
+/*!************************************!*\
+  !*** ./src/renderer/GridRender.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+const tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.mjs");
+const Render_1 = tslib_1.__importDefault(__webpack_require__(/*! ./Render */ "./src/renderer/Render.ts"));
+const validUtils_1 = __webpack_require__(/*! src/util/validUtils */ "./src/util/validUtils.ts");
+const DaraForm_1 = tslib_1.__importDefault(__webpack_require__(/*! src/DaraForm */ "./src/DaraForm.ts"));
+const utils = tslib_1.__importStar(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
+const styleUtils_1 = tslib_1.__importDefault(__webpack_require__(/*! src/util/styleUtils */ "./src/util/styleUtils.ts"));
+let $$idx = 0;
+class GridRender extends Render_1.default {
+  constructor(field, rowElement, daraForm) {
+    super(daraForm, field, rowElement);
+    this.allAddRowInfo = {};
+    if (field.renderer) {
+      this.customFunction = field.renderer;
+    } else {
+      this.customFunction = {};
+    }
+    const gridFormOptions = {
+      style: {
+        width: "100%",
+        labelWidth: 3,
+        valueWidth: 9,
+        position: "left-right"
+      },
+      autoCreate: false,
+      notValidMessage: "This form is not valid.",
+      fields: []
+    };
+    this.gridForm = new DaraForm_1.default(document.createElement("div"), gridFormOptions);
+    this.mounted();
+    this.setDefaultOption();
+    this.setDefaultInfo();
+  }
+  mounted() {
+    var _a;
+    this.addRow();
+    if (this.customFunction.mounted) {
+      this.customFunction.mounted.call(this, this.field, this.rowElement);
+    }
+    (_a = this.rowElement.querySelector(".df-grid-add-row-btn")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", evt => {
+      this.addRow();
+    });
+  }
+  static isDataRender() {
+    return false;
+  }
+  static isChildrenCreate() {
+    return false;
+  }
+  createField() {
+    var _a, _b, _c, _d, _e, _f, _g;
+    const field = this.field;
+    const fieldContainerElement = this.rowElement.querySelector(".df-field-container");
+    let theadTemplate = [];
+    let colgroupTemplate = [];
+    let addBtnTemplate = [];
+    addBtnTemplate.push("");
+    if (field.children) {
+      colgroupTemplate.push("<colgroup>");
+      theadTemplate.push("<tr>");
+      colgroupTemplate.push(`<col style="width:38px">`);
+      theadTemplate.push("<th>");
+      if (((_a = field.gridOptions) === null || _a === void 0 ? void 0 : _a.disableAddButton) !== true) {
+        theadTemplate.push(`<button type="button" class="df-btn df-grid-add-row-btn" title="Add"><i class="df-icon df-add-icon"></i></button>`);
+      }
+      theadTemplate.push("</th>");
+      for (const childField of field.children) {
+        colgroupTemplate.push(`<col style="width:${(_c = (_b = childField.style) === null || _b === void 0 ? void 0 : _b.width) !== null && _c !== void 0 ? _c : "*"}">`);
+        theadTemplate.push(`<th class="df-grid-header">${childField.label}</th>`);
+      }
+      colgroupTemplate.push("</colgroup>");
+      theadTemplate.push("</tr>");
+    }
+    fieldContainerElement.innerHTML = `
+    <div class="df-grid-field">
+      ${addBtnTemplate.join("")}
+     <div class="df-grid-container ${(_e = (_d = field.style) === null || _d === void 0 ? void 0 : _d.position) !== null && _e !== void 0 ? _e : ""}" style="height:${(_g = (_f = field.gridOptions) === null || _f === void 0 ? void 0 : _f.height) !== null && _g !== void 0 ? _g : "auto"};">
+        <table class="df-grid">${colgroupTemplate.join("")}<thead>${theadTemplate.join("")}</thead><tbody></tbody></table>
+     </div>
+     </div>
+     `;
+  }
+  /**
+   * add row
+   */
+  addRow(valueItem) {
+    var _a, _b, _c;
+    let rowTemplate = [];
+    const options = this.daraForm.getOptions();
+    const formTemplate = this.gridForm.formTemplate;
+    const parentName = this.field.$xssName;
+    ++$$idx;
+    let addColumns = [];
+    rowTemplate.push(`<tr class="grid-row">`);
+    rowTemplate.push("<td>");
+    if (((_a = this.field.gridOptions) === null || _a === void 0 ? void 0 : _a.disableRemoveButton) !== true) {
+      rowTemplate.push(`<button type="button" data-row-idx="${$$idx}" class="df-btn df-grid-row-remove"><i class="df-icon df-remove-icon"></i></button>`);
+    }
+    rowTemplate.push("</td>");
+    for (const childField of this.field.children) {
+      let fieldStyle = styleUtils_1.default.fieldStyle(options, childField, null, true);
+      let columnField = utils.merge({}, childField);
+      addColumns.push(columnField);
+      columnField.$orgin = childField;
+      columnField.name = columnField.name + "_" + $$idx;
+      columnField.$xssName = parentName + "_" + utils.getXssFieldName(columnField);
+      formTemplate.addRowFieldInfo(columnField);
+      rowTemplate.push(`<td id="${columnField.$xssName}"><div class="df-field-container ${columnField.required ? "required" : ""} " style="${fieldStyle.valueStyle}"></div></td>`);
+    }
+    rowTemplate.push("</tr>");
+    this.allAddRowInfo[$$idx] = addColumns;
+    const addRowElement = utils.templateToElement(rowTemplate.join(""));
+    if (addRowElement) {
+      (_b = this.rowElement.querySelector("tbody")) === null || _b === void 0 ? void 0 : _b.append(addRowElement);
+      (_c = addRowElement.querySelector(".df-grid-row-remove")) === null || _c === void 0 ? void 0 : _c.addEventListener("click", evt => {
+        this.removeRow(evt);
+      });
+    }
+    valueItem = valueItem !== null && valueItem !== void 0 ? valueItem : {};
+    for (let columnField of addColumns) {
+      columnField.$instance = new columnField.$renderType(columnField, addRowElement === null || addRowElement === void 0 ? void 0 : addRowElement.querySelector(`#${columnField.$xssName}`), this.gridForm);
+      if (valueItem[columnField.$orgin.name]) {
+        columnField.$instance.setValue(valueItem[columnField.$orgin.name]);
+      }
+    }
+  }
+  /**
+   * remove row
+   *
+   * @param evt event
+   */
+  removeRow(evt) {
+    var _a, _b;
+    const target = evt.target;
+    const rowElement = target.closest("tr");
+    if (rowElement) {
+      if (((_a = rowElement.parentElement) === null || _a === void 0 ? void 0 : _a.childElementCount) == 1) return;
+      let rowIdx = ((_b = evt.currentTarget) === null || _b === void 0 ? void 0 : _b.getAttribute("data-row-idx")) || "-1";
+      this.removeFieldInfo(rowIdx);
+      rowElement.remove();
+    }
+  }
+  /**
+   *
+   * @param rowIdx row index
+   */
+  removeFieldInfo(rowIdx) {
+    let removeFieldArrs = [];
+    if (utils.isEmpty(rowIdx)) {
+      for (let key in this.allAddRowInfo) {
+        removeFieldArrs = removeFieldArrs.concat(this.allAddRowInfo[key]);
+      }
+      this.allAddRowInfo = {};
+    } else if (rowIdx) {
+      const rowIdxNum = parseInt(rowIdx, 10);
+      removeFieldArrs = removeFieldArrs.concat(this.allAddRowInfo[rowIdxNum]);
+      delete this.allAddRowInfo[rowIdxNum];
+    }
+    for (let columnField of removeFieldArrs) {
+      this.gridForm.getFieldInfoMap().removeFieldInfo(columnField.name);
+    }
+  }
+  allRemoveRow() {
+    var _a;
+    (_a = this.rowElement.querySelector("tbody")) === null || _a === void 0 ? void 0 : _a.replaceChildren();
+    this.removeFieldInfo();
+  }
+  getValue() {
+    if (this.customFunction.getValue) {
+      return this.customFunction.getValue.call(this, this.field, this.rowElement);
+    }
+    let result = [];
+    const children = this.field.children;
+    const childrenLength = children.length;
+    for (let idx in this.allAddRowInfo) {
+      const rowColumns = this.allAddRowInfo[idx];
+      let rowInfo = {};
+      for (let childIdx = 0; childIdx < childrenLength; childIdx++) {
+        let childField = children[childIdx];
+        rowInfo[childField.name] = this.gridForm.getFieldValue(rowColumns[childIdx].name); // rowColumns[childIdx].$instance.getValue();
+      }
+
+      result.push(rowInfo);
+    }
+    return result;
+  }
+  setValue(value) {
+    this.field.$value = value;
+    let valueArr = [];
+    if (Array.isArray(value)) {
+      valueArr = value;
+    } else {
+      if (utils.isPlainObject(value)) {
+        valueArr.push(value);
+      }
+    }
+    this.allRemoveRow();
+    for (let valueItem of valueArr) {
+      this.addRow(valueItem);
+    }
+  }
+  reset() {
+    this.setDefaultInfo();
+    (0, validUtils_1.resetRowElementStyleClass)(this.rowElement);
+  }
+  getElement() {
+    if (this.customFunction.getElement) {
+      return this.customFunction.getElement.call(this, this.field, this.rowElement);
+    }
+    return null;
+  }
+  valid() {
+    if (this.customFunction.valid) {
+      const validResult = this.customFunction.valid.call(this, this.field, this.rowElement);
+      (0, validUtils_1.invalidMessage)(this.field, this.rowElement, validResult);
+      return;
+    }
+    const validResult = this.gridForm.validForm();
+    if (validResult.length > 0) {
+      const firstItem = validResult[0];
+      if (firstItem.message) {
+        firstItem.message = "[" + this.field.label + "] " + firstItem.message;
+        return firstItem;
+      }
+    }
+    return true;
+  }
+  focus() {}
+}
+exports["default"] = GridRender;
 
 /***/ }),
 
@@ -1693,7 +2061,7 @@ class GroupRender extends Render_1.default {
   static isDataRender() {
     return false;
   }
-  static template(field) {
+  createField() {
     return "";
   }
   getValue() {
@@ -1707,6 +2075,15 @@ class GroupRender extends Render_1.default {
   valid() {
     return true;
   }
+  addChildField(element) {
+    let addContainer = this.rowElement.querySelector(".df-field-container");
+    if (addContainer) {
+      addContainer.append(element);
+    } else {
+      this.rowElement.append(element);
+    }
+  }
+  focus() {}
 }
 exports["default"] = GroupRender;
 
@@ -1731,7 +2108,7 @@ class HiddenRender extends Render_1.default {
     this.field.$value = field.defaultValue;
   }
   mounted() {}
-  static template(field) {
+  createField() {
     return ``;
   }
   getValue() {
@@ -1773,7 +2150,6 @@ const renderEvents_1 = __webpack_require__(/*! src/event/renderEvents */ "./src/
 class NumberRender extends Render_1.default {
   constructor(field, rowElement, daraForm) {
     super(daraForm, field, rowElement);
-    this.element = rowElement.querySelector(`[name="${field.$xssName}"]`);
     this.mounted();
     this.setDefaultOption();
     this.setDefaultInfo();
@@ -1781,19 +2157,26 @@ class NumberRender extends Render_1.default {
   mounted() {
     (0, renderEvents_1.numberInputEvent)(this.field, this.element, this);
   }
-  static template(field) {
-    return `
+  createField() {
+    const field = this.field;
+    const fieldContainerElement = this.rowElement.querySelector(".df-field-container");
+    fieldContainerElement.innerHTML = `
         <div class="df-field">
-            <input type="text" name="${field.name}" class="form-field number help-icon" />
+            <input type="text" name="${field.$xssName}" class="form-field number help-icon" />
         </div> 
         ${Render_1.default.getDescriptionTemplate(field)}
         <div class="help-message"></div>
        `;
+    this.element = fieldContainerElement.querySelector(`[name="${field.$xssName}"]`);
   }
   getValue() {
     return this.element.value;
   }
-  setValue(value) {
+  setValue(value, changeCheckFlag) {
+    if (changeCheckFlag !== false && this.changeEventCall(this.field, null, this, value) === false) {
+      this.element.value = this.field.$value;
+      return;
+    }
     this.field.$value = value;
     this.element.value = value;
   }
@@ -1834,7 +2217,6 @@ const renderEvents_1 = __webpack_require__(/*! src/event/renderEvents */ "./src/
 class PasswordRender extends Render_1.default {
   constructor(field, rowElement, daraForm) {
     super(daraForm, field, rowElement);
-    this.element = rowElement.querySelector(`[name="${field.$xssName}"]`);
     this.mounted();
     this.setDefaultOption();
     this.setDefaultInfo();
@@ -1842,19 +2224,26 @@ class PasswordRender extends Render_1.default {
   mounted() {
     (0, renderEvents_1.inputEvent)(this.field, this.element, this);
   }
-  static template(field) {
-    return `
+  createField() {
+    const field = this.field;
+    const fieldContainerElement = this.rowElement.querySelector(".df-field-container");
+    fieldContainerElement.innerHTML = `
         <div class="df-field">
-            <input type="password" name="${field.name}" class="form-field password help-icon" autocomplete="off" />
+            <input type="password" name="${field.$xssName}" class="form-field password help-icon" autocomplete="off" />
         </div>
         ${Render_1.default.getDescriptionTemplate(field)}
         <div class="help-message"></div>
     `;
+    this.element = fieldContainerElement.querySelector(`[name="${field.$xssName}"]`);
   }
   getValue() {
     return this.element.value;
   }
-  setValue(value) {
+  setValue(value, changeCheckFlag) {
+    if (changeCheckFlag !== false && this.changeEventCall(this.field, null, this, value) === false) {
+      this.element.value = this.field.$value;
+      return;
+    }
     this.field.$value = value;
     this.element.value = value;
   }
@@ -1892,14 +2281,14 @@ const Render_1 = tslib_1.__importDefault(__webpack_require__(/*! ./Render */ "./
 const constants_1 = __webpack_require__(/*! src/constants */ "./src/constants.ts");
 const validUtils_1 = __webpack_require__(/*! src/util/validUtils */ "./src/util/validUtils.ts");
 const renderEvents_1 = __webpack_require__(/*! src/event/renderEvents */ "./src/event/renderEvents.ts");
-const utils_1 = tslib_1.__importDefault(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
+const utils = tslib_1.__importStar(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
 class RadioRender extends Render_1.default {
   constructor(field, rowElement, daraForm) {
     var _a, _b, _c, _d, _e;
     super(daraForm, field, rowElement);
     this.defaultCheckValue = "";
     let initDefaultValue = [];
-    if (!utils_1.default.isUndefined(field.defaultValue)) {
+    if (!utils.isUndefined(field.defaultValue)) {
       initDefaultValue = field.defaultValue;
     }
     const valueKey = RadioRender.valuesValueKey(field);
@@ -1921,13 +2310,16 @@ class RadioRender extends Render_1.default {
     }
     this.mounted();
     this.setDefaultOption();
-    this.setValue(this.defaultCheckValue);
+    this.setValue(this.defaultCheckValue, false);
   }
   mounted() {
+    this.initEvent();
+  }
+  initEvent() {
     const checkboxes = this.rowElement.querySelectorAll(this.getSelector());
     checkboxes.forEach(ele => {
       ele.addEventListener("change", e => {
-        (0, renderEvents_1.customChangeEventCall)(this.field, e, this);
+        (0, renderEvents_1.customChangeEventCall)(this.field, e, this, this.getValue());
         this.valid();
       });
     });
@@ -1935,19 +2327,21 @@ class RadioRender extends Render_1.default {
   getSelector() {
     return `input[type="radio"][name="${this.field.$xssName}"]`;
   }
-  static template(field) {
+  createField() {
     var _a, _b;
+    const field = this.field;
+    const fieldContainerElement = this.rowElement.querySelector(".df-field-container");
     const templates = [];
-    const fieldName = field.name;
-    const labelKey = this.valuesLabelKey(field);
-    const valueKey = this.valuesValueKey(field);
+    const fieldName = field.$xssName;
+    const labelKey = Render_1.default.valuesLabelKey(field);
+    const valueKey = Render_1.default.valuesValueKey(field);
     templates.push(`<div class="df-field"><div class="field-group">`);
     (_b = (_a = field.listItem) === null || _a === void 0 ? void 0 : _a.list) === null || _b === void 0 ? void 0 : _b.forEach(val => {
       const radioVal = val[valueKey];
       templates.push(`<span class="field ${field.orientation == "vertical" ? "vertical" : "horizontal"}">
         <label>
             <input type="radio" name="${fieldName}" value="${radioVal}" class="form-field radio" ${val.selected ? "checked" : ""} ${val.disabled ? "disabled" : ""}/>
-            ${this.valuesLabelValue(labelKey, val)}
+            ${Render_1.default.valuesLabelValue(labelKey, val)}
         </label>
         </span>
                 `);
@@ -1956,7 +2350,8 @@ class RadioRender extends Render_1.default {
         ${Render_1.default.getDescriptionTemplate(field)}
      <div class="help-message"></div>
     `);
-    return templates.join("");
+    fieldContainerElement.innerHTML = templates.join("");
+    this.initEvent();
   }
   setValueItems(items) {
     const containerEle = this.rowElement.querySelector(".df-field-container");
@@ -1968,15 +2363,22 @@ class RadioRender extends Render_1.default {
           list: items
         };
       }
-      containerEle.innerHTML = RadioRender.template(this.field);
-      this.mounted();
+      this.createField();
+      if (!utils.isBlank(this.field.$value)) {
+        const currentValue = this.field.$value;
+        this.field.$value = "";
+        this.setValue(currentValue);
+      }
     }
   }
   getValue() {
     var _a;
     return (_a = this.rowElement.querySelector(`[name="${this.field.$xssName}"]:checked`)) === null || _a === void 0 ? void 0 : _a.value;
   }
-  setValue(value) {
+  setValue(value, changeCheckFlag) {
+    if (changeCheckFlag !== false && this.changeEventCall(this.field, null, this, value) === false) {
+      value = this.field.$value;
+    }
     this.field.$value = value;
     if (value === true) {
       this.rowElement.querySelector(`[name="${this.field.$xssName}"]`).checked = true;
@@ -1997,18 +2399,24 @@ class RadioRender extends Render_1.default {
     });
   }
   reset() {
-    this.setValue(this.defaultCheckValue);
+    this.setValue(this.defaultCheckValue, false);
     this.setDisabled(false);
     (0, validUtils_1.resetRowElementStyleClass)(this.rowElement);
   }
   getElement() {
     return this.rowElement.querySelectorAll(this.getSelector());
   }
+  focus() {
+    const elements = this.getElement();
+    if (elements && elements.length > 0) {
+      this.getElement()[0].focus();
+    }
+  }
   valid() {
     const value = this.getValue();
     let validResult = true;
     if (this.field.required) {
-      if (utils_1.default.isBlank(value)) {
+      if (utils.isBlank(value)) {
         validResult = {
           name: this.field.name,
           constraint: []
@@ -2043,7 +2451,6 @@ const renderEvents_1 = __webpack_require__(/*! src/event/renderEvents */ "./src/
 class RangeRender extends Render_1.default {
   constructor(field, rowElement, daraForm) {
     super(daraForm, field, rowElement);
-    this.element = rowElement.querySelector(`[name="${field.$xssName}"]`);
     this.rangeNumElement = rowElement.querySelector(".range-num");
     this.mounted();
     this.setDefaultOption();
@@ -2053,24 +2460,31 @@ class RangeRender extends Render_1.default {
     this.element.addEventListener("input", e => {
       this.rangeNumElement.innerHTML = e.target.value;
       this.element.setAttribute("title", e.target.value);
-      (0, renderEvents_1.customChangeEventCall)(this.field, e, this);
+      (0, renderEvents_1.customChangeEventCall)(this.field, e, this, this.getValue());
       this.valid();
     });
   }
-  static template(field) {
-    return `
+  createField() {
+    const field = this.field;
+    const fieldContainerElement = this.rowElement.querySelector(".df-field-container");
+    fieldContainerElement.innerHTML = `
         <div class="df-field">
             <span class="range-num">${field.defaultValue ? field.defaultValue : 0}</span>
-            <input type="range" name="${field.name}" class="form-field range help-icon" min="${field.rule.minimum}" max="${field.rule.maximum}"/>
+            <input type="range" name="${field.$xssName}" class="form-field range help-icon" min="${field.rule.minimum}" max="${field.rule.maximum}"/>
         </div> 
         ${Render_1.default.getDescriptionTemplate(field)}
         <div class="help-message"></div>
        `;
+    this.element = fieldContainerElement.querySelector(`[name="${field.$xssName}"]`);
   }
   getValue() {
     return this.element.value;
   }
-  setValue(value) {
+  setValue(value, changeCheckFlag) {
+    if (changeCheckFlag !== false && this.changeEventCall(this.field, null, this, value) === false) {
+      this.element.value = this.field.$value;
+      return;
+    }
     this.field.$value = value;
     this.element.value = value;
   }
@@ -2104,22 +2518,24 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 const tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.mjs");
-const utils_1 = tslib_1.__importDefault(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
+const utils = tslib_1.__importStar(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
 class Render {
   constructor(form, field, rowElement) {
     var _a;
+    this.enableView = true;
     this.daraForm = form;
     this.field = field;
     this.rowElement = rowElement;
+    this.createField();
     if (field.tooltip) (_a = rowElement.querySelector(".df-tooltip")) === null || _a === void 0 ? void 0 : _a.setAttribute("tooltip", field.tooltip);
   }
   setDefaultInfo() {
-    if (utils_1.default.isUndefined(this.field.defaultValue)) {
-      this.setValue("");
+    if (utils.isUndefined(this.field.defaultValue)) {
+      this.setValue("", false);
     } else {
-      this.setValue(this.field.defaultValue);
+      this.setValue(this.field.defaultValue, false);
     }
-    if (!utils_1.default.isUndefined(this.field.placeholder)) {
+    if (!utils.isUndefined(this.field.placeholder)) {
       const ele = this.getElement();
       if (ele instanceof Element) {
         ele.setAttribute("placeholder", this.field.placeholder);
@@ -2130,7 +2546,14 @@ class Render {
     var _a;
     this.setDisabled((_a = this.field.disabled) !== null && _a !== void 0 ? _a : false);
   }
+  addChildField(element) {
+    var _a;
+    (_a = this.rowElement.querySelector(".df-field-container")) === null || _a === void 0 ? void 0 : _a.append(element);
+  }
   static isDataRender() {
+    return true;
+  }
+  static isChildrenCreate() {
     return true;
   }
   getForm() {
@@ -2140,44 +2563,53 @@ class Render {
   static getDescriptionTemplate(field) {
     return field.description ? `<div class="df-description">${field.description}</div>` : "";
   }
-  changeEventCall(field, e, rederInfo) {
+  changeEventCall(field, e, rederInfo, fieldValue) {
     var _a;
     if (field.onChange) {
-      let fieldValue = rederInfo.getValue();
-      let changeValue = {
+      let changeInfo = {
         field: field,
-        evt: e
+        evt: e,
+        oldValue: field.$value,
+        value: fieldValue
       };
-      changeValue.value = fieldValue;
       if ((_a = field.listItem) === null || _a === void 0 ? void 0 : _a.list) {
         let valuesItem = [];
         const valueKey = Render.valuesValueKey(field);
         for (let val of field.listItem.list) {
           let changeVal = val[valueKey];
-          if (utils_1.default.isString(fieldValue)) {
+          if (utils.isString(fieldValue)) {
             if (changeVal == fieldValue) {
               valuesItem.push(val);
               break;
             }
-          } else if (utils_1.default.isArray(fieldValue)) {
+          } else if (utils.isArray(fieldValue)) {
             if (fieldValue.includes(changeVal)) {
               valuesItem.push(val);
             }
           }
         }
-        changeValue.valueItem = valuesItem;
+        changeInfo.valueItems = valuesItem;
       }
-      field.onChange.call(null, changeValue);
+      if (changeInfo.oldValue != changeInfo.value && field.onChange.call(null, changeInfo) === false) {
+        rederInfo.setValue(field.$value, false);
+        return false;
+      }
+      field.$value = changeInfo.value;
     }
     this.daraForm.conditionCheck();
   }
   focus() {
     this.getElement().focus();
   }
+  isEnableView() {
+    return this.enableView;
+  }
   show() {
+    this.enableView = true;
     this.rowElement.classList.remove("df-hidden");
   }
   hide() {
+    this.enableView = false;
     if (!this.rowElement.classList.contains("df-hidden")) {
       this.rowElement.classList.add("df-hidden");
     }
@@ -2257,15 +2689,23 @@ Object.defineProperty(exports, "__esModule", ({
 const tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.mjs");
 const Render_1 = tslib_1.__importDefault(__webpack_require__(/*! ./Render */ "./src/renderer/Render.ts"));
 const validUtils_1 = __webpack_require__(/*! src/util/validUtils */ "./src/util/validUtils.ts");
-const stringValidator_1 = __webpack_require__(/*! src/rule/stringValidator */ "./src/rule/stringValidator.ts");
+const DaraForm_1 = tslib_1.__importDefault(__webpack_require__(/*! src/DaraForm */ "./src/DaraForm.ts"));
 const styleUtils_1 = tslib_1.__importDefault(__webpack_require__(/*! src/util/styleUtils */ "./src/util/styleUtils.ts"));
+const utils = tslib_1.__importStar(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
 class TabRender extends Render_1.default {
   constructor(field, rowElement, daraForm) {
     super(daraForm, field, rowElement);
-    this.tabContainerElement = rowElement.querySelector(".df-field-container");
+    if (field.renderer) {
+      this.customFunction = field.renderer;
+    } else {
+      this.customFunction = {};
+    }
     this.mounted();
   }
   mounted() {
+    if (this.customFunction.mounted) {
+      this.customFunction.mounted.call(this, this.field, this.rowElement);
+    }
     this.tabContainerElement.querySelectorAll(".tab-item").forEach(tabItem => {
       tabItem.addEventListener("click", e => {
         this.clickEventHandler(tabItem, e);
@@ -2303,6 +2743,9 @@ class TabRender extends Render_1.default {
   static isDataRender() {
     return false;
   }
+  static isChildrenCreate() {
+    return false;
+  }
   /**
    * tab template
    *
@@ -2311,50 +2754,115 @@ class TabRender extends Render_1.default {
    * @param {FormOptions} options
    * @returns {string} template string
    */
-  static template(field, formTemplate, options) {
-    let tabTemplate = [];
-    let tabChildTemplate = [];
+  createField() {
+    var _a, _b, _c, _d, _e, _f;
+    const field = this.field;
+    const formTemplate = this.daraForm.formTemplate;
+    const options = this.daraForm.getOptions();
+    const fieldContainerElement = this.rowElement.querySelector(".df-field-container");
     //tab 이벤트 처리 할것.
     let fieldStyle = styleUtils_1.default.fieldStyle(options, field);
+    fieldContainerElement.innerHTML = `
+        <div class="df-field ">
+          <div class="tab-header ${fieldStyle.tabAlignClass}"></div>
+        </div>
+        <div class="df-tab-body"></div>
+    `;
     if (field.children) {
       let firstFlag = true;
+      const formOptions = this.getForm().getOptions();
+      let fieldStyle = styleUtils_1.default.fieldStyle(formOptions, field, null, formTemplate.isLabelHide(field));
       for (const childField of field.children) {
         childField.$parent = field;
         formTemplate.addRowFieldInfo(childField);
         let id = childField.$key;
-        tabTemplate.push(`<span class="tab-item ${firstFlag ? "active" : ""}" data-tab-id="${id}"><a href="javascript:;">${childField.label}</a></span>`);
-        tabChildTemplate.push(`<div class="tab-panel ${firstFlag ? "active" : ""}" tab-panel-id="${id}">${Render_1.default.getDescriptionTemplate(childField)}`);
-        if (childField.children) {
-          tabChildTemplate.push(formTemplate.childTemplate(childField, fieldStyle));
-        }
-        tabChildTemplate.push(`</div>`);
+        let tabTemplate = `<span class="tab-item ${firstFlag ? "active" : ""}" data-tab-id="${id}"><a href="javascript:;">${childField.label}</a></span>`;
+        let tabBodyTemplate = `<div class="tab-panel ${firstFlag ? "active" : ""}" tab-panel-id="${id}">${Render_1.default.getDescriptionTemplate(childField)}
+          <div class="tab-group"></div>
+        </div>`;
+        const tabElement = utils.templateToElement(tabTemplate);
+        const tabBodyElement = utils.templateToElement(tabBodyTemplate);
         firstFlag = false;
+        if (tabElement) {
+          (_a = fieldContainerElement.querySelector(".tab-header")) === null || _a === void 0 ? void 0 : _a.appendChild(tabElement);
+        }
+        if (tabBodyElement) {
+          (_b = fieldContainerElement.querySelector(".df-tab-body")) === null || _b === void 0 ? void 0 : _b.appendChild(tabBodyElement);
+          if (childField.children) {
+            let tabFormOptions = {
+              style: {
+                width: (_c = formOptions.style.width) !== null && _c !== void 0 ? _c : "100%",
+                labelWidth: (_d = formOptions.style.labelWidth) !== null && _d !== void 0 ? _d : 3,
+                valueWidth: (_e = formOptions.style.valueWidth) !== null && _e !== void 0 ? _e : 9,
+                position: (_f = formOptions.style.position) !== null && _f !== void 0 ? _f : "left-right"
+              },
+              useTypeValue: formOptions.useTypeValue,
+              autoCreate: false,
+              notValidMessage: "This form is not valid.",
+              fields: []
+            };
+            childField.$tabForm = new DaraForm_1.default(document.createElement("div"), tabFormOptions);
+            childField.$instance = new childField.$renderType(childField, tabBodyElement === null || tabBodyElement === void 0 ? void 0 : tabBodyElement.querySelector(".tab-group"), childField.$tabForm);
+            childField.$tabForm.formTemplate.childTemplate(childField, fieldStyle);
+          }
+        }
       }
+      this.tabContainerElement = fieldContainerElement;
     }
-    return `
-     <div class="df-field ">
-      <div class="tab-header ${fieldStyle.tabAlignClass}">
-      ${tabTemplate.join("")}
-      </div>
-     </div>
-     <div class="df-tab-body">
-      ${tabChildTemplate.join("")}
-     </div>
-     `;
   }
   getValue() {
-    return "";
+    var _a;
+    if (this.customFunction.getValue) {
+      return this.customFunction.getValue.call(this, this.field, this.rowElement);
+    }
+    let allTabValue = {};
+    let useTypeValue = this.getForm().getOptions().useTypeValue;
+    for (const childField of this.field.children) {
+      const childFieldValue = (_a = childField.$tabForm) === null || _a === void 0 ? void 0 : _a.getValue(false);
+      if (useTypeValue) {
+        allTabValue[childField.$validName] = childFieldValue;
+      } else {
+        for (let [key, value] of Object.entries(childFieldValue)) {
+          allTabValue[key] = value;
+        }
+      }
+    }
+    return allTabValue;
   }
-  setValue(value) {}
+  setValue(value) {
+    var _a;
+    for (const childField of this.field.children) {
+      let tabChildValue = value[childField.$validName];
+      if (tabChildValue) {
+        (_a = childField.$tabForm) === null || _a === void 0 ? void 0 : _a.setValue(tabChildValue);
+      }
+    }
+  }
   reset() {}
   getElement() {
     return this.rowElement;
   }
   valid() {
-    const validResult = (0, stringValidator_1.stringValidator)(this.getValue(), this.field);
-    (0, validUtils_1.invalidMessage)(this.field, this.rowElement, validResult);
-    return validResult;
+    var _a;
+    if (this.customFunction.valid) {
+      const validResult = this.customFunction.valid.call(this, this.field, this.rowElement);
+      (0, validUtils_1.invalidMessage)(this.field, this.rowElement, validResult);
+      return;
+    }
+    const field = this.field;
+    for (const childField of field.children) {
+      const validResult = (_a = childField.$tabForm) === null || _a === void 0 ? void 0 : _a.validForm();
+      if (validResult && validResult.length > 0) {
+        const firstItem = validResult[0];
+        if (firstItem.message) {
+          firstItem.message = "[" + this.field.label + "] " + firstItem.message;
+          return firstItem;
+        }
+      }
+    }
+    return true;
   }
+  focus() {}
 }
 exports["default"] = TabRender;
 
@@ -2379,7 +2887,6 @@ const renderEvents_1 = __webpack_require__(/*! src/event/renderEvents */ "./src/
 class TextAreaRender extends Render_1.default {
   constructor(field, rowElement, daraForm) {
     super(daraForm, field, rowElement);
-    this.element = rowElement.querySelector(`[name="${field.$xssName}"]`);
     this.mounted();
     this.setDefaultOption();
     this.setDefaultInfo();
@@ -2387,22 +2894,29 @@ class TextAreaRender extends Render_1.default {
   mounted() {
     (0, renderEvents_1.inputEvent)(this.field, this.element, this);
   }
-  static template(field) {
+  createField() {
     var _a;
+    const field = this.field;
+    const fieldContainerElement = this.rowElement.querySelector(".df-field-container");
     let rows = (_a = field.customOptions) === null || _a === void 0 ? void 0 : _a.rows;
     rows = +rows > 0 ? rows : 3;
-    return `
+    fieldContainerElement.innerHTML = `
         <div class="df-field">
-            <textarea name="${field.name}" rows="${rows}" class="form-field textarea help-icon"></textarea>
+            <textarea name="${field.$xssName}" rows="${rows}" class="form-field textarea help-icon"></textarea>
         </div> 
         ${Render_1.default.getDescriptionTemplate(field)}
         <div class="help-message"></div>
     `;
+    this.element = fieldContainerElement.querySelector(`[name="${field.$xssName}"]`);
   }
   getValue() {
     return this.element.value;
   }
-  setValue(value) {
+  setValue(value, changeCheckFlag) {
+    if (changeCheckFlag !== false && this.changeEventCall(this.field, null, this, value) === false) {
+      this.element.value = this.field.$value;
+      return;
+    }
     this.field.$value = value;
     this.element.value = value;
   }
@@ -2443,7 +2957,6 @@ const renderEvents_1 = __webpack_require__(/*! src/event/renderEvents */ "./src/
 class TextRender extends Render_1.default {
   constructor(field, rowElement, daraForm) {
     super(daraForm, field, rowElement);
-    this.element = rowElement.querySelector(`[name="${field.$xssName}"]`);
     this.mounted();
     this.setDefaultOption();
     this.setDefaultInfo();
@@ -2451,19 +2964,26 @@ class TextRender extends Render_1.default {
   mounted() {
     (0, renderEvents_1.inputEvent)(this.field, this.element, this);
   }
-  static template(field) {
-    return `
-     <div class="df-field">
-      <input type="text" name="${field.name}" class="form-field text help-icon" />
-     </div>
-     ${Render_1.default.getDescriptionTemplate(field)}
-     <div class="help-message"></div>
-     `;
+  createField() {
+    const field = this.field;
+    const fieldContainerElement = this.rowElement.querySelector(".df-field-container");
+    fieldContainerElement.innerHTML = `
+      <div class="df-field">
+       <input type="text" name="${field.$xssName}" class="form-field text help-icon" />
+      </div>
+      ${Render_1.default.getDescriptionTemplate(field)}
+      <div class="help-message"></div>
+      `;
+    this.element = fieldContainerElement.querySelector(`[name="${field.$xssName}"]`);
   }
   getValue() {
     return this.element.value;
   }
-  setValue(value) {
+  setValue(value, changeCheckFlag) {
+    if (changeCheckFlag !== false && this.changeEventCall(this.field, null, this, value) === false) {
+      this.element.value = this.field.$value;
+      return;
+    }
     this.field.$value = value;
     this.element.value = value;
   }
@@ -2539,7 +3059,7 @@ exports.numberValidator = void 0;
 const tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.mjs");
 const constants_1 = __webpack_require__(/*! src/constants */ "./src/constants.ts");
 const validator_1 = __webpack_require__(/*! ./validator */ "./src/rule/validator.ts");
-const utils_1 = tslib_1.__importDefault(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
+const utils = tslib_1.__importStar(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
 /**
  * 숫자 유효성 체크
  *
@@ -2548,16 +3068,19 @@ const utils_1 = tslib_1.__importDefault(__webpack_require__(/*! src/util/utils *
  * @returns {(ValidResult | boolean)}
  */
 const numberValidator = (value, field) => {
+  if (!field.$instance.isEnableView()) {
+    return true;
+  }
   const result = {
     name: field.name,
     constraint: []
   };
   const numValue = Number(value);
-  if (field.required && utils_1.default.isBlank(value)) {
+  if (field.required && utils.isBlank(value)) {
     result.constraint.push(constants_1.RULES.REQUIRED);
     return result;
   }
-  if (!utils_1.default.isNumber(value)) {
+  if (!utils.isNumber(value)) {
     result.constraint.push(constants_1.RULES.NAN);
     return result;
   }
@@ -2566,8 +3089,8 @@ const numberValidator = (value, field) => {
   }
   const rule = field.rule;
   if (rule) {
-    const isMinimum = utils_1.default.isNumber(rule.minimum),
-      isMaximum = utils_1.default.isNumber(rule.maximum);
+    const isMinimum = utils.isNumber(rule.minimum),
+      isMaximum = utils.isNumber(rule.maximum);
     let minRule = false,
       minExclusive = false,
       maxRule = false,
@@ -2633,17 +3156,17 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.regexpValidator = void 0;
 const regexp = {
-  'mobile': /^\d{3}-\d{3,4}-\d{4}$/,
-  'email': /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-  'url': /^(?:(?:https?|HTTPS?|ftp|FTP):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-zA-Z\u00a1-\uffff0-9]-*)*[a-zA-Z\u00a1-\uffff0-9]+)(?:\.(?:[a-zA-Z\u00a1-\uffff0-9]-*)*[a-zA-Z\u00a1-\uffff0-9]+)*(?:\.(?:[a-zA-Z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/,
-  'number': /\d$/,
-  'alpha': /^[a-zA-Z]+$/,
-  'alpha-num': /^[a-zA-Z0-9]+$/,
-  'variable': /^[a-zA-Z0-9_$][a-zA-Z0-9_$]*$/,
-  'number-char': /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]/,
-  'upper-char': /^(?=.*?[A-Z])(?=.*?[a-z])/,
-  'upper-char-special': /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!@$%^&*-])/,
-  'upper-char-special-number': /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]/
+  mobile: /^\d{3}-\d{3,4}-\d{4}$/,
+  email: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+  url: /^(?:(?:https?|HTTPS?|ftp|FTP):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-zA-Z\u00a1-\uffff0-9]-*)*[a-zA-Z\u00a1-\uffff0-9]+)(?:\.(?:[a-zA-Z\u00a1-\uffff0-9]-*)*[a-zA-Z\u00a1-\uffff0-9]+)*(?:\.(?:[a-zA-Z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/,
+  number: /\d$/,
+  alpha: /^[a-zA-Z]+$/,
+  "alpha-num": /^[a-zA-Z0-9]+$/,
+  variable: /^[a-zA-Z0-9_$][a-zA-Z0-9_$]*$/,
+  "number-char": /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]/,
+  "upper-char": /^(?=.*?[A-Z])(?=.*?[a-z])/,
+  "upper-char-special": /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!@$%^&*-])/,
+  "upper-char-special-number": /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]/
 };
 /**
  * 정규식 유효성 체크.
@@ -2654,7 +3177,13 @@ const regexp = {
  * @returns {ValidResult}
  */
 const regexpValidator = (value, field, result) => {
-  if (typeof result === 'undefined') {
+  if (!field.$instance.isEnableView()) {
+    return {
+      name: field.name,
+      constraint: []
+    };
+  }
+  if (typeof result === "undefined") {
     result = {
       name: field.name,
       constraint: []
@@ -2687,7 +3216,7 @@ Object.defineProperty(exports, "__esModule", ({
 exports.stringValidator = void 0;
 const tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.mjs");
 const constants_1 = __webpack_require__(/*! src/constants */ "./src/constants.ts");
-const utils_1 = tslib_1.__importDefault(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
+const utils = tslib_1.__importStar(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
 const validator_1 = __webpack_require__(/*! ./validator */ "./src/rule/validator.ts");
 /**
  * string validator
@@ -2697,11 +3226,14 @@ const validator_1 = __webpack_require__(/*! ./validator */ "./src/rule/validator
  * @returns {(ValidResult | boolean)}
  */
 const stringValidator = (value, field) => {
+  if (!field.$instance.isEnableView()) {
+    return true;
+  }
   let result = {
     name: field.name,
     constraint: []
   };
-  if (field.required && utils_1.default.isBlank(value)) {
+  if (field.required && utils.isBlank(value)) {
     result.constraint.push(constants_1.RULES.REQUIRED);
     return result;
   }
@@ -2712,8 +3244,8 @@ const stringValidator = (value, field) => {
   const rule = field.rule;
   if (rule) {
     const valueLength = value.length;
-    const isMinNumber = utils_1.default.isNumber(rule.minLength),
-      isMaxNumber = utils_1.default.isNumber(rule.maxLength);
+    const isMinNumber = utils.isNumber(rule.minLength),
+      isMaxNumber = utils.isNumber(rule.maxLength);
     let minRule = false,
       maxRule = false;
     if (isMinNumber && valueLength < rule.minLength) {
@@ -2754,7 +3286,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.validator = void 0;
+const tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.mjs");
 const regexpValidator_1 = __webpack_require__(/*! ./regexpValidator */ "./src/rule/regexpValidator.ts");
+const utils = tslib_1.__importStar(__webpack_require__(/*! src/util/utils */ "./src/util/utils.ts"));
 /**
  *  validator  ,  regexp 체크 .
  *
@@ -2766,7 +3300,7 @@ const regexpValidator_1 = __webpack_require__(/*! ./regexpValidator */ "./src/ru
 const validator = (value, field, result) => {
   if (field.validator) {
     result.validator = field.validator(field, value);
-    if (typeof result.validator === 'object') {
+    if (typeof result.validator === "object") {
       return result;
     }
   }
@@ -2776,16 +3310,16 @@ const validator = (value, field, result) => {
   }
   if (field.different) {
     const diffFieldName = field.different.field;
-    const diffField = field.$renderer.getForm().getField(diffFieldName);
-    if (field.$renderer.getValue() == diffField.$renderer.getValue()) {
+    const diffField = field.$instance.getForm().getField(diffFieldName);
+    if (!utils.isEmpty(diffField) && field.$instance.getValue() == diffField.$instance.getValue()) {
       result.message = field.different.message;
       return result;
     }
   }
   if (field.identical) {
     const diffFieldName = field.identical.field;
-    const diffField = field.$renderer.getForm().getField(diffFieldName);
-    if (field.$renderer.getValue() != diffField.$renderer.getValue()) {
+    const diffField = field.$instance.getForm().getField(diffFieldName);
+    if (!utils.isEmpty(diffField) && field.$instance.getValue() != diffField.$instance.getValue()) {
       result.message = field.identical.message;
       return result;
     }
@@ -2811,6 +3345,7 @@ const constants_1 = __webpack_require__(/*! src/constants */ "./src/constants.ts
 let localeMessage = {
   required: "{label} 필수 입력사항입니다.",
   fileButton: "파일찾기",
+  selection: "선택",
   string: {
     minLength: "{minLength} 글자 이상으로 입력하세요.",
     maxLength: "{maxLength} 글자 이하로 입력하세요.",
@@ -2935,19 +3470,19 @@ exports["default"] = new Language();
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.getRenderTemplate = exports.getRenderer = void 0;
+exports.getRenderer = void 0;
 const tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.mjs");
 const constants_1 = __webpack_require__(/*! ../constants */ "./src/constants.ts");
-const utils_1 = tslib_1.__importDefault(__webpack_require__(/*! ./utils */ "./src/util/utils.ts"));
+const utils = tslib_1.__importStar(__webpack_require__(/*! ./utils */ "./src/util/utils.ts"));
 const getRenderer = field => {
   let render;
   if (field.renderType) {
     render = constants_1.RENDER_TEMPLATE[field.renderType];
   }
-  if (render && (render.isDataRender() === false || !utils_1.default.isUndefined(field.name))) {
+  if (render && (render.isDataRender() === false || !utils.isUndefined(field.name))) {
     return render;
   }
-  if (utils_1.default.isUndefined(field.name)) {
+  if (utils.isUndefined(field.name)) {
     if (field.children) {
       return constants_1.RENDER_TEMPLATE["group"];
     } else {
@@ -2957,11 +3492,6 @@ const getRenderer = field => {
   return constants_1.RENDER_TEMPLATE["text"];
 };
 exports.getRenderer = getRenderer;
-const getRenderTemplate = field => {
-  let render = (0, exports.getRenderer)(field);
-  return render.template(field);
-};
-exports.getRenderTemplate = getRenderTemplate;
 
 /***/ }),
 
@@ -2977,7 +3507,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 const tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.mjs");
-const utils_1 = tslib_1.__importDefault(__webpack_require__(/*! ./utils */ "./src/util/utils.ts"));
+const utils = tslib_1.__importStar(__webpack_require__(/*! ./utils */ "./src/util/utils.ts"));
 const constants_1 = __webpack_require__(/*! src/constants */ "./src/constants.ts");
 exports["default"] = {
   /**
@@ -3008,17 +3538,17 @@ exports["default"] = {
     const positionArr = (_m = (_l = constants_1.FIELD_POSITION_STYLE[(_k = field.style) === null || _k === void 0 ? void 0 : _k.position]) !== null && _l !== void 0 ? _l : constants_1.FIELD_POSITION_STYLE[position]) !== null && _m !== void 0 ? _m : constants_1.FIELD_POSITION_STYLE.top;
     fieldStyle.fieldClass = `${positionArr[0]} ${((_o = field.style) === null || _o === void 0 ? void 0 : _o.customClass) || ""}`;
     if (width) {
-      if (utils_1.default.isNumber(width)) {
-        fieldStyle.fieldClass += utils_1.default.isNumber(width) ? ` col-xs-${width}` : "";
+      if (utils.isNumber(width)) {
+        fieldStyle.fieldClass += utils.isNumber(width) ? ` col-xs-${width}` : "";
       } else {
-        fieldStyle.fieldStyle = utils_1.default.isNumber(width) ? "" : `width:${width};`;
+        fieldStyle.fieldStyle = utils.isNumber(width) ? "" : `width:${width};`;
       }
     }
     fieldStyle.tabAlignClass = "tab-al-" + (["right", "center"].includes((_p = field.style) === null || _p === void 0 ? void 0 : _p.tabAlign) ? field.style.tabAlign : "left");
     const labelWidth = ((_q = field.style) === null || _q === void 0 ? void 0 : _q.labelWidth) || defaultLabelWidth;
     fieldStyle.labelAlignClass = positionArr[1];
     if (!isLabelHide && labelWidth && !["top", "bottom"].includes(positionArr[0])) {
-      if (utils_1.default.isNumber(labelWidth)) {
+      if (utils.isNumber(labelWidth)) {
         const labelWidthValue = +labelWidth;
         defaultValueWidth = 12 - labelWidthValue;
         fieldStyle.labelClass = `col-xs-${labelWidthValue}`;
@@ -3032,7 +3562,7 @@ exports["default"] = {
       fieldStyle.valueClass = "col-full";
     } else {
       if (valueWidth && !["top", "bottom"].includes(positionArr[0])) {
-        if (utils_1.default.isNumber(valueWidth)) {
+        if (utils.isNumber(valueWidth)) {
           fieldStyle.valueClass = fieldStyle.labelStyle ? "col-full" : `col-xs-${valueWidth}`;
         } else {
           fieldStyle.valueStyle = `width:${valueWidth};`;
@@ -3064,6 +3594,7 @@ function spaceReplace(str) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
+exports.merge = exports.isPlainObject = exports.templateToElement = exports.isHiddenField = exports.getHashCode = exports.getXssFieldName = exports.ignoreValueField = exports.replaceXssField = exports.isGridType = exports.isTabType = exports.isEmpty = exports.isArray = exports.isNumber = exports.isString = exports.isFunction = exports.isUndefined = exports.isBlank = exports.unFieldName = exports.unReplace = exports.hasOwnProp = exports.replaceXss = void 0;
 const xssFilter = {
   "&": "&amp;",
   "<": "&lt;",
@@ -3071,82 +3602,260 @@ const xssFilter = {
   '"': "&quot;",
   "'": "&#39;"
 };
-exports["default"] = {
-  replace(inputText) {
-    let returnText = inputText;
-    if (returnText) {
-      Object.keys(xssFilter).forEach(key => {
-        returnText = returnText.replaceAll(key, xssFilter[key]);
-      });
-    }
-    return returnText;
-  },
-  hasOwnProp(obj, key) {
-    return obj.hasOwnProperty(key);
-  },
-  unReplace(inputText) {
-    let returnText = inputText;
-    if (returnText) {
-      Object.keys(xssFilter).forEach(key => {
-        returnText = returnText.replaceAll(xssFilter[key], key);
-      });
-    }
-    return returnText;
-  },
-  unFieldName(fieldName) {
-    if (fieldName) {
-      return this.unReplace(fieldName).replaceAll('"', '\\"');
-    }
-    return "";
-  },
-  isBlank(value) {
-    if (value === null) return true;
-    if (value === "") return true;
-    if (typeof value === "undefined") return true;
-    if (typeof value === "string" && (value === "" || value.replace(/\s/g, "") === "")) return true;
-    return false;
-  },
-  isUndefined(value) {
-    return typeof value === "undefined";
-  },
-  isFunction(value) {
-    return typeof value === "function";
-  },
-  isString(value) {
-    return typeof value === "string";
-  },
-  isNumber(value) {
-    if (this.isBlank(value)) {
-      return false;
-    }
-    value = +value;
-    return !isNaN(value);
-  },
-  isArray(value) {
-    return Array.isArray(value);
-  },
-  replaceXssField(field) {
-    field.name = this.replace(field.name);
-    field.label = this.replace(field.label);
-    return field;
-  },
-  getHashCode(str) {
-    let hash = 0;
-    if (str.length == 0) return hash;
-    for (let i = 0; i < str.length; i++) {
-      let tmpChar = str.charCodeAt(i);
-      hash = (hash << 5) - hash + tmpChar;
-      hash = hash & hash;
-    }
-    return String(hash).replaceAll(/-/g, "_");
-  },
-  isHiddenField(field) {
-    if (field.renderType === "hidden") {
-      return true;
-    }
+const replaceXss = inputText => {
+  let returnText = inputText;
+  if (returnText) {
+    Object.keys(xssFilter).forEach(key => {
+      returnText = returnText.replaceAll(key, xssFilter[key]);
+    });
+  }
+  return returnText;
+};
+exports.replaceXss = replaceXss;
+const hasOwnProp = (obj, key) => {
+  return obj.hasOwnProperty(key);
+};
+exports.hasOwnProp = hasOwnProp;
+const unReplace = inputText => {
+  let returnText = inputText;
+  if (returnText) {
+    Object.keys(xssFilter).forEach(key => {
+      returnText = returnText.replaceAll(xssFilter[key], key);
+    });
+  }
+  return returnText;
+};
+exports.unReplace = unReplace;
+const unFieldName = fieldName => {
+  if (fieldName) {
+    return (0, exports.unReplace)(fieldName).replaceAll('"', '\\"');
+  }
+  return "";
+};
+exports.unFieldName = unFieldName;
+const isBlank = value => {
+  if (value === null) return true;
+  if (value === "") return true;
+  if (typeof value === "undefined") return true;
+  if (typeof value === "string" && (value === "" || value.replace(/\s/g, "") === "")) return true;
+  return false;
+};
+exports.isBlank = isBlank;
+const isUndefined = value => {
+  return typeof value === "undefined";
+};
+exports.isUndefined = isUndefined;
+const isFunction = value => {
+  return typeof value === "function";
+};
+exports.isFunction = isFunction;
+const isString = value => {
+  return typeof value === "string";
+};
+exports.isString = isString;
+const isNumber = value => {
+  if ((0, exports.isBlank)(value)) {
     return false;
   }
+  value = +value;
+  return !isNaN(value);
 };
+exports.isNumber = isNumber;
+const isArray = value => {
+  return Array.isArray(value);
+};
+exports.isArray = isArray;
+/**
+ * 값있는지 여부 체크.
+ *
+ * @param {*} value
+ * @returns {boolean}
+ */
+const isEmpty = value => (0, exports.isUndefined)(value) || value == null; //_isEmpty(value);
+exports.isEmpty = isEmpty;
+/**
+ * tab render type check
+ *
+ * @param {FormField} field
+ * @returns {boolean} tab type 인지 여부
+ */
+const isTabType = field => {
+  return field && field.renderType === "tab";
+};
+exports.isTabType = isTabType;
+/**
+ * grid render type check
+ *
+ * @param {FormField} field
+ * @returns {boolean} grid type 인지 여부
+ */
+const isGridType = field => {
+  return field && field.renderType === "grid";
+};
+exports.isGridType = isGridType;
+const replaceXssField = field => {
+  field.$xssName = (0, exports.getXssFieldName)(field);
+  field.label = (0, exports.replaceXss)(field.label);
+  return field;
+};
+exports.replaceXssField = replaceXssField;
+/**
+ * 값을 무시하는 필드
+ *
+ * @param field formField
+ * @returns
+ */
+const ignoreValueField = field => {
+  return (0, exports.isGridType)(field.$parent) || (0, exports.isTabType)(field.$parent);
+};
+exports.ignoreValueField = ignoreValueField;
+/**
+ * grid field name xss repalce
+ *
+ * @param {FormField} field
+ * @returns {string} replace 된 field name
+ */
+const getXssFieldName = field => {
+  if ((0, exports.isUndefined)(field.$xssName)) {
+    let returnText = field.name;
+    if (returnText) {
+      Object.keys(xssFilter).forEach(key => {
+        returnText = returnText.replaceAll(key, "_");
+      });
+    }
+    return "df_" + returnText;
+  }
+  return field.$xssName;
+};
+exports.getXssFieldName = getXssFieldName;
+const getHashCode = str => {
+  let hash = 0;
+  if (str.length == 0) return hash;
+  for (let i = 0; i < str.length; i++) {
+    let tmpChar = str.charCodeAt(i);
+    hash = (hash << 5) - hash + tmpChar;
+    hash = hash & hash;
+  }
+  return String(hash).replaceAll(/-/g, "_");
+};
+exports.getHashCode = getHashCode;
+const isHiddenField = field => {
+  if (field.renderType === "hidden") {
+    return true;
+  }
+  return false;
+};
+exports.isHiddenField = isHiddenField;
+const templateToElement = htmlTemplate => {
+  const template = document.createElement("template");
+  template.innerHTML = htmlTemplate;
+  return template.content.firstElementChild;
+};
+exports.templateToElement = templateToElement;
+function isPlainObject(obj) {
+  // 객체가 아닌 경우 또는 null인 경우 false 반환
+  if (typeof obj !== "object" || obj === null) {
+    return false;
+  }
+  // 프로토타입 체인을 따라 Object 생성자를 찾음
+  let proto = obj;
+  while (Object.getPrototypeOf(proto) !== null) {
+    proto = Object.getPrototypeOf(proto);
+  }
+  // Object 생성자의 prototype과 같으면 Plain Object로 판단
+  return Object.getPrototypeOf(obj) === proto;
+}
+exports.isPlainObject = isPlainObject;
+function isObject(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+function isDate(value) {
+  return value instanceof Date && !isNaN(value.valueOf());
+}
+/**
+ * object merge
+ *
+ * @example
+ ```
+ merge({},{aaa:'bbb',ccc:'ddd'},{bbb:'bbb','aaa':'aaa'})) -> {"aaa": "aaa", "bbb": "bbb", "ccc": "ddd"}
+ ```
+ * @param {...any[]} value
+ * @returns {object}
+ */
+const merge = (...value) => {
+  let reval = value[0];
+  if (!isPlainObject(reval) || (0, exports.isEmpty)(reval)) {
+    return reval;
+  }
+  let i = 1;
+  if (Object.keys(reval).length > 0) {
+    i = 0;
+    reval = (0, exports.isArray)(reval) ? [] : {};
+  }
+  const argLen = value.length;
+  for (; i < argLen; i += 1) {
+    cloneDeep(reval, value[i]);
+  }
+  return reval;
+};
+exports.merge = merge;
+function trim(s) {
+  return s.replace(/^\s+|\s+$/g, "");
+}
+function cloneDeep(dst, src) {
+  if (isObject(src)) {
+    return cloneObjectDeep(dst, src);
+  }
+  if ((0, exports.isArray)(src)) {
+    return cloneArrayDeep(dst, src);
+  }
+  if (isDate(src)) {
+    return new src.constructor(src);
+  }
+  return src;
+}
+/*eslint no-param-reassign: "error"*/
+function cloneObjectDeep(dst, src) {
+  if ((0, exports.isFunction)(src)) {
+    return src;
+  }
+  for (const key of Object.keys(src)) {
+    const val = src[key];
+    if ((0, exports.isUndefined)(val)) {
+      continue;
+    }
+    if (val === null) {
+      dst[key] = val;
+    } else if ((0, exports.isFunction)(val)) {
+      dst[key] = val;
+    } else if ((0, exports.isEmpty)(dst[key])) {
+      dst[key] = cloneDeep((0, exports.isArray)(val) ? [] : {}, val);
+    } else if (!isObject(val)) {
+      dst[key] = val;
+    } else {
+      cloneDeep(dst[key], val);
+    }
+  }
+  return dst;
+}
+function cloneArrayDeep(dst, src) {
+  const isObj = isPlainObject(dst);
+  for (let i = 0; i < src.length; i += 1) {
+    const val = src[i];
+    let newVal;
+    if (val == null) {
+      newVal = val;
+    } else {
+      newVal = cloneDeep((0, exports.isArray)(val) ? [] : {}, val);
+    }
+    if (isObj) {
+      dst[i] = newVal;
+    } else {
+      dst.push(newVal);
+    }
+  }
+  return dst;
+}
 
 /***/ }),
 
@@ -3693,15 +4402,20 @@ ___CSS_LOADER_EXPORT___.push([module.id, `@charset "UTF-8";
 
 var ___CSS_LOADER_URL_IMPORT_0___ = new URL(/* asset import */ __webpack_require__(/*! data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI0IDI0IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjIwcHgiIGZpbGw9IiMwMDAwMDAiPjxnPjxyZWN0IGZpbGw9Im5vbmUiIGhlaWdodD0iMjQiIHdpZHRoPSIyNCIvPjwvZz48Zz48cGF0aCBkPSJNMTgsMTV2M0g2di0zSDR2M2MwLDEuMSwwLjksMiwyLDJoMTJjMS4xLDAsMi0wLjksMi0ydi0zSDE4eiBNMTcsMTFsLTEuNDEtMS40MUwxMywxMi4xN1Y0aC0ydjguMTdMOC40MSw5LjU5TDcsMTFsNSw1IEwxNywxMXoiLz48L2c+PC9zdmc+ */ "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI0IDI0IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjIwcHgiIGZpbGw9IiMwMDAwMDAiPjxnPjxyZWN0IGZpbGw9Im5vbmUiIGhlaWdodD0iMjQiIHdpZHRoPSIyNCIvPjwvZz48Zz48cGF0aCBkPSJNMTgsMTV2M0g2di0zSDR2M2MwLDEuMSwwLjksMiwyLDJoMTJjMS4xLDAsMi0wLjksMi0ydi0zSDE4eiBNMTcsMTFsLTEuNDEtMS40MUwxMywxMi4xN1Y0aC0ydjguMTdMOC40MSw5LjU5TDcsMTFsNSw1IEwxNywxMXoiLz48L2c+PC9zdmc+"), __webpack_require__.b);
 var ___CSS_LOADER_URL_IMPORT_1___ = new URL(/* asset import */ __webpack_require__(/*! data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjBweCIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjBweCIgZmlsbD0iIzAwMDAwMCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE2IDl2MTBIOFY5aDhtLTEuNS02aC01bC0xIDFINXYyaDE0VjRoLTMuNWwtMS0xek0xOCA3SDZ2MTJjMCAxLjEuOSAyIDIgMmg4YzEuMSAwIDItLjkgMi0yVjd6Ii8+PC9zdmc+ */ "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjBweCIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjBweCIgZmlsbD0iIzAwMDAwMCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE2IDl2MTBIOFY5aDhtLTEuNS02aC01bC0xIDFINXYyaDE0VjRoLTMuNWwtMS0xek0xOCA3SDZ2MTJjMCAxLjEuOSAyIDIgMmg4YzEuMSAwIDItLjkgMi0yVjd6Ii8+PC9zdmc+"), __webpack_require__.b);
-var ___CSS_LOADER_URL_IMPORT_2___ = new URL(/* asset import */ __webpack_require__(/*! data:image/svg+xml; base64, PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjAiPjxwYXRoIGQ9Im0yNDktMjA3LTQyLTQyIDIzMS0yMzEtMjMxLTIzMSA0Mi00MiAyMzEgMjMxIDIzMS0yMzEgNDIgNDItMjMxIDIzMSAyMzEgMjMxLTQyIDQyLTIzMS0yMzEtMjMxIDIzMVoiIHN0eWxlPSImIzEwOyAgICBmaWxsOiAjZmY3MzczOyYjMTA7Ii8+PC9zdmc+ */ "data:image/svg+xml; base64, PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjAiPjxwYXRoIGQ9Im0yNDktMjA3LTQyLTQyIDIzMS0yMzEtMjMxLTIzMSA0Mi00MiAyMzEgMjMxIDIzMS0yMzEgNDIgNDItMjMxIDIzMSAyMzEgMjMxLTQyIDQyLTIzMS0yMzEtMjMxIDIzMVoiIHN0eWxlPSImIzEwOyAgICBmaWxsOiAjZmY3MzczOyYjMTA7Ii8+PC9zdmc+"), __webpack_require__.b);
-var ___CSS_LOADER_URL_IMPORT_3___ = new URL(/* asset import */ __webpack_require__(/*! data:image/svg+xml; base64, PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHN0eWxlPSImIzEwOyAgICBmaWxsOiAjMTlhOTc0OyYjMTA7Ij48cGF0aCBkPSJNMzc4LTI0NiAxNTQtNDcwbDQzLTQzIDE4MSAxODEgMzg0LTM4NCA0MyA0My00MjcgNDI3WiIvPjwvc3ZnPg== */ "data:image/svg+xml; base64, PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHN0eWxlPSImIzEwOyAgICBmaWxsOiAjMTlhOTc0OyYjMTA7Ij48cGF0aCBkPSJNMzc4LTI0NiAxNTQtNDcwbDQzLTQzIDE4MSAxODEgMzg0LTM4NCA0MyA0My00MjcgNDI3WiIvPjwvc3ZnPg=="), __webpack_require__.b);
+var ___CSS_LOADER_URL_IMPORT_2___ = new URL(/* asset import */ __webpack_require__(/*! data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 height=%2720px%27 viewBox=%270 -960 960 960%27 width=%2720px%27 fill=%27%235f6368%27%3E%3Cpath d=%27M431-431H220.78v-98H431v-210.22h98V-529h210.22v98H529v210.22h-98V-431Z%27/%3E%3C/svg%3E */ "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 height=%2720px%27 viewBox=%270 -960 960 960%27 width=%2720px%27 fill=%27%235f6368%27%3E%3Cpath d=%27M431-431H220.78v-98H431v-210.22h98V-529h210.22v98H529v210.22h-98V-431Z%27/%3E%3C/svg%3E"), __webpack_require__.b);
+var ___CSS_LOADER_URL_IMPORT_3___ = new URL(/* asset import */ __webpack_require__(/*! data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 height=%2720px%27 viewBox=%270 -960 960 960%27 width=%2720px%27 fill=%27%235f6368%27%3E%3Cpath d=%27M291-221.91 221.91-291l189-189-189-189L291-738.09l189 189 189-189L738.09-669l-189 189 189 189L669-221.91l-189-189-189 189Z%27/%3E%3C/svg%3E */ "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 height=%2720px%27 viewBox=%270 -960 960 960%27 width=%2720px%27 fill=%27%235f6368%27%3E%3Cpath d=%27M291-221.91 221.91-291l189-189-189-189L291-738.09l189 189 189-189L738.09-669l-189 189 189 189L669-221.91l-189-189-189 189Z%27/%3E%3C/svg%3E"), __webpack_require__.b);
+var ___CSS_LOADER_URL_IMPORT_4___ = new URL(/* asset import */ __webpack_require__(/*! data:image/svg+xml; base64, PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjAiPjxwYXRoIGQ9Im0yNDktMjA3LTQyLTQyIDIzMS0yMzEtMjMxLTIzMSA0Mi00MiAyMzEgMjMxIDIzMS0yMzEgNDIgNDItMjMxIDIzMSAyMzEgMjMxLTQyIDQyLTIzMS0yMzEtMjMxIDIzMVoiIHN0eWxlPSImIzEwOyAgICBmaWxsOiAjZmY3MzczOyYjMTA7Ii8+PC9zdmc+ */ "data:image/svg+xml; base64, PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjAiPjxwYXRoIGQ9Im0yNDktMjA3LTQyLTQyIDIzMS0yMzEtMjMxLTIzMSA0Mi00MiAyMzEgMjMxIDIzMS0yMzEgNDIgNDItMjMxIDIzMSAyMzEgMjMxLTQyIDQyLTIzMS0yMzEtMjMxIDIzMVoiIHN0eWxlPSImIzEwOyAgICBmaWxsOiAjZmY3MzczOyYjMTA7Ii8+PC9zdmc+"), __webpack_require__.b);
+var ___CSS_LOADER_URL_IMPORT_5___ = new URL(/* asset import */ __webpack_require__(/*! data:image/svg+xml; base64, PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHN0eWxlPSImIzEwOyAgICBmaWxsOiAjMTlhOTc0OyYjMTA7Ij48cGF0aCBkPSJNMzc4LTI0NiAxNTQtNDcwbDQzLTQzIDE4MSAxODEgMzg0LTM4NCA0MyA0My00MjcgNDI3WiIvPjwvc3ZnPg== */ "data:image/svg+xml; base64, PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHN0eWxlPSImIzEwOyAgICBmaWxsOiAjMTlhOTc0OyYjMTA7Ij48cGF0aCBkPSJNMzc4LTI0NiAxNTQtNDcwbDQzLTQzIDE4MSAxODEgMzg0LTM4NCA0MyA0My00MjcgNDI3WiIvPjwvc3ZnPg=="), __webpack_require__.b);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_0___);
 var ___CSS_LOADER_URL_REPLACEMENT_1___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_1___);
 var ___CSS_LOADER_URL_REPLACEMENT_2___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_2___);
 var ___CSS_LOADER_URL_REPLACEMENT_3___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_3___);
+var ___CSS_LOADER_URL_REPLACEMENT_4___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_4___);
+var ___CSS_LOADER_URL_REPLACEMENT_5___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_5___);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `.dara-form {
+___CSS_LOADER_EXPORT___.push([module.id, `@charset "UTF-8";
+.dara-form {
   --border-color: #dfe1e5;
   --color-danger: #d9534f;
   --background-danger: #d9534f;
@@ -3720,6 +4434,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.dara-form {
   --input-bg: #fff;
   --input-color: #212529;
   --input-disabled-bg: #ebebeb;
+  --bg-grid-header: #f1f1f1;
 }
 
 body.dark .dara-form,
@@ -3742,6 +4457,7 @@ body.dark .dara-form,
   --input-bg: transparent;
   --input-color: #c6cddb;
   --input-disabled-bg: #878787;
+  --bg-grid-header: #878787;
 }
 
 .dara-form {
@@ -3762,6 +4478,15 @@ body.dark .dara-form,
 }
 .dara-form .txt-right {
   text-align: right;
+}
+.dara-form[data-df-mode=view] .form-field {
+  border-width: 0px;
+  border-color: transparent;
+  border-color: transparent;
+  outline: initial;
+}
+.dara-form[data-df-mode=view] .form-field:focus-visible, .dara-form[data-df-mode=view] .form-field:focus {
+  border-width: 0px;
 }
 .dara-form .df-hidden {
   max-height: 0vh !important;
@@ -3917,50 +4642,86 @@ body.dark .dara-form,
 }
 .dara-form .col-xs-1 {
   flex-basis: 8.33333333%;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 8.33333333%;
+  flex: 0 0 8.33333333%;
   max-width: 8.33333333%;
 }
 .dara-form .col-xs-2 {
   flex-basis: 16.66666667%;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 16.66666667%;
+  flex: 0 0 16.66666667%;
   max-width: 16.66666667%;
 }
 .dara-form .col-xs-3 {
   flex-basis: 25%;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 25%;
+  flex: 0 0 25%;
   max-width: 25%;
 }
 .dara-form .col-xs-4 {
   flex-basis: 33.33333333%;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 33.33333333%;
+  flex: 0 0 33.33333333%;
   max-width: 33.33333333%;
 }
 .dara-form .col-xs-5 {
   flex-basis: 41.66666667%;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 41.66666667%;
+  flex: 0 0 41.66666667%;
   max-width: 41.66666667%;
 }
 .dara-form .col-xs-6 {
   flex-basis: 50%;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 50%;
+  flex: 0 0 50%;
   max-width: 50%;
 }
 .dara-form .col-xs-7 {
   flex-basis: 58.33333333%;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 58.33333333%;
+  flex: 0 0 58.33333333%;
   max-width: 58.33333333%;
 }
 .dara-form .col-xs-8 {
   flex-basis: 66.66666667%;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 66.66666667%;
+  flex: 0 0 66.66666667%;
   max-width: 66.66666667%;
 }
 .dara-form .col-xs-9 {
   flex-basis: 75%;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 75%;
+  flex: 0 0 75%;
   max-width: 75%;
 }
 .dara-form .col-xs-10 {
   flex-basis: 83.33333333%;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 83.33333333%;
+  flex: 0 0 83.33333333%;
   max-width: 83.33333333%;
 }
 .dara-form .col-xs-11 {
   flex-basis: 91.66666667%;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 91.66666667%;
+  flex: 0 0 91.66666667%;
   max-width: 91.66666667%;
 }
 .dara-form .col-xs-12 {
   flex-basis: 100%;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 100%;
+  flex: 0 0 100%;
   max-width: 100%;
 }
 .dara-form .align-items-center {
@@ -3993,6 +4754,7 @@ body.dark .dara-form,
 }
 .dara-form .df-field-container {
   overflow: initial;
+  position: relative;
 }
 .dara-form .df-field-container > .df-row {
   margin-top: -10px;
@@ -4002,6 +4764,7 @@ body.dark .dara-form,
 }
 .dara-form .df-field-container .df-field {
   position: relative;
+  margin-right: 10px;
 }
 .dara-form .df-field-container .df-field .range-num {
   clear: both;
@@ -4107,18 +4870,30 @@ body.dark .dara-form,
   padding: 5px 10px;
   border-radius: calc(0.45rem - 1px);
   border: 1px solid var(--border-color);
+  background-color: var(--button-bg);
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 .dara-form .df-btn:hover {
   color: var(--font-hover-color);
   background-color: var(--button-bg-hover);
 }
+.dara-form .df-icon {
+  display: inline-block;
+  width: 21px; /* 아이콘의 너비 설정 */
+  height: 21px; /* 아이콘의 높이 설정 */
+  vertical-align: middle;
+}
+.dara-form .df-add-icon {
+  background-image: url(${___CSS_LOADER_URL_REPLACEMENT_2___});
+}
+.dara-form .df-remove-icon {
+  background-image: url(${___CSS_LOADER_URL_REPLACEMENT_3___});
+}
 .dara-form .form-group {
   display: -ms-flexbox;
   display: -webkit-box;
   display: flex;
-  -ms-flex: 0 1 auto;
-  -webkit-box-flex: 0;
-  flex: 0 1 auto;
   -ms-flex-direction: row;
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
@@ -4127,6 +4902,8 @@ body.dark .dara-form,
   flex-wrap: wrap;
   margin-top: var(--field-margin-top);
   margin-bottom: 0px;
+  margin-right: 0px !important;
+  margin-left: 0px !important;
 }
 .dara-form .form-group:last-child {
   margin-bottom: 0px;
@@ -4175,7 +4952,7 @@ body.dark .dara-form,
 }
 .dara-form .form-group.invalid > .df-field-container.required > .df-field .help-icon {
   display: block;
-  background-image: url(${___CSS_LOADER_URL_REPLACEMENT_2___});
+  background-image: url(${___CSS_LOADER_URL_REPLACEMENT_4___});
 }
 .dara-form .form-group.invalid .help-message {
   display: block;
@@ -4183,7 +4960,7 @@ body.dark .dara-form,
 }
 .dara-form .form-group.valid > .df-field-container.required > .df-field .help-icon {
   display: block;
-  background-image: url(${___CSS_LOADER_URL_REPLACEMENT_3___});
+  background-image: url(${___CSS_LOADER_URL_REPLACEMENT_5___});
 }
 .dara-form .form-group .file-label {
   border: 1px solid var(--border-color);
@@ -4197,7 +4974,104 @@ body.dark .dara-form,
 }
 .dara-form .form-group .file-label:hover {
   background-color: var(--button-bg-hover);
-}`, "",{"version":3,"sources":["webpack://./style/dara.form.scss"],"names":[],"mappings":"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","sourcesContent":["$sizes: 8.33333333%, 16.66666667%, 25%, 33.33333333%, 41.66666667%, 50%, 58.33333333%, 66.66666667%, 75%, 83.33333333%, 91.66666667%, 100%;\r\n\r\n@mixin rowFlex() {\r\n  &.top {\r\n    flex-direction: column;\r\n    > div {\r\n      max-width: 100% !important;\r\n    }\r\n  }\r\n\r\n  &.right {\r\n    -ms-flex-direction: row-reverse !important;\r\n    -webkit-box-orient: horizontal !important;\r\n    -webkit-box-direction: reverse !important;\r\n    flex-direction: row-reverse !important;\r\n  }\r\n\r\n  &.bottom {\r\n    flex-direction: column-reverse !important;\r\n    > div {\r\n      max-width: 100% !important;\r\n    }\r\n  }\r\n}\r\n\r\n.dara-form {\r\n  --border-color: #dfe1e5;\r\n  --color-danger: #d9534f;\r\n  --background-danger: #d9534f;\r\n  --font-color: #686868;\r\n  --font-hover-color: #3a3d41;\r\n  --invalid-font-color: #ff4136;\r\n  --invalid-border-color: #ffb6b4;\r\n  --invalid-background-color: #fdd;\r\n  --button-bg: #f6f6f6;\r\n  --button-bg-hover: #ebebeb;\r\n  --tab-bg: #f6f6f6;\r\n  --tab-bg-hover: #ebebeb;\r\n  --tooltip-background: #3e3e3e;\r\n  --tooltip-color: #fff;\r\n  --field-margin-top: 10px;\r\n  --input-bg: #fff;\r\n  --input-color: #212529;\r\n  --input-disabled-bg: #ebebeb;\r\n}\r\n\r\nbody.dark .dara-form,\r\n.dara-form.dark {\r\n  --border-color: #41444c;\r\n  --color-danger: #d9534f;\r\n  --background-danger: #d9534f;\r\n  --font-color: #b9bdc1;\r\n  --font-hover-color: #f5f3f3;\r\n  --invalid-font-color: #ff4136;\r\n  --invalid-border-color: #ffb6b4;\r\n  --invalid-background-color: #fdd;\r\n  --button-bg: #435ebe;\r\n  --button-bg-hover: #3950a2;\r\n  --tab-bg: #23418f;\r\n  --tab-bg-hover: #516db1;\r\n  --tooltip-background: #3e3e3e;\r\n  --tooltip-color: #fff;\r\n  --field-margin-top: 10px;\r\n  --input-bg: transparent;\r\n  --input-color: #c6cddb;\r\n  --input-disabled-bg: #878787;\r\n}\r\n\r\n.dara-form {\r\n  padding: 0px;\r\n  margin-top: 10px;\r\n  color: var(--font-color);\r\n\r\n  *,\r\n  ::after,\r\n  ::before {\r\n    box-sizing: border-box;\r\n  }\r\n\r\n  .txt {\r\n    &-left {\r\n      text-align: left;\r\n    }\r\n\r\n    &-center {\r\n      text-align: center;\r\n    }\r\n\r\n    &-right {\r\n      text-align: right;\r\n    }\r\n  }\r\n\r\n  .df-hidden {\r\n    max-height: 0vh !important;\r\n    width: 0px;\r\n    visibility: collapse;\r\n    display: none !important;\r\n    padding: 0px !important;\r\n    margin: 0px !important;\r\n  }\r\n\r\n  input,\r\n  select,\r\n  textarea {\r\n    background-color: transparent;\r\n    color: var(--font-color);\r\n    &[disabled] {\r\n      background-color: var(--input-disabled-bg);\r\n      opacity: 0.8;\r\n    }\r\n  }\r\n\r\n  .df-label {\r\n    position: relative;\r\n    font-weight: 700;\r\n    vertical-align: top;\r\n    padding: 5px 15px 0px 0px;\r\n    overflow: initial;\r\n    // 확인할것.\r\n    white-space: nowrap;\r\n    text-overflow: ellipsis;\r\n    word-break: break-all;\r\n\r\n    .required {\r\n      &::after {\r\n        content: \"*\";\r\n        vertical-align: middle;\r\n      }\r\n\r\n      color: var(--color-danger);\r\n    }\r\n\r\n    .df-tooltip {\r\n      visibility: visible;\r\n      color: var(--tooltip-color);\r\n      background: var(--tooltip-background);\r\n      width: 16px;\r\n      height: 16px;\r\n      border-radius: 8px;\r\n      text-align: center;\r\n      line-height: 16px;\r\n      margin: 0 5px;\r\n      font-size: 12px;\r\n      cursor: help;\r\n      position: relative;\r\n      display: inline-block;\r\n\r\n      .tooltip {\r\n        display: none;\r\n        text-align: initial;\r\n        background: var(--tooltip-background);\r\n        border-radius: 5px;\r\n        color: var(--tooltip-color);\r\n        padding: 10px 5px;\r\n        position: absolute;\r\n        z-index: 2;\r\n        left: -10px;\r\n        min-width: max-content;\r\n        text-shadow: none;\r\n        cursor: default;\r\n      }\r\n\r\n      &:hover .tooltip {\r\n        display: block;\r\n      }\r\n    }\r\n  }\r\n\r\n  .form-field {\r\n    border: 1px solid var(--border-color);\r\n    display: block;\r\n    width: 100%;\r\n    padding: 0.375rem 0.75rem;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    border-radius: 4px;\r\n    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;\r\n    background-color: var(--input-bg);\r\n    background-clip: padding-box;\r\n    color: var(--input-color);\r\n\r\n    &[type=\"radio\"],\r\n    &[type=\"checkbox\"] {\r\n      width: 14px;\r\n      display: inline;\r\n      min-height: 0px;\r\n      padding: 0px;\r\n      margin: 0px;\r\n      vertical-align: middle;\r\n    }\r\n\r\n    &.dropdown {\r\n      appearance: none;\r\n      -webkit-appearance: none;\r\n      -moz-appearance: none;\r\n    }\r\n\r\n    &.textarea {\r\n      padding-right: 0px;\r\n    }\r\n\r\n    &[type=\"number\"] {\r\n      padding-right: 3px;\r\n    }\r\n\r\n    &.file {\r\n      display: none;\r\n    }\r\n\r\n    &.range {\r\n      padding: 0px;\r\n    }\r\n  }\r\n\r\n  .df-row {\r\n    display: -ms-flexbox;\r\n    display: -webkit-box;\r\n    display: flex;\r\n    -ms-flex: 0 1 auto;\r\n    -webkit-box-flex: 0;\r\n    flex: 0 1 auto;\r\n    -ms-flex-direction: row;\r\n    -webkit-box-orient: horizontal;\r\n    -webkit-box-direction: normal;\r\n    flex-direction: row;\r\n    -ms-flex-wrap: wrap;\r\n    flex-wrap: wrap;\r\n\r\n    &.vertical {\r\n      display: block;\r\n    }\r\n\r\n    &.horizontal {\r\n      -webkit-box-flex: 0;\r\n      -ms-flex: 0 0 auto;\r\n      flex: 0 0 auto;\r\n      width: auto;\r\n      max-width: none;\r\n\r\n      > .form-group > .empty {\r\n        display: none !important;\r\n      }\r\n    }\r\n\r\n    @include rowFlex();\r\n  }\r\n\r\n  @each $size in $sizes {\r\n    $i: index($sizes, $size);\r\n    $className: \".col-xs-#{$i}\";\r\n    #{$className} {\r\n      flex-basis: $size;\r\n      max-width: $size;\r\n    }\r\n  }\r\n\r\n  .align-items-center {\r\n    -webkit-box-align: center !important;\r\n    -ms-flex-align: center !important;\r\n    align-items: center !important;\r\n  }\r\n\r\n  .col-xs {\r\n    -webkit-flex-grow: 1;\r\n    -ms-flex-positive: 1;\r\n    -webkit-box-flex: 1;\r\n    flex-grow: 1;\r\n    -ms-flex-preferred-size: 0;\r\n    flex-basis: 0;\r\n    max-width: 100%;\r\n  }\r\n\r\n  .col-auto {\r\n    -webkit-box-flex: 0;\r\n    -ms-flex: 0 0 auto;\r\n    flex: 0 0 auto;\r\n    width: auto;\r\n    max-width: none;\r\n  }\r\n\r\n  .col-fix {\r\n    flex: none;\r\n  }\r\n\r\n  .col-full {\r\n    flex: 1;\r\n    overflow: auto;\r\n  }\r\n\r\n  .df-field-container {\r\n    overflow: initial;\r\n    > .df-row {\r\n      margin-top: -10px;\r\n    }\r\n\r\n    > div + .df-row {\r\n      margin-top: 0px;\r\n    }\r\n    .df-field {\r\n      position: relative;\r\n\r\n      .range-num {\r\n        clear: both;\r\n        display: block;\r\n        width: 100%;\r\n        text-align: left;\r\n      }\r\n\r\n      .file-wrapper {\r\n        border: 1px solid var(--border-color);\r\n        text-align: center;\r\n        display: block;\r\n        width: 100%;\r\n        padding: 0.375rem 0.75rem;\r\n        font-weight: 400;\r\n        line-height: 1.5;\r\n        background-clip: padding-box;\r\n        border-radius: 4px;\r\n        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;\r\n      }\r\n    }\r\n  }\r\n\r\n  .dara-file-list {\r\n    .file-icon {\r\n      width: 20px;\r\n      height: 20px;\r\n      display: inline-block;\r\n      vertical-align: middle;\r\n      cursor: pointer;\r\n\r\n      &:hover {\r\n        background-color: var(--button-bg-hover);\r\n      }\r\n\r\n      &.download {\r\n        background-image: url(\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI0IDI0IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjIwcHgiIGZpbGw9IiMwMDAwMDAiPjxnPjxyZWN0IGZpbGw9Im5vbmUiIGhlaWdodD0iMjQiIHdpZHRoPSIyNCIvPjwvZz48Zz48cGF0aCBkPSJNMTgsMTV2M0g2di0zSDR2M2MwLDEuMSwwLjksMiwyLDJoMTJjMS4xLDAsMi0wLjksMi0ydi0zSDE4eiBNMTcsMTFsLTEuNDEtMS40MUwxMywxMi4xN1Y0aC0ydjguMTdMOC40MSw5LjU5TDcsMTFsNSw1IEwxNywxMXoiLz48L2c+PC9zdmc+\");\r\n      }\r\n\r\n      &.remove {\r\n        background-image: url(\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjBweCIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjBweCIgZmlsbD0iIzAwMDAwMCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE2IDl2MTBIOFY5aDhtLTEuNS02aC01bC0xIDFINXYyaDE0VjRoLTMuNWwtMS0xek0xOCA3SDZ2MTJjMCAxLjEuOSAyIDIgMmg4YzEuMSAwIDItLjkgMi0yVjd6Ii8+PC9zdmc+\");\r\n      }\r\n    }\r\n\r\n    .file-name {\r\n      text-overflow: ellipsis;\r\n      white-space: nowrap;\r\n      word-wrap: normal;\r\n      overflow: hidden;\r\n      display: inline-block;\r\n      vertical-align: middle;\r\n      width: calc(100% - 55px);\r\n    }\r\n  }\r\n\r\n  .field-group {\r\n    .field.vertical {\r\n      > * {\r\n        display: block;\r\n      }\r\n    }\r\n  }\r\n\r\n  .tab-header {\r\n    list-style: none;\r\n    margin: 0px;\r\n    padding: 0px;\r\n\r\n    display: flex;\r\n    line-height: 1.3;\r\n    width: 100%;\r\n    border-bottom: 1px solid var(--border-color);\r\n\r\n    &.tab-al {\r\n      &-left {\r\n        justify-content: left;\r\n      }\r\n      &-right {\r\n        justify-content: right;\r\n      }\r\n      &-center {\r\n        justify-content: center;\r\n      }\r\n    }\r\n\r\n    > .tab-item {\r\n      list-style: none;\r\n      float: left;\r\n      position: relative;\r\n      top: 0;\r\n      margin: 1px 0.4em 0 0;\r\n      padding: 0;\r\n      white-space: nowrap;\r\n\r\n      &.active {\r\n        a {\r\n          color: var(--font-hover-color);\r\n          background-color: var(--tab-bg);\r\n        }\r\n      }\r\n\r\n      a {\r\n        border-top-left-radius: calc(0.45rem - 1px);\r\n        border-top-right-radius: calc(0.45rem - 1px);\r\n        border: 1px solid transparent;\r\n        border-bottom-width: 0;\r\n        float: left;\r\n        padding: 0.5em 1em;\r\n        text-decoration: none;\r\n        color: var(--font-color);\r\n        height: 30px;\r\n        line-height: 15px;\r\n\r\n        &:hover {\r\n          background-color: var(--tab-bg-hover);\r\n          border: 1px solid var(--border-color);\r\n          border-bottom-width: 0;\r\n        }\r\n      }\r\n    }\r\n  }\r\n\r\n  .df-tab-body {\r\n    .tab-panel {\r\n      display: none;\r\n\r\n      &.active {\r\n        display: block;\r\n      }\r\n    }\r\n  }\r\n\r\n  .df-btn {\r\n    padding: 5px 10px;\r\n    border-radius: calc(0.45rem - 1px);\r\n    border: 1px solid var(--border-color);\r\n\r\n    &:hover {\r\n      color: var(--font-hover-color);\r\n      background-color: var(--button-bg-hover);\r\n    }\r\n  }\r\n\r\n  .form-group {\r\n    display: -ms-flexbox;\r\n    display: -webkit-box;\r\n    display: flex;\r\n    -ms-flex: 0 1 auto;\r\n    -webkit-box-flex: 0;\r\n    flex: 0 1 auto;\r\n    -ms-flex-direction: row;\r\n    -webkit-box-orient: horizontal;\r\n    -webkit-box-direction: normal;\r\n    flex-direction: row;\r\n    -ms-flex-wrap: wrap;\r\n    flex-wrap: wrap;\r\n    margin-top: var(--field-margin-top);\r\n    margin-bottom: 0px;\r\n\r\n    &:last-child {\r\n      margin-bottom: 0px;\r\n    }\r\n\r\n    @include rowFlex();\r\n\r\n    .help-message {\r\n      display: none;\r\n    }\r\n\r\n    .help-icon {\r\n      background-repeat: no-repeat;\r\n      background-position-y: center;\r\n\r\n      &.form-field {\r\n        background-position-x: calc(100% - 15px);\r\n      }\r\n\r\n      &.dara-icon {\r\n        display: none;\r\n        position: absolute;\r\n        z-index: 1;\r\n        top: 0px;\r\n        right: 0px;\r\n        height: 100%;\r\n        width: 20px;\r\n        margin-right: 15px;\r\n      }\r\n    }\r\n\r\n    &.invalid {\r\n      .form-field {\r\n        border-color: var(--invalid-border-color);\r\n        outline-color: var(--invalid-border-color);\r\n      }\r\n\r\n      > .df-field-container.required > .df-field .help-icon {\r\n        display: block;\r\n        background-image: url(\"data:image/svg+xml; base64, PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjAiPjxwYXRoIGQ9Im0yNDktMjA3LTQyLTQyIDIzMS0yMzEtMjMxLTIzMSA0Mi00MiAyMzEgMjMxIDIzMS0yMzEgNDIgNDItMjMxIDIzMSAyMzEgMjMxLTQyIDQyLTIzMS0yMzEtMjMxIDIzMVoiIHN0eWxlPSImIzEwOyAgICBmaWxsOiAjZmY3MzczOyYjMTA7Ii8+PC9zdmc+\");\r\n      }\r\n\r\n      .help-message {\r\n        display: block;\r\n        color: var(--invalid-font-color);\r\n      }\r\n    }\r\n\r\n    &.valid {\r\n      > .df-field-container.required {\r\n        > .df-field .help-icon {\r\n          display: block;\r\n          background-image: url(\"data:image/svg+xml; base64, PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHN0eWxlPSImIzEwOyAgICBmaWxsOiAjMTlhOTc0OyYjMTA7Ij48cGF0aCBkPSJNMzc4LTI0NiAxNTQtNDcwbDQzLTQzIDE4MSAxODEgMzg0LTM4NCA0MyA0My00MjcgNDI3WiIvPjwvc3ZnPg==\");\r\n        }\r\n      }\r\n    }\r\n\r\n    .file-label {\r\n      border: 1px solid var(--border-color);\r\n      display: inline;\r\n      width: 100%;\r\n      padding: 3px 15px;\r\n      line-height: 1;\r\n      background-clip: padding-box;\r\n      border-radius: 4px;\r\n      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;\r\n\r\n      &:hover {\r\n        background-color: var(--button-bg-hover);\r\n      }\r\n    }\r\n  }\r\n}\r\n"],"sourceRoot":""}]);
+}
+.dara-form .df-grid-field {
+  margin-right: 10px;
+}
+.dara-form .df-grid-field .df-grid-btn-area {
+  border: 1px solid var(--border-color);
+  padding: 3px;
+}
+.dara-form .df-grid-field .df-grid-container {
+  width: 100%;
+  height: auto;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+}
+.dara-form .df-grid-field .df-grid-container .df-btn {
+  padding: 3px 5px;
+}
+.dara-form .df-grid-field .df-grid-container .df-grid {
+  width: 100%;
+  border-top-width: 0px;
+  border-collapse: collapse;
+}
+.dara-form .df-grid-field .df-grid-container .df-grid > thead th {
+  position: sticky;
+  top: 0px;
+  z-index: 10;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-grid-header);
+  text-align: center;
+}
+.dara-form .df-grid-field .df-grid-container .df-grid .help-message {
+  display: none;
+}
+.dara-form .df-grid-field .df-grid-container .df-grid td,
+.dara-form .df-grid-field .df-grid-container .df-grid th {
+  padding: 3px 5px;
+}
+.dara-form .df-grid-field .df-grid-container .df-grid .help-icon {
+  background-repeat: no-repeat;
+  background-position-y: center;
+}
+.dara-form .df-grid-field .df-grid-container .df-grid .help-icon.form-field {
+  background-position-x: calc(100% - 15px);
+}
+.dara-form .df-grid-field .df-grid-container .df-grid .help-icon.dara-icon {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  top: 0px;
+  right: 0px;
+  height: 100%;
+  width: 20px;
+  margin-right: 15px;
+}
+.dara-form .df-grid-field .df-grid-container .df-grid .grid-column {
+  position: relative;
+}
+.dara-form .df-grid-field .df-grid-container .df-grid .invalid .form-field {
+  border-color: var(--invalid-border-color);
+  outline-color: var(--invalid-border-color);
+}
+.dara-form .df-grid-field .df-grid-container .df-grid .invalid > .grid-column.required .df-field .help-icon {
+  display: block;
+  background-image: url(${___CSS_LOADER_URL_REPLACEMENT_4___});
+}
+.dara-form .df-grid-field .df-grid-container .df-grid .invalid .help-message {
+  display: block;
+  position: absolute;
+  border: 1px solid var(--invalid-border-color);
+  border-color: var(--invalid-border-color) transparent transparent transparent;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 270px;
+  padding: 5px 5px;
+  border-radius: 0.4rem;
+  z-index: 2;
+  background-color: var(--invalid-background-color);
+  color: var(--invalid-font-color);
+}
+.dara-form .df-grid-field .df-grid-container .df-grid .invalid .help-message::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border: 7px solid transparent;
+  border-bottom-color: var(--invalid-border-color);
+  border-top: 0;
+  border-left: 0;
+  margin-left: -3.5px;
+  margin-top: -7px;
+}
+.dara-form .df-grid-field .df-grid-container .df-grid .valid > .grid-column.required .df-field .help-icon {
+  display: block;
+  background-image: url(${___CSS_LOADER_URL_REPLACEMENT_5___});
+}`, "",{"version":3,"sources":["webpack://./style/dara.form.scss"],"names":[],"mappings":"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","sourcesContent":["$sizes: 8.33333333%, 16.66666667%, 25%, 33.33333333%, 41.66666667%, 50%, 58.33333333%, 66.66666667%, 75%, 83.33333333%, 91.66666667%, 100%;\r\n\r\n@mixin rowFlex() {\r\n  &.top {\r\n    flex-direction: column;\r\n    > div {\r\n      max-width: 100% !important;\r\n    }\r\n  }\r\n\r\n  &.right {\r\n    -ms-flex-direction: row-reverse !important;\r\n    -webkit-box-orient: horizontal !important;\r\n    -webkit-box-direction: reverse !important;\r\n    flex-direction: row-reverse !important;\r\n  }\r\n\r\n  &.bottom {\r\n    flex-direction: column-reverse !important;\r\n    > div {\r\n      max-width: 100% !important;\r\n    }\r\n  }\r\n}\r\n\r\n.dara-form {\r\n  --border-color: #dfe1e5;\r\n  --color-danger: #d9534f;\r\n  --background-danger: #d9534f;\r\n  --font-color: #686868;\r\n  --font-hover-color: #3a3d41;\r\n  --invalid-font-color: #ff4136;\r\n  --invalid-border-color: #ffb6b4;\r\n  --invalid-background-color: #fdd;\r\n  --button-bg: #f6f6f6;\r\n  --button-bg-hover: #ebebeb;\r\n  --tab-bg: #f6f6f6;\r\n  --tab-bg-hover: #ebebeb;\r\n  --tooltip-background: #3e3e3e;\r\n  --tooltip-color: #fff;\r\n  --field-margin-top: 10px;\r\n  --input-bg: #fff;\r\n  --input-color: #212529;\r\n  --input-disabled-bg: #ebebeb;\r\n  --bg-grid-header: #f1f1f1;\r\n}\r\n\r\nbody.dark .dara-form,\r\n.dara-form.dark {\r\n  --border-color: #41444c;\r\n  --color-danger: #d9534f;\r\n  --background-danger: #d9534f;\r\n  --font-color: #b9bdc1;\r\n  --font-hover-color: #f5f3f3;\r\n  --invalid-font-color: #ff4136;\r\n  --invalid-border-color: #ffb6b4;\r\n  --invalid-background-color: #fdd;\r\n  --button-bg: #435ebe;\r\n  --button-bg-hover: #3950a2;\r\n  --tab-bg: #23418f;\r\n  --tab-bg-hover: #516db1;\r\n  --tooltip-background: #3e3e3e;\r\n  --tooltip-color: #fff;\r\n  --field-margin-top: 10px;\r\n  --input-bg: transparent;\r\n  --input-color: #c6cddb;\r\n  --input-disabled-bg: #878787;\r\n  --bg-grid-header: #878787;\r\n}\r\n\r\n.dara-form {\r\n  padding: 0px;\r\n  margin-top: 10px;\r\n  color: var(--font-color);\r\n\r\n  *,\r\n  ::after,\r\n  ::before {\r\n    box-sizing: border-box;\r\n  }\r\n\r\n  .txt {\r\n    &-left {\r\n      text-align: left;\r\n    }\r\n\r\n    &-center {\r\n      text-align: center;\r\n    }\r\n\r\n    &-right {\r\n      text-align: right;\r\n    }\r\n  }\r\n\r\n  &[data-df-mode=\"view\"] {\r\n    .form-field {\r\n      border-width: 0px;\r\n      border-color: transparent;\r\n      border-color: transparent;\r\n      outline: initial;\r\n\r\n      &:focus-visible,\r\n      &:focus {\r\n        border-width: 0px;\r\n      }\r\n    }\r\n  }\r\n\r\n  .df-hidden {\r\n    max-height: 0vh !important;\r\n    width: 0px;\r\n    visibility: collapse;\r\n    display: none !important;\r\n    padding: 0px !important;\r\n    margin: 0px !important;\r\n  }\r\n\r\n  input,\r\n  select,\r\n  textarea {\r\n    background-color: transparent;\r\n    color: var(--font-color);\r\n    &[disabled] {\r\n      background-color: var(--input-disabled-bg);\r\n      opacity: 0.8;\r\n    }\r\n  }\r\n\r\n  .df-label {\r\n    position: relative;\r\n    font-weight: 700;\r\n    vertical-align: top;\r\n    padding: 5px 15px 0px 0px;\r\n    overflow: initial;\r\n    // 확인할것.\r\n    white-space: nowrap;\r\n    text-overflow: ellipsis;\r\n    word-break: break-all;\r\n\r\n    .required {\r\n      &::after {\r\n        content: \"*\";\r\n        vertical-align: middle;\r\n      }\r\n\r\n      color: var(--color-danger);\r\n    }\r\n\r\n    .df-tooltip {\r\n      visibility: visible;\r\n      color: var(--tooltip-color);\r\n      background: var(--tooltip-background);\r\n      width: 16px;\r\n      height: 16px;\r\n      border-radius: 8px;\r\n      text-align: center;\r\n      line-height: 16px;\r\n      margin: 0 5px;\r\n      font-size: 12px;\r\n      cursor: help;\r\n      position: relative;\r\n      display: inline-block;\r\n\r\n      .tooltip {\r\n        display: none;\r\n        text-align: initial;\r\n        background: var(--tooltip-background);\r\n        border-radius: 5px;\r\n        color: var(--tooltip-color);\r\n        padding: 10px 5px;\r\n        position: absolute;\r\n        z-index: 2;\r\n        left: -10px;\r\n        min-width: max-content;\r\n        text-shadow: none;\r\n        cursor: default;\r\n      }\r\n\r\n      &:hover .tooltip {\r\n        display: block;\r\n      }\r\n    }\r\n  }\r\n\r\n  .form-field {\r\n    border: 1px solid var(--border-color);\r\n    display: block;\r\n    width: 100%;\r\n    padding: 0.375rem 0.75rem;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    border-radius: 4px;\r\n    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;\r\n    background-color: var(--input-bg);\r\n    background-clip: padding-box;\r\n    color: var(--input-color);\r\n\r\n    &[type=\"radio\"],\r\n    &[type=\"checkbox\"] {\r\n      width: 14px;\r\n      display: inline;\r\n      min-height: 0px;\r\n      padding: 0px;\r\n      margin: 0px;\r\n      vertical-align: middle;\r\n    }\r\n\r\n    &.dropdown {\r\n      appearance: none;\r\n      -webkit-appearance: none;\r\n      -moz-appearance: none;\r\n    }\r\n\r\n    &.textarea {\r\n      padding-right: 0px;\r\n    }\r\n\r\n    &[type=\"number\"] {\r\n      padding-right: 3px;\r\n    }\r\n\r\n    &.file {\r\n      display: none;\r\n    }\r\n\r\n    &.range {\r\n      padding: 0px;\r\n    }\r\n  }\r\n\r\n  .df-row {\r\n    display: -ms-flexbox;\r\n    display: -webkit-box;\r\n    display: flex;\r\n    -ms-flex: 0 1 auto;\r\n    -webkit-box-flex: 0;\r\n    flex: 0 1 auto;\r\n    -ms-flex-direction: row;\r\n    -webkit-box-orient: horizontal;\r\n    -webkit-box-direction: normal;\r\n    flex-direction: row;\r\n    -ms-flex-wrap: wrap;\r\n    flex-wrap: wrap;\r\n\r\n    &.vertical {\r\n      display: block;\r\n    }\r\n\r\n    &.horizontal {\r\n      -webkit-box-flex: 0;\r\n      -ms-flex: 0 0 auto;\r\n      flex: 0 0 auto;\r\n      width: auto;\r\n      max-width: none;\r\n\r\n      > .form-group > .empty {\r\n        display: none !important;\r\n      }\r\n    }\r\n\r\n    @include rowFlex();\r\n  }\r\n\r\n  @each $size in $sizes {\r\n    $i: index($sizes, $size);\r\n    $className: \".col-xs-#{$i}\";\r\n    #{$className} {\r\n      flex-basis: $size;\r\n      -webkit-box-flex: 0;\r\n      -ms-flex: 0 0 $size;\r\n      flex: 0 0 $size;\r\n      max-width: $size;\r\n    }\r\n  }\r\n\r\n  .align-items-center {\r\n    -webkit-box-align: center !important;\r\n    -ms-flex-align: center !important;\r\n    align-items: center !important;\r\n  }\r\n\r\n  .col-xs {\r\n    -webkit-flex-grow: 1;\r\n    -ms-flex-positive: 1;\r\n    -webkit-box-flex: 1;\r\n    flex-grow: 1;\r\n    -ms-flex-preferred-size: 0;\r\n    flex-basis: 0;\r\n    max-width: 100%;\r\n  }\r\n\r\n  .col-auto {\r\n    -webkit-box-flex: 0;\r\n    -ms-flex: 0 0 auto;\r\n    flex: 0 0 auto;\r\n    width: auto;\r\n    max-width: none;\r\n  }\r\n\r\n  .col-fix {\r\n    flex: none;\r\n  }\r\n\r\n  .col-full {\r\n    flex: 1;\r\n    overflow: auto;\r\n  }\r\n\r\n  .df-field-container {\r\n    overflow: initial;\r\n    position: relative;\r\n    > .df-row {\r\n      margin-top: -10px;\r\n    }\r\n\r\n    > div + .df-row {\r\n      margin-top: 0px;\r\n    }\r\n    .df-field {\r\n      position: relative;\r\n      margin-right: 10px;\r\n\r\n      .range-num {\r\n        clear: both;\r\n        display: block;\r\n        width: 100%;\r\n        text-align: left;\r\n      }\r\n\r\n      .file-wrapper {\r\n        border: 1px solid var(--border-color);\r\n        text-align: center;\r\n        display: block;\r\n        width: 100%;\r\n        padding: 0.375rem 0.75rem;\r\n        font-weight: 400;\r\n        line-height: 1.5;\r\n        background-clip: padding-box;\r\n        border-radius: 4px;\r\n        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;\r\n      }\r\n    }\r\n  }\r\n\r\n  .dara-file-list {\r\n    .file-icon {\r\n      width: 20px;\r\n      height: 20px;\r\n      display: inline-block;\r\n      vertical-align: middle;\r\n      cursor: pointer;\r\n\r\n      &:hover {\r\n        background-color: var(--button-bg-hover);\r\n      }\r\n\r\n      &.download {\r\n        background-image: url(\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI0IDI0IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjIwcHgiIGZpbGw9IiMwMDAwMDAiPjxnPjxyZWN0IGZpbGw9Im5vbmUiIGhlaWdodD0iMjQiIHdpZHRoPSIyNCIvPjwvZz48Zz48cGF0aCBkPSJNMTgsMTV2M0g2di0zSDR2M2MwLDEuMSwwLjksMiwyLDJoMTJjMS4xLDAsMi0wLjksMi0ydi0zSDE4eiBNMTcsMTFsLTEuNDEtMS40MUwxMywxMi4xN1Y0aC0ydjguMTdMOC40MSw5LjU5TDcsMTFsNSw1IEwxNywxMXoiLz48L2c+PC9zdmc+\");\r\n      }\r\n\r\n      &.remove {\r\n        background-image: url(\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjBweCIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjBweCIgZmlsbD0iIzAwMDAwMCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE2IDl2MTBIOFY5aDhtLTEuNS02aC01bC0xIDFINXYyaDE0VjRoLTMuNWwtMS0xek0xOCA3SDZ2MTJjMCAxLjEuOSAyIDIgMmg4YzEuMSAwIDItLjkgMi0yVjd6Ii8+PC9zdmc+\");\r\n      }\r\n    }\r\n\r\n    .file-name {\r\n      text-overflow: ellipsis;\r\n      white-space: nowrap;\r\n      word-wrap: normal;\r\n      overflow: hidden;\r\n      display: inline-block;\r\n      vertical-align: middle;\r\n      width: calc(100% - 55px);\r\n    }\r\n  }\r\n\r\n  .field-group {\r\n    .field.vertical {\r\n      > * {\r\n        display: block;\r\n      }\r\n    }\r\n  }\r\n\r\n  .tab-header {\r\n    list-style: none;\r\n    margin: 0px;\r\n    padding: 0px;\r\n\r\n    display: flex;\r\n    line-height: 1.3;\r\n    width: 100%;\r\n    border-bottom: 1px solid var(--border-color);\r\n\r\n    &.tab-al {\r\n      &-left {\r\n        justify-content: left;\r\n      }\r\n      &-right {\r\n        justify-content: right;\r\n      }\r\n      &-center {\r\n        justify-content: center;\r\n      }\r\n    }\r\n\r\n    > .tab-item {\r\n      list-style: none;\r\n      float: left;\r\n      position: relative;\r\n      top: 0;\r\n      margin: 1px 0.4em 0 0;\r\n      padding: 0;\r\n      white-space: nowrap;\r\n\r\n      &.active {\r\n        a {\r\n          color: var(--font-hover-color);\r\n          background-color: var(--tab-bg);\r\n        }\r\n      }\r\n\r\n      a {\r\n        border-top-left-radius: calc(0.45rem - 1px);\r\n        border-top-right-radius: calc(0.45rem - 1px);\r\n        border: 1px solid transparent;\r\n        border-bottom-width: 0;\r\n        float: left;\r\n        padding: 0.5em 1em;\r\n        text-decoration: none;\r\n        color: var(--font-color);\r\n        height: 30px;\r\n        line-height: 15px;\r\n\r\n        &:hover {\r\n          background-color: var(--tab-bg-hover);\r\n          border: 1px solid var(--border-color);\r\n          border-bottom-width: 0;\r\n        }\r\n      }\r\n    }\r\n  }\r\n\r\n  .df-tab-body {\r\n    .tab-panel {\r\n      display: none;\r\n\r\n      &.active {\r\n        display: block;\r\n      }\r\n    }\r\n  }\r\n\r\n  .df-btn {\r\n    padding: 5px 10px;\r\n    border-radius: calc(0.45rem - 1px);\r\n    border: 1px solid var(--border-color);\r\n    background-color: var(--button-bg);\r\n\r\n    cursor: pointer;\r\n    transition: background-color 0.3s;\r\n\r\n    &:hover {\r\n      color: var(--font-hover-color);\r\n      background-color: var(--button-bg-hover);\r\n    }\r\n  }\r\n\r\n  .df-icon {\r\n    display: inline-block;\r\n    width: 21px; /* 아이콘의 너비 설정 */\r\n    height: 21px; /* 아이콘의 높이 설정 */\r\n    vertical-align: middle;\r\n  }\r\n\r\n  .df-add-icon {\r\n    background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='20px' viewBox='0 -960 960 960' width='20px' fill='%235f6368'%3E%3Cpath d='M431-431H220.78v-98H431v-210.22h98V-529h210.22v98H529v210.22h-98V-431Z'/%3E%3C/svg%3E\");\r\n  }\r\n\r\n  .df-remove-icon {\r\n    background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='20px' viewBox='0 -960 960 960' width='20px' fill='%235f6368'%3E%3Cpath d='M291-221.91 221.91-291l189-189-189-189L291-738.09l189 189 189-189L738.09-669l-189 189 189 189L669-221.91l-189-189-189 189Z'/%3E%3C/svg%3E\");\r\n  }\r\n\r\n  .form-group {\r\n    display: -ms-flexbox;\r\n    display: -webkit-box;\r\n    display: flex;\r\n    -ms-flex-direction: row;\r\n    -webkit-box-orient: horizontal;\r\n    -webkit-box-direction: normal;\r\n    flex-direction: row;\r\n    -ms-flex-wrap: wrap;\r\n    flex-wrap: wrap;\r\n    margin-top: var(--field-margin-top);\r\n    margin-bottom: 0px;\r\n    margin-right: 0px !important;\r\n    margin-left: 0px !important;\r\n\r\n    &:last-child {\r\n      margin-bottom: 0px;\r\n    }\r\n\r\n    @include rowFlex();\r\n\r\n    .help-message {\r\n      display: none;\r\n    }\r\n\r\n    .help-icon {\r\n      background-repeat: no-repeat;\r\n      background-position-y: center;\r\n\r\n      &.form-field {\r\n        background-position-x: calc(100% - 15px);\r\n      }\r\n\r\n      &.dara-icon {\r\n        display: none;\r\n        position: absolute;\r\n        z-index: 1;\r\n        top: 0px;\r\n        right: 0px;\r\n        height: 100%;\r\n        width: 20px;\r\n        margin-right: 15px;\r\n      }\r\n    }\r\n\r\n    &.invalid {\r\n      .form-field {\r\n        border-color: var(--invalid-border-color);\r\n        outline-color: var(--invalid-border-color);\r\n      }\r\n\r\n      > .df-field-container.required > .df-field .help-icon {\r\n        display: block;\r\n        background-image: url(\"data:image/svg+xml; base64, PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjAiPjxwYXRoIGQ9Im0yNDktMjA3LTQyLTQyIDIzMS0yMzEtMjMxLTIzMSA0Mi00MiAyMzEgMjMxIDIzMS0yMzEgNDIgNDItMjMxIDIzMSAyMzEgMjMxLTQyIDQyLTIzMS0yMzEtMjMxIDIzMVoiIHN0eWxlPSImIzEwOyAgICBmaWxsOiAjZmY3MzczOyYjMTA7Ii8+PC9zdmc+\");\r\n      }\r\n\r\n      .help-message {\r\n        display: block;\r\n        color: var(--invalid-font-color);\r\n      }\r\n    }\r\n\r\n    &.valid {\r\n      > .df-field-container.required {\r\n        > .df-field .help-icon {\r\n          display: block;\r\n          background-image: url(\"data:image/svg+xml; base64, PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHN0eWxlPSImIzEwOyAgICBmaWxsOiAjMTlhOTc0OyYjMTA7Ij48cGF0aCBkPSJNMzc4LTI0NiAxNTQtNDcwbDQzLTQzIDE4MSAxODEgMzg0LTM4NCA0MyA0My00MjcgNDI3WiIvPjwvc3ZnPg==\");\r\n        }\r\n      }\r\n    }\r\n\r\n    .file-label {\r\n      border: 1px solid var(--border-color);\r\n      display: inline;\r\n      width: 100%;\r\n      padding: 3px 15px;\r\n      line-height: 1;\r\n      background-clip: padding-box;\r\n      border-radius: 4px;\r\n      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;\r\n\r\n      &:hover {\r\n        background-color: var(--button-bg-hover);\r\n      }\r\n    }\r\n  }\r\n  .df-grid-field {\r\n    margin-right: 10px;\r\n    .df-grid-btn-area {\r\n      border: 1px solid var(--border-color);\r\n      padding: 3px;\r\n    }\r\n\r\n    .df-grid-container {\r\n      width: 100%;\r\n      height: auto;\r\n      overflow-y: auto;\r\n      border: 1px solid var(--border-color);\r\n\r\n      .df-btn {\r\n        padding: 3px 5px;\r\n      }\r\n\r\n      .df-grid {\r\n        width: 100%;\r\n        border-top-width: 0px;\r\n        border-collapse: collapse;\r\n\r\n        > thead {\r\n          th {\r\n            position: sticky;\r\n            top: 0px;\r\n            z-index: 10;\r\n            border-bottom: 1px solid var(--border-color);\r\n            background-color: var(--bg-grid-header);\r\n            text-align: center;\r\n          }\r\n        }\r\n\r\n        .help-message {\r\n          display: none;\r\n        }\r\n\r\n        td,\r\n        th {\r\n          padding: 3px 5px;\r\n        }\r\n\r\n        .help-icon {\r\n          background-repeat: no-repeat;\r\n          background-position-y: center;\r\n\r\n          &.form-field {\r\n            background-position-x: calc(100% - 15px);\r\n          }\r\n\r\n          &.dara-icon {\r\n            display: none;\r\n            position: absolute;\r\n            z-index: 1;\r\n            top: 0px;\r\n            right: 0px;\r\n            height: 100%;\r\n            width: 20px;\r\n            margin-right: 15px;\r\n          }\r\n        }\r\n\r\n        .grid-column {\r\n          position: relative;\r\n        }\r\n\r\n        .invalid {\r\n          .form-field {\r\n            border-color: var(--invalid-border-color);\r\n            outline-color: var(--invalid-border-color);\r\n          }\r\n\r\n          > .grid-column.required .df-field .help-icon {\r\n            display: block;\r\n            background-image: url(\"data:image/svg+xml; base64, PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjAiPjxwYXRoIGQ9Im0yNDktMjA3LTQyLTQyIDIzMS0yMzEtMjMxLTIzMSA0Mi00MiAyMzEgMjMxIDIzMS0yMzEgNDIgNDItMjMxIDIzMSAyMzEgMjMxLTQyIDQyLTIzMS0yMzEtMjMxIDIzMVoiIHN0eWxlPSImIzEwOyAgICBmaWxsOiAjZmY3MzczOyYjMTA7Ii8+PC9zdmc+\");\r\n          }\r\n\r\n          .help-message {\r\n            display: block;\r\n            position: absolute;\r\n            border: 1px solid var(--invalid-border-color);\r\n            border-color: var(--invalid-border-color) transparent transparent transparent;\r\n            top: calc(100% + 6px);\r\n            left: 50%;\r\n            transform: translateX(-50%);\r\n            min-width: 270px;\r\n            padding: 5px 5px;\r\n            border-radius: 0.4rem;\r\n            z-index: 2;\r\n            background-color: var(--invalid-background-color);\r\n            color: var(--invalid-font-color);\r\n            &::after {\r\n              content: \"\";\r\n              position: absolute;\r\n              top: 0;\r\n              left: 50%;\r\n              width: 0;\r\n              height: 0;\r\n              border: 7px solid transparent;\r\n              border-bottom-color: var(--invalid-border-color);\r\n              border-top: 0;\r\n              border-left: 0;\r\n              margin-left: -3.5px;\r\n              margin-top: -7px;\r\n            }\r\n          }\r\n        }\r\n\r\n        .valid {\r\n          > .grid-column.required {\r\n            .df-field .help-icon {\r\n              display: block;\r\n              background-image: url(\"data:image/svg+xml; base64, PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHN0eWxlPSImIzEwOyAgICBmaWxsOiAjMTlhOTc0OyYjMTA7Ij48cGF0aCBkPSJNMzc4LTI0NiAxNTQtNDcwbDQzLTQzIDE4MSAxODEgMzg0LTM4NCA0MyA0My00MjcgNDI3WiIvPjwvc3ZnPg==\");\r\n            }\r\n          }\r\n        }\r\n      }\r\n    }\r\n  }\r\n}\r\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -6110,6 +6984,26 @@ function styleTagTransform(css, styleElement) {
   }
 }
 module.exports = styleTagTransform;
+
+/***/ }),
+
+/***/ "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 height=%2720px%27 viewBox=%270 -960 960 960%27 width=%2720px%27 fill=%27%235f6368%27%3E%3Cpath d=%27M291-221.91 221.91-291l189-189-189-189L291-738.09l189 189 189-189L738.09-669l-189 189 189 189L669-221.91l-189-189-189 189Z%27/%3E%3C/svg%3E":
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 height=%2720px%27 viewBox=%270 -960 960 960%27 width=%2720px%27 fill=%27%235f6368%27%3E%3Cpath d=%27M291-221.91 221.91-291l189-189-189-189L291-738.09l189 189 189-189L738.09-669l-189 189 189 189L669-221.91l-189-189-189 189Z%27/%3E%3C/svg%3E ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module) => {
+
+module.exports = "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 height=%2720px%27 viewBox=%270 -960 960 960%27 width=%2720px%27 fill=%27%235f6368%27%3E%3Cpath d=%27M291-221.91 221.91-291l189-189-189-189L291-738.09l189 189 189-189L738.09-669l-189 189 189 189L669-221.91l-189-189-189 189Z%27/%3E%3C/svg%3E";
+
+/***/ }),
+
+/***/ "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 height=%2720px%27 viewBox=%270 -960 960 960%27 width=%2720px%27 fill=%27%235f6368%27%3E%3Cpath d=%27M431-431H220.78v-98H431v-210.22h98V-529h210.22v98H529v210.22h-98V-431Z%27/%3E%3C/svg%3E":
+/*!********************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 height=%2720px%27 viewBox=%270 -960 960 960%27 width=%2720px%27 fill=%27%235f6368%27%3E%3Cpath d=%27M431-431H220.78v-98H431v-210.22h98V-529h210.22v98H529v210.22h-98V-431Z%27/%3E%3C/svg%3E ***!
+  \********************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module) => {
+
+module.exports = "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 height=%2720px%27 viewBox=%270 -960 960 960%27 width=%2720px%27 fill=%27%235f6368%27%3E%3Cpath d=%27M431-431H220.78v-98H431v-210.22h98V-529h210.22v98H529v210.22h-98V-431Z%27/%3E%3C/svg%3E";
 
 /***/ }),
 

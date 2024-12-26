@@ -3,19 +3,12 @@ package com.varsql.core.connection;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.varsql.core.configuration.Configuration;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.connection.pool.ConnectionPoolInterface;
 import com.varsql.core.connection.pool.PoolStatus;
@@ -37,49 +30,23 @@ public final class ConnectionFactory implements ConnectionContext{
 
 	private PoolType connectionPoolType = PoolType.DBCP2;
 
-	private final ConcurrentHashMap<String, ConnectionInfo> connectionConfig = new ConcurrentHashMap<String, ConnectionInfo>();
-
 	private final ConcurrentHashMap<String, Boolean> connectionShutdownInfo = new ConcurrentHashMap<String, Boolean>();
 
-	private ConnectionInfoDao connectionInfoDao;
-
-	private ConnectionFactory() {
-		init();
-	}
+	private ConnectionFactory() {}
 
 	@Override
 	public Connection getConnection(String connid) throws ConnectionFactoryException  {
-		ConnectionInfo connInfo  = getConnectionInfo(connid);
+		ConnectionInfo connInfo  = createPool(connid);
 
 		if(connInfo != null){
 			if(isShutdown(connid)) {
 				return null; 
 			}
-
+			
 			return connectionPoolType.getPoolBean().getConnection(connInfo);
 		}
 
 		throw new ConnectionFactoryException(" null connection infomation : "+ connid);
-	}
-
-	/**
-	 *
-	 * @Method Name  : getConnectionInfo
-	 * @Method 설명 : connection info
-	 * @작성일   : 2018. 2. 13.
-	 * @작성자   : ytkim
-	 * @변경이력  :
-	 * @param connid
-	 * @return
-	 * @throws SQLException
-	 * @throws Exception
-	 */
-	public ConnectionInfo getConnectionInfo(String connid) throws ConnectionFactoryException{
-		if(connectionConfig.containsKey(connid)){
-			return connectionConfig.get(connid);
-		}else{
-			return createConnectionInfo(connid);
-		}
 	}
 
 	/**
@@ -93,18 +60,25 @@ public final class ConnectionFactory implements ConnectionContext{
 	 * @return
 	 * @throws Exception
 	 */
-	private synchronized ConnectionInfo createConnectionInfo(String connid) throws ConnectionFactoryException{
+	private synchronized ConnectionInfo createPool(String connid) throws ConnectionFactoryException{
 		try {
-			ConnectionInfo connInfo = connectionInfoDao.getConnectionInfo(connid);
+			
+			ConnectionInfo connInfo = ConnectionInfoManager.getInstance().getConnectionInfo(connid);
+			
+			if(connInfo.isCreateConnectionPool()) {
+				return connInfo; 
+			}
+			
 			getPoolBean().createDataSource(connInfo);
 			
 			try(Connection conn =  connectionPoolType.getPoolBean().getConnection(connInfo);){
 				if(conn == null) {
-					throw new ConnectionFactoryException(VarsqlAppCode.EC_FACTORY_CONNECTION_ERROR ,"createConnectionInfo error : [" + connid + "]");
+					throw new ConnectionFactoryException(VarsqlAppCode.EC_FACTORY_CONNECTION_ERROR ,"createConnectionInfo error : [" + connInfo.getConnid() + "]");
 				}
 			}
 			
-			this.connectionConfig.put(connid, connInfo);
+			connInfo.setCreateConnectionPool(true);
+			
 			return connInfo;
 		} catch (Exception e) {
 			this.logger.error("createConnectionInfo error ", e);
@@ -131,7 +105,6 @@ public final class ConnectionFactory implements ConnectionContext{
 	public synchronized void resetConnectionPool(String connid) throws SQLException, ConnectionFactoryException  {
 		poolShutdown(connid);
 		connectionShutdownInfo.remove(connid);
-		createConnectionInfo(connid);
 	}
 
 	/**
@@ -147,8 +120,8 @@ public final class ConnectionFactory implements ConnectionContext{
 
 		logger.info("db pool shutdown : {}" , connid);
 
-		if(connectionConfig.containsKey(connid)){
-			ConnectionFactory.getInstance().getPoolBean().poolShutdown( connectionConfig.get(connid));
+		if(ConnectionInfoManager.getInstance().exists(connid)){
+			ConnectionFactory.getInstance().getPoolBean().poolShutdown( ConnectionInfoManager.getInstance().getConnectionInfo(connid));
 		}
 		closeMataDataSource(connid);
 		connectionShutdownInfo.put(connid, true);
@@ -158,21 +131,24 @@ public final class ConnectionFactory implements ConnectionContext{
 		getInstance().allPoolShutdown();
 	}
 	
+	/**
+	 * 모든 커넥션 풀 닫기
+	 * @throws SQLException
+	 * @throws ConnectionFactoryException
+	 */
 	private synchronized void allPoolShutdown() throws SQLException, ConnectionFactoryException  {
 		
-		if(connectionConfig.size() > 0) {
-			for(Entry<String, ConnectionInfo> connEntry: connectionConfig.entrySet()) {
+		if(ConnectionInfoManager.getInstance().size() > 0) {
+			for(Entry<String, ConnectionInfo> connEntry: ConnectionInfoManager.getInstance().entrySet()) {
 				String connid = connEntry.getKey();
-				getInstance().getPoolBean().poolShutdown( connectionConfig.get(connid));
-				closeMataDataSource(connid);
-				connectionShutdownInfo.put(connid, true);
+				poolShutdown(connid);
 			}
 		}
-		
 	}
 
 	public synchronized void closeMataDataSource(String connid) throws SQLException, ConnectionFactoryException  {
 		SQLManager.getInstance().close(connid);
+		ConnectionInfoManager.getInstance().remove(connid);
 	}
 
 	private static class FactoryHolder{
@@ -182,7 +158,10 @@ public final class ConnectionFactory implements ConnectionContext{
 	public static ConnectionFactory getInstance() {
 		return FactoryHolder.instance;
     }
-
+	
+	/**
+	 * shutdown check
+	 */
 	@Override
 	public boolean isShutdown(String connid) throws ConnectionFactoryException {
 		if(connectionShutdownInfo.containsKey(connid)) {
@@ -191,46 +170,18 @@ public final class ConnectionFactory implements ConnectionContext{
 		return false;
 	}
 	
+	/**
+	 * pool status check
+	 */
 	@Override
 	public PoolStatus getStatus(String connid) {
 		if(connectionShutdownInfo.containsKey(connid)) {
 			return PoolStatus.SHUTDOWN; 
 		}
-		if(connectionConfig.containsKey(connid)){
-			return PoolStatus.START; 
+		if(ConnectionInfoManager.getInstance().exists(connid)){
+			return ConnectionInfoManager.getInstance().getConnectionInfo(connid).isCreateConnectionPool()? PoolStatus.START : PoolStatus.STOP; 
 		}
 		return PoolStatus.STOP;
-	}
-
-	private void init() {
-		
-		logger.debug("connection info config scan package : {}", Configuration.getInstance().getConnectiondaoPackage());
-		try {
-			Reflections reflections = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage(Configuration.getInstance().getConnectiondaoPackage())).setScanners(new TypeAnnotationsScanner(), new SubTypesScanner()));
-
-			Set<Class<?>> types = reflections.getTypesAnnotatedWith(ConnectionInfoConfig.class);
-			StringBuffer sb =new StringBuffer();
-
-			for (Class<?> type : types) {
-				ConnectionInfoConfig annoInfo = type.getAnnotation(ConnectionInfoConfig.class);
-				sb.append("beanType : [").append(annoInfo.beanType());
-				sb.append("] primary : [").append(annoInfo.primary()).append("]");
-				sb.append("] beanName : [").append(annoInfo.beanName()).append("]");
-
-				connectionInfoDao =	(ConnectionInfoDao)type.getDeclaredConstructor().newInstance(new Object[] {});
-				
-				if(annoInfo.primary() == true) {
-					break ;
-				}
-			}
-
-			if(connectionInfoDao ==null) {
-				throw new ConnectionFactoryException(VarsqlAppCode.EC_FACTORY_CONNECTION_INFO, "ConnectionInfoDao bean null; config info : "+ sb.toString());
-			}
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			throw new  ConnectionFactoryException("ConnectionInfoDao bean: "+ e.getMessage());
-		}
 	}
 
 	public ConnectionPoolInterface getPoolBean() {

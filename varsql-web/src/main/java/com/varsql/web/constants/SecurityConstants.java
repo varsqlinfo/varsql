@@ -16,5 +16,7 @@ package com.varsql.web.constants;
 public interface SecurityConstants {
 	final String REMEMBERME_KEY = "varsqlTokenKey";
 	final String REMEMBERME_PARAMETER = "varsqlRememberMe";
-	final String REMEMBERME_COOKIENAME = "varsql_token";
+	final String REMEMBERME_COOKIENAME = "VARSQLRTOKEN";
+	
+	public final String JSESSION_ID_COOKIE_NAME = "VSQLJSID";
 }

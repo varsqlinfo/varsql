@@ -6,15 +6,31 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.mapping.ParameterMapping;
 import com.varsql.core.sql.mapping.ParameterMode;
 import com.varsql.core.sql.type.SQLDataType;
+import com.vartech.common.utils.VartechUtils;
 
 public final class SQLParamUtils {
 	private SQLParamUtils() {}
 
 	public static String functionValue (ParameterMapping param , Map reqParam) {
+		String functionName = param.getFunctionName();
+		
+		switch (functionName) {
+		case "uuid":
+			return VartechUtils.generateUUID();
+		case "currentDate":
+			return VarsqlDateUtils.currentDateFormat();
+		case "currentDateTime":
+			return VarsqlDateUtils.currentDateTimeFormat();
+			
+		default:
+			break;
+		}
+		
 		return "";
 	}
 

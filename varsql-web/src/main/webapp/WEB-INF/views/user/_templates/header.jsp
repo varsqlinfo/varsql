@@ -333,7 +333,7 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 });
 
 function userConnect(){
-	VARSQL.socket.connect('user', {uid : $varsqlConfig.viewId}, function (data){
+	VARSQL.socket.connect('topic', {uid : $varsqlConfig.viewId}, function (data){
 		var msgType = data.type;
 
 		if(msgType== 'NOTE'){

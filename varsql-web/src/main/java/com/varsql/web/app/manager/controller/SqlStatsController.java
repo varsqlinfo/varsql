@@ -17,11 +17,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.VarsqlDateUtils;
+import com.varsql.core.sql.SqlExecuteManager;
 import com.varsql.web.app.manager.service.ManagerCommonServiceImpl;
 import com.varsql.web.app.manager.service.SqlStatsServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.HttpParamConstants;
 import com.varsql.web.constants.VIEW_PAGE;
+import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
@@ -76,7 +78,7 @@ public class SqlStatsController extends AbstractController {
 
 		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
 
-		return getModelAndView("/sqlLogStat", VIEW_PAGE.MANAGER,model);
+		return getModelAndView("/sqlLogStat", VIEW_PAGE.MANAGER_lOG,model);
 	}
 
 	/**
@@ -166,7 +168,7 @@ public class SqlStatsController extends AbstractController {
 		model.addAttribute("selectMenu", "sqlLog");
 		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
 
-		return getModelAndView("/sqlLogHistory", VIEW_PAGE.MANAGER,model);
+		return getModelAndView("/sqlLogHistory", VIEW_PAGE.MANAGER_lOG,model);
 	}
 	/**
 	 * @Method Name  : logList
@@ -186,5 +188,32 @@ public class SqlStatsController extends AbstractController {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		return sqlStatsServiceImpl.findSqlLog(vconnid, searchParameter);
 	}
-
+	
+	/**
+	 * 실행 sql 보기 
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@GetMapping("/executeSql")
+	public ModelAndView executeSql(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
+		ModelMap model = mav.getModelMap();
+		model.addAttribute("selectMenu", "sqlLog");
+		
+		return getModelAndView("/sqlExecuteStat", VIEW_PAGE.MANAGER_lOG,model);
+	}
+	
+	/**
+	 * 모든 실행되고 있는 sql 로그 
+	 * 
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/allExecuteList", method = RequestMethod.GET)
+	public @ResponseBody ResponseResult allExecuteStatements(HttpServletRequest req) throws Exception {
+		return ResponseResult.builder().list(SqlExecuteManager.getInstance().allExecuteStatements()).build();
+	}
 }

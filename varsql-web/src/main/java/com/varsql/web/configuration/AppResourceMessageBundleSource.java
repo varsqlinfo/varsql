@@ -85,7 +85,11 @@ public class AppResourceMessageBundleSource extends ReloadableResourceBundleMess
 				if (prop != null) {
 					
 					prop.entrySet().forEach(item->{
-						mergedMap.put((String) item.getKey(), item.getValue());
+						String value = item.getValue().toString();
+						
+						value = value.replaceAll("\\\\n", "\n");
+						value = value.replaceAll("\\\\t", "\t");
+						mergedMap.put((String) item.getKey(), value);
 					});
 				}
 			}

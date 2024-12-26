@@ -12,6 +12,8 @@ public interface DataType {
 	
 	public String getTypeName();
 	
+	public String getViewTypeName(String typeName);
+	
 	public int getDefaultSize();
 	
 	public boolean isExcludeImportColumn();

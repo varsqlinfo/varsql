@@ -16,6 +16,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.envers.RelationTargetAuditMode;
@@ -25,7 +27,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.varsql.web.model.base.AbstractAuditorModel;
 import com.varsql.web.model.converter.BooleanToDelYnConverter;
 import com.varsql.web.model.converter.DbPasswordEncodeConverter;
-import com.varsql.web.model.entity.scheduler.JobEntity;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -138,16 +139,11 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 
 	@NotAudited
 	@JsonIgnore
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JsonManagedReference
 	@OneToMany(mappedBy = "dbConnInfo",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private Set<DBManagerEntity> managerList;
 	
-	@NotAudited
-	@JsonIgnore
-	@JsonManagedReference
-	@OneToMany(fetch=FetchType.LAZY, mappedBy = "jobDBConnection")
-    private Set<JobEntity> jobEntity;
-
 //	@NotAudited
 //	@JsonManagedReference
 //	@OneToMany(mappedBy = "groupConnInfo",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)

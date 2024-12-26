@@ -13,8 +13,11 @@ values( #{KEY1},  #{KEY2},  #{KEYNM},  #{DATA1},  #{DATA2},  #{DATA3},  #{DATA4}
 
 	const codeEditorObj = new codeEditor(document.getElementById('container'), {
 		schema: 'dbnameTest',
-		editorOptions: { theme: 'vs-dark' },
+		editorOptions: {
+			theme: 'vs-dark'
+		},
 		mimeType: 'oracle',
+		useDocumentSuggest: false,
 		contentInfo: {
 			sqlId: 'test1',
 			sqlCont: `select    *

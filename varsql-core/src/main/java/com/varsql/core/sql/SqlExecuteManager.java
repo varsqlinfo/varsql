@@ -2,12 +2,16 @@ package com.varsql.core.sql;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.varsql.core.sql.beans.ExecuteStatementInfo;
 import com.varsql.core.sql.beans.SqlExecuteBean;
 import com.varsql.core.sql.util.JdbcUtils;
 
@@ -39,17 +43,16 @@ public class SqlExecuteManager {
 		private static final SqlExecuteManager instance = new SqlExecuteManager();
 	}
 
-	public synchronized void addStatementInfo(String requid, Statement statement) {
-		addStatementInfo(requid, statement, Thread.currentThread().getId());
+	public synchronized void addStatementInfo(SqlExecuteBean seb, ExecuteStatementInfo statement) {
+		addStatementInfo(seb, statement, Thread.currentThread().getId());
 	}
 	
-	public synchronized void addStatementInfo(String requid, Statement statement, long threadId) {
+	public synchronized void addStatementInfo(SqlExecuteBean seb, ExecuteStatementInfo statement, long threadId) {
+		String requid = seb.getReqUid();
 		
 		if(requid == null) return ; 
 		
 		if(!SQL_EXECUTE_INFO.containsKey(requid)) {
-			SqlExecuteBean seb = new SqlExecuteBean();
-			
 			seb.setThreadId(threadId);
 			seb.setStartTime(System.currentTimeMillis());
 			seb.addStatement(statement);
@@ -64,6 +67,21 @@ public class SqlExecuteManager {
 			return null; 
 		}
 		return SQL_EXECUTE_INFO.get(requid);
+	}
+	
+	/**
+	 * 실행되고 있는 모든 statement 정보얻기
+	 * 
+	 * @return
+	 */
+	public List allExecuteStatements() {
+		List reval = new ArrayList();
+		
+		for (Entry<String, SqlExecuteBean> entry : SQL_EXECUTE_INFO.entrySet()) {
+			reval.add(entry.getValue());
+        }
+		
+		return reval;
 	}
 	
 	/**
@@ -89,9 +107,10 @@ public class SqlExecuteManager {
 			
 			if(seb == null) return ; 
 			
-			if (seb.getStatement() != null) {
-				for(Statement statement : seb.getStatement()) {
+			if (seb.getExecuteStatements() != null) {
+				for(ExecuteStatementInfo executeStatementInfo : seb.getExecuteStatements()) {
 					try {
+						Statement statement =  executeStatementInfo.getStatement();
 						if(statement != null && !statement.isClosed()) {
 							statement.cancel();
 							JdbcUtils.close(statement);
@@ -113,19 +132,27 @@ public class SqlExecuteManager {
 		SqlExecuteBean seb = getStatementInfo(requid);
 		
 		logger.info("cancel : {} , seb : {}", requid, seb);
-		if (seb == null ||seb.getStatement()== null) {
+		
+		if (seb == null ||seb.getExecuteStatements()== null) {
 			return ; 
 		}
 
 		try {
 			boolean statementClose = false; 
-			for(Statement statement : seb.getStatement()) {
-				if(statement != null) {
-					statementClose = true; 
-					statement.cancel();
-					JdbcUtils.close(statement);
+			
+			for(ExecuteStatementInfo executeStatementInfo : seb.getExecuteStatements()) {
+				try {
+					Statement statement =  executeStatementInfo.getStatement();
+					if(statement != null && !statement.isClosed()) {
+						statementClose = true; 
+						statement.cancel();
+						JdbcUtils.close(statement);
+					}
+				} catch (SQLException e) {
+					// ignore 
 				}
-			}
+			} 
+			
 			if(statementClose) {
 				removeStatementInfo(requid, false);
 				return ; 
@@ -170,5 +197,14 @@ public class SqlExecuteManager {
 		}
 		
 		removeStatementInfo(requid, false);
+	}
+	
+	/**
+	 * 실행 중인 SQL 전체 취소
+	 */
+	public void allCancel() {
+		for (Entry<String, SqlExecuteBean> entry : SQL_EXECUTE_INFO.entrySet()) {
+			cancelStatementInfo(entry.getKey());
+        }
 	}
 }

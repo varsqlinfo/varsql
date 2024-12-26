@@ -16,9 +16,9 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.db.valueobject.ddl.DDLTemplateParam;
-import com.varsql.core.sql.SQLTemplateCode;
+import com.varsql.core.sql.DDLTemplateCode;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
-import com.varsql.core.sql.template.SQLTemplateFactory;
+import com.varsql.core.sql.template.DDLTemplateFactory;
 import com.vartech.common.app.beans.DataMap;
 
 /**
@@ -61,7 +61,7 @@ public class CubridDDLScript extends AbstractDDLScript {
 					.sourceText(source.getString("CREATE TABLE"))
 				.build();
 				
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.TABLE.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -92,7 +92,7 @@ public class CubridDDLScript extends AbstractDDLScript {
 					.sourceText(source.getString("Create View"))
 				.build();
 				
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.VIEW.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.VIEW.create, param));
 				
 				reval.add(ddlInfo);
 			}
@@ -123,7 +123,7 @@ public class CubridDDLScript extends AbstractDDLScript {
 					.items(sqlSession.selectList("indexScript", dataParamInfo))
 				.build();
 	
-				ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.INDEX.create, param), dbType));
+				ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.INDEX.create, param), dbType));
 				reval.add(ddlInfo);
 			}
 		}
@@ -155,7 +155,7 @@ public class CubridDDLScript extends AbstractDDLScript {
 					.item(sqlSession.selectOne("functionScript", dataParamInfo))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.FUNCTION.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(dbType, DDLTemplateCode.FUNCTION.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -188,7 +188,7 @@ public class CubridDDLScript extends AbstractDDLScript {
 					.item(sqlSession.selectOne("procedureScript", dataParamInfo))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.PROCEDURE.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(dbType, DDLTemplateCode.PROCEDURE.create, param));
 	
 				reval.add(ddlInfo);
 			}
@@ -238,7 +238,7 @@ public class CubridDDLScript extends AbstractDDLScript {
 						.sourceText(StringUtils.trim(sourceSb.toString()))
 					.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TRIGGER.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.TRIGGER.create, param));
 	
 				reval.add(ddlInfo);
 			}

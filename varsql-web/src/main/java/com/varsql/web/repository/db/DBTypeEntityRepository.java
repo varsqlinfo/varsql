@@ -7,6 +7,6 @@ import com.varsql.web.model.entity.db.DBTypeEntity;
 import com.varsql.web.repository.DefaultJpaRepository;
 
 @Repository
-public interface DBTypeEntityRepository extends DefaultJpaRepository, JpaRepository<DBTypeEntity, Long> {
-
+public interface DBTypeEntityRepository extends DefaultJpaRepository, JpaRepository<DBTypeEntity, String> {
+	
 }

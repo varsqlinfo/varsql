@@ -86,6 +86,21 @@ public class FileUploadService {
 		return fileInfos;
 	}
 	
+	/**
+	 * only file upload 
+	 * 
+	 * @param fileType
+	 * @param mfileInfo
+	 * @param contentId
+	 * @param addExtensionSuffix
+	 * @return
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
+	public FileInfoEntity onlySaveFile(UploadFileType fileType, MultipartFile mfileInfo, String contentId, boolean addExtensionSuffix) throws IllegalStateException, IOException {
+		return this.saveFile(fileType, mfileInfo, "", addExtensionSuffix);
+	}
+	
 	private FileInfoEntity saveFile(UploadFileType fileType, MultipartFile mfileInfo, String contentId, boolean addExtensionSuffix)
 			throws IllegalStateException, IOException {
 

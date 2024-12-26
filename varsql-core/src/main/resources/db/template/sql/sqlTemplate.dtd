@@ -1,50 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!ELEMENT templateConfig (table | view | function | procedure? | package | trigger | index | sequence)*>
+<!ELEMENT templateConfig (table)*>
 
-<!-- ddl create template -->
-<!ELEMENT table (create|createConversion| rename| addComment| modifyComment| dropComment| select| insert | update | delete | selectInsert | merge| createSelect
-
-	|columnAdd |columnRename |columnModify |columnDrop |columnAddComment |columnModifyComment |columnDropComment |constraintKey
-)+>
-
-<!ELEMENT view (create| rename| addComment| modifyComment| dropComment)+>
-
-<!ELEMENT function (create| rename| addComment| modifyComment| dropComment)+>
-
-<!ELEMENT procedure (create| rename| addComment| modifyComment| dropComment)+>
-
-<!ELEMENT package (create| rename| addComment| modifyComment| dropComment)+>
-
-<!ELEMENT trigger (create| rename| addComment| modifyComment| dropComment)+>
-
-<!ELEMENT index (create| rename| addComment| modifyComment| dropComment)+>
-
-<!ELEMENT sequence (create| rename| addComment| modifyComment| dropComment)+>
-
-<!ELEMENT create (#PCDATA)>
-
-<!ELEMENT createConversion (#PCDATA)>
-
-<!ELEMENT rename (#PCDATA)>
-<!ELEMENT addComment (#PCDATA)>
-<!ELEMENT modifyComment (#PCDATA)>
-<!ELEMENT dropComment (#PCDATA)>
-
-<!-- column start -->
-<!ELEMENT columnAdd (#PCDATA)>
-<!ELEMENT columnRename (#PCDATA)>
-<!ELEMENT columnModify (#PCDATA)>
-<!ELEMENT columnDrop (#PCDATA)>
-
-
-<!ELEMENT columnAddComment (#PCDATA)>
-<!ELEMENT columnModifyComment (#PCDATA)>
-<!ELEMENT columnDropComment (#PCDATA)>
-<!-- // column end -->
+<!ELEMENT table ( select| selectPaging | selectCount | insert | update | delete | selectInsert | merge| createSelect)+>
 
 <!-- dml sql example start -->
 <!ELEMENT select (#PCDATA) >
+<!ELEMENT selectCount (#PCDATA) >
+<!ELEMENT selectPaging (#PCDATA) >
 <!ELEMENT insert (#PCDATA) >
 <!ELEMENT update (#PCDATA) >
 <!ELEMENT delete (#PCDATA) >
@@ -53,6 +16,3 @@
 <!ELEMENT createSelect (#PCDATA)>
 <!-- // dml sql example end -->
 
-<!-- constraint start -->
-<!ELEMENT constraintKey (#PCDATA)>
-<!-- //constraint end -->

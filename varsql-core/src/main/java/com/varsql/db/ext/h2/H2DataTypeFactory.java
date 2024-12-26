@@ -2,6 +2,7 @@ package com.varsql.db.ext.h2;
 
 import com.varsql.core.db.datatype.AbstractDataTypeFactory;
 import com.varsql.core.db.datatype.DBColumnMetaInfo;
+import com.varsql.core.db.datatype.DataTypeConfigInfo;
 import com.varsql.core.db.datatype.DefaultDataType;
 import com.varsql.core.db.datatype.VenderDataType;
 
@@ -17,11 +18,13 @@ public class H2DataTypeFactory extends AbstractDataTypeFactory{
 	
 	// 버전별 데이타를 체크 하기위해서 버전을 받음. 
 	public H2DataTypeFactory() {
-		addDataType(new VenderDataType("VARCHAR_IGNORECASE", DefaultDataType.NVARCHAR.getTypeCode(), DBColumnMetaInfo.STRING));
-		addDataType(new VenderDataType("CHARACTER VARYING", DefaultDataType.VARCHAR.getTypeCode(), DBColumnMetaInfo.STRING));
-		addDataType(new VenderDataType("CHARACTER LARGE OBJECT", DefaultDataType.CLOB.getTypeCode(), DBColumnMetaInfo.STRING));
-		addDataType(new VenderDataType("CHARACTER", DefaultDataType.CHAR.getTypeCode(), DBColumnMetaInfo.STRING));
-		addDataType(new VenderDataType("TIME WITH TIME ZONE", DefaultDataType.TIME.getTypeCode() , DBColumnMetaInfo.TIME));
-		addDataType(new VenderDataType("TIMESTAMP WITH TIME ZONE", DefaultDataType.TIMESTAMP.getTypeCode() , DBColumnMetaInfo.DATE));
+		
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("VARCHAR_IGNORECASE").typeCode(DefaultDataType.NVARCHAR.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.STRING).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("CHARACTER VARYING").typeCode(DefaultDataType.VARCHAR.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.STRING).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("CHARACTER LARGE OBJECT").typeCode(DefaultDataType.CLOB.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.STRING).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("CHARACTER").typeCode(DefaultDataType.CHAR.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.STRING).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("TIME WITH TIME ZONE").typeCode(DefaultDataType.TIME.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.TIME).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("TIMESTAMP WITH TIME ZONE").typeCode(DefaultDataType.TIMESTAMP.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.DATE).build()));
+		
 	}
 }

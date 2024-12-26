@@ -41,7 +41,14 @@
 		    <div class="row">
 		        <form name="appForm" class="form-horizontal well" role="form">
 			        <div class="form-group">
-			            <label for="inputEmail3" class="col-sm-3 control-label"><spring:message code="charset"/></label>
+			            <label class="col-sm-3 control-label"><spring:message code="app.data.path"/></label>
+			
+			            <div class="col-sm-6 col-md-6">
+			            	<input type="text" class="form-control" v-model="appInfo.dataPath" placeholder="<spring:message code="app.data.path"/>"/>
+			            </div>
+			        </div>
+			        <div class="form-group">
+			            <label class="col-sm-3 control-label"><spring:message code="charset"/></label>
 			
 			            <div class="col-sm-6 col-md-6">
 			            	<select v-model="appInfo.charset" class="form-control select-charset">
@@ -96,9 +103,31 @@
 			    </form>
 		    </div>
 		</div>
+		
+		<%-- app 설정 --%>
+		<div class="process-step" :class="currentStep == 3 ? 'active':'hide'">
+			<div class="row">
+		        <div class="col-xs-12 text-center"><spring:message code="test.db" text="Test DB" /></div>
+		    </div>
+		    <hr>
+		    <div class="row">
+		        <form name="appForm" class="form-horizontal well" role="form">
+			        <div class="form-group">
+			            <label class="col-sm-3 control-label">Test DB Create</label>
+			
+			            <div class="col-sm-6 col-md-6">
+			            	<div class="col-sm-8" style="margin: 5px 0px;">
+								<label><input type="radio" value="Y" v-model="appInfo.useTestDb" checked>Y</label>
+								<label><input type="radio" value="N" v-model="appInfo.useTestDb">N</label>
+							</div>
+			            </div>
+			        </div>
+			    </form>
+		    </div>
+		</div>
 	   
 		<%-- 완료 --%>
-		<div class="process-step" :class="currentStep == 3 ? 'active':'hide'">
+		<div class="process-step" :class="currentStep == 4 ? 'active':'hide'">
 			<div class="row">
 		        <div class="col-xs-12 text-center"><spring:message code="app.settings" /></div>
 		        
@@ -106,7 +135,7 @@
 		    </div>
 	   </div>
 	   
-	   <div class="process-step" :class="currentStep == 4 ? 'active':'hide'">
+	   <div class="process-step" :class="currentStep == 5 ? 'active':'hide'">
 			<div class="row">
 		        <h2 class="col-xs-12 text-center">
 		        	<spring:message code="msg.install.complete" />
@@ -120,11 +149,11 @@
 	   
 	   <hr>
 		    
-	    <div class="row" :class="currentStep == 4 ? 'hide':''">
+	    <div class="row" :class="currentStep == 5 ? 'hide':''">
 	    	 <div class="col-xs-12 text-center">
 	    	 	<button v-if="currentStep > step" class="btn btn-default" @click="moveStep(-1)"><spring:message code="step.prev"/></button>
 	    	 	<button v-if="endStep > currentStep" class="btn btn-default" @click="moveStep(1)"><spring:message code="step.next"/></button>
-	    	 	<button v-if="endStep == currentStep" class="btn btn-default" @click="complete()"><spring:message code="install"/></button>
+	    	 	<button v-if="endStep == currentStep" class="btn btn-default" @click="installStart()"><spring:message code="install"/></button>
 	    	 </div>
 	    </div>
 	</div>
@@ -144,8 +173,8 @@ VarsqlAPP.vueServiceBean({
 	,data: {
 		isInstall: false
 		, step : 1
-		, currentStep: <c:out value="${isInstall?4:1}" escapeXml="true"></c:out>
-		, endStep : 3
+		, currentStep: <c:out value="${isInstall?5:1}" escapeXml="true"/>
+		, endStep : 4
 		, charsets:[
 			{name : 'Cp874',code:'Cp874'}
 			,{name : 'EUC-CN',code:'EUC-CN'}
@@ -193,7 +222,8 @@ VarsqlAPP.vueServiceBean({
 		,appInfo : {
 			charset: 'UTF-8'
 			,fileRetentionPeriod : 30
-			
+			,useTestDb: 'Y'
+			,dataPath: '<c:out value="${installRoot}" escapeXml="true"/>'
 		}
 		,dbInfo : {
 			type : 'H2'
@@ -202,13 +232,14 @@ VarsqlAPP.vueServiceBean({
 			,pw : ''
 			,confirmPw : ''
 		}
+		,form : false
 	}
 	,created : function (){
 		<c:out value="${param.conuid}" escapeXml="true"></c:out>
 	}
 	,methods:{
 		init : function (){
-			new DaraForm("#accountForm", {
+			this.form = new DaraForm(document.getElementById("accountForm"), {
 				message : "This value is not valid",
 				style : {
 					position : 'left-right',
@@ -272,7 +303,7 @@ VarsqlAPP.vueServiceBean({
 			}
 			
 			if(currentStep == 2){
-				if(!DaraForm.instance('#accountForm').isValidForm()){
+				if(!this.form.isValidForm()){
 					return ;
 				}
 			}
@@ -280,11 +311,11 @@ VarsqlAPP.vueServiceBean({
 			this.currentStep = currentStep ;
 		}
 		// 완료
-		,complete : function (){
+		,installStart : function (){
 			var _self = this;
-
+			
 			var param = {
-				userInfo : DaraForm.instance('#accountForm').getValue()
+				userInfo : this.form.getValue()
 				,appInfo : this.appInfo
 				,dbInfo :  this.dbInfo
 			};
@@ -299,7 +330,7 @@ VarsqlAPP.vueServiceBean({
 						alert(resData.message);
 						return; 
 					}
-					_self.currentStep = 4; 
+					_self.currentStep = _self.endStep+1; 
 				}
 			});
 		}

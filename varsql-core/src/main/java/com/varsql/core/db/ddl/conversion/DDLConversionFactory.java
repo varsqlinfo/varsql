@@ -6,10 +6,10 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.vartech.common.io.Resource;
 
 import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.db.DBVenderType;
+import com.vartech.common.io.Resource;
 import com.vartech.common.utils.VartechUtils;
 
 /**
@@ -44,7 +44,7 @@ public class DDLConversionFactory {
 		Resource[] resources = ResourceUtils.getResources(TEMPLATE_PACKAGE);
 
 		for (Resource resource: resources){
-			logger.debug("conversion resource : {} ", resource);
+			logger.debug("conversion resource : {} ", resource.getFileName());
 			String fileName = resource.getFileName();
 
 			String dbVender = fileName.replace("DataType.json", "");

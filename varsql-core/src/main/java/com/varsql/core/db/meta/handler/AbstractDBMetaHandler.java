@@ -8,7 +8,6 @@ import java.util.Set;
 import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
-import com.varsql.core.db.util.DbMetaUtils;
 import com.varsql.core.db.valueobject.ColumnInfo;
 import com.varsql.core.sql.ConstraintType;
 import com.vartech.common.utils.StringUtils;

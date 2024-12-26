@@ -124,7 +124,7 @@
 						<label class="col-sm-4 control-label"><spring:message code="length" /></label>
 						<div class="col-sm-8">
 							<input class="form-control text required" v-model="detailItem.wordLength">
-							<div>char,string -> 정수값 , number, float -> (0,1)</div>
+							<div>char,string -> Size , number, float -> (0,1)</div>
 						</div>
 					</div>
 					<div class="form-group">

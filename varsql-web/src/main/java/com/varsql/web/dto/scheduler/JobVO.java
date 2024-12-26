@@ -66,5 +66,16 @@ public class JobVO implements Serializable{
 				.jobData(entity.getJobData())
 				.build();
 	}
+	
+	public static JobVO taskEntityToVo(JobEntity entity) {
+		return JobVO.builder()
+				.jobUid(entity.getJobUid())
+				.jobName(entity.getJobName())
+				.jobGroup(entity.getJobGroup())
+				.cronExpression(entity.getCronExpression())
+				.jobDescription(entity.getJobDescription())
+				.jobData(entity.getJobData())
+				.build();
+	}
 
 }

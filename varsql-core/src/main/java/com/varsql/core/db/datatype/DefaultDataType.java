@@ -2,7 +2,6 @@ package com.varsql.core.db.datatype;
 
 import java.io.Reader;
 import java.math.BigDecimal;
-import java.sql.Array;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +10,7 @@ import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -401,8 +401,17 @@ public enum DefaultDataType implements DataType {
 			}
 		}).resultSetHandler(new ResultSetHandler() {
 			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
-				Array reval = rs.getArray(columnIndex);
-				return reval==null ? null : reval.getArray();
+				Object reval = rs.getObject(columnIndex);
+				
+				if(reval == null) {
+					return reval; 
+				}
+				
+				try {
+					return Arrays.toString((Object[])reval);
+				}catch(RuntimeException e) {
+					return reval.toString();
+				}
 			}
 		}).build()
 	),
@@ -420,7 +429,7 @@ public enum DefaultDataType implements DataType {
 			}
 		}).build()
 	),
-	CLOB(Types.CLOB, DBColumnMetaInfo.CLOB, DataTypeHandler.builder().statementHandler(new StatementHandler() {
+	CLOB(Types.CLOB, DBColumnMetaInfo.TEXT, DataTypeHandler.builder().statementHandler(new StatementHandler() {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 	            if(setNullValue(pstmt, parameterIndex, Types.CLOB, value)) return ;
 				
@@ -531,7 +540,7 @@ public enum DefaultDataType implements DataType {
 			}
 		}).build()
 	),
-	NCLOB(Types.NCLOB, DBColumnMetaInfo.CLOB, CLOB.getDataTypeHandler()),
+	NCLOB(Types.NCLOB, DBColumnMetaInfo.TEXT, CLOB.getDataTypeHandler()),
 	SQLXML(Types.SQLXML, DBColumnMetaInfo.SQLXML, DataTypeHandler.builder().statementHandler(new StatementHandler() {
 			public void setParameter(PreparedStatement pstmt, int parameterIndex, Object value) throws SQLException {
 	            if(setNullValue(pstmt, parameterIndex, Types.SQLXML, value)) return ;
@@ -738,5 +747,10 @@ public enum DefaultDataType implements DataType {
 	@Override
 	public boolean isExcludeImportColumn() {
 		return excludeImportColumn;
+	}
+
+	@Override
+	public String getViewTypeName(String typeName) {
+		return typeName;
 	}
 }

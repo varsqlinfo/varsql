@@ -38,6 +38,7 @@
 <entry key="msg.delete.success">削除されました</entry>
 <entry key="msg.apply.confirm">適用しますか?</entry>
 <entry key="msg.apply.success">適用されました.</entry>
+<entry key="msg.copy.confirm">コピーしますか?</entry>
 <entry key="msg.copy.success">コピーされました</entry>
 <entry key="msg.change.confirm">変更しますか?</entry>
 <entry key="msg.change.success">変更されました</entry>
@@ -49,6 +50,11 @@
 <entry key="msg.release.success">解除されました</entry>
 <entry key="msg.send.confirm">送信しますか?</entry>
 <entry key="msg.send.confirm.param">{item}を送信しますか?</entry>
+<entry key="msg.cancel.confirm">キャンセルしてもよろしいですか？</entry>
+<entry key="msg.cancel.success">キャンセルされました</entry>
+<entry key="msg.refresh.confirm">更新してもよろしいですか？</entry>
+<entry key="msg.refresh.please">更新してください。</entry>
+<entry key="msg.refresh.success">更新が完了しました。</entry>
 
 <entry key="msg.close.confirm">閉じますか?</entry>
 <entry key="msg.close.confirm.param">[{name}]を閉じますか?</entry>
@@ -220,5 +226,11 @@
 <entry key="msg.setting.code.template.desc">DBテーブルのカラム情報を使用してコードを自動生成できるテンプレートを作成します。</entry>
 <entry key="msg.install.end">インストール完了後、サーバーを再起動してください。</entry>
 <entry key="msg.install.complete">インストール完了</entry>
+
+<entry key="msg.execute.confirm">実行してもよろしいですか？</entry>
+<entry key="msg.execute.success">実行が完了しました。</entry>
+<entry key="msg.execute.db.error">使用できない接続情報です。</entry>
+
+
 
 </properties>

@@ -45,6 +45,24 @@
             <li>
                <a href="<varsql:url type="manager" suffix="stats/history" />"><spring:message code="manager.menu.sqllog" /></a>
             </li>
+            <li>
+               <a href="<varsql:url type="manager" suffix="stats/executeSql" />"><spring:message code="manager.menu.executestat" /></a>
+            </li>
+		</ul>
+	</li>
+	<li class="dropdown<c:if test="${selectMenu eq 'taskMgmt'}"> active</c:if>">
+		<a href="#" data-toggle="collapse" data-target="#task-sub-menu">
+			<i class="fa fa-tasks"></i>
+			<span class="hidden-xs"><spring:message code="manager.menu.task" text="Task" /></span>
+			<i class="fa fa-fw fa-caret-down"></i>
+		</a>
+		<ul id="task-sub-menu" class="nav sub-menu collapse <c:if test="${selectMenu eq 'taskMgmt'}"> in</c:if>">
+			<li>
+               <a href="<varsql:url type="manager" suffix="task/sql" />"><spring:message code="manager.menu.sqltaskmgmt" text="SQL Task" /></a>
+            </li>
+			<li>
+               <a href="<varsql:url type="manager" suffix="task/dataMig" />"><spring:message code="manager.menu.datamigtaskmgmt" text="Data Mig Task" /></a>
+            </li>
 		</ul>
 	</li>
     <li class="dropdown<c:if test="${selectMenu eq 'jobMgmt'}"> active</c:if>">
@@ -61,8 +79,9 @@
                <a href="<varsql:url type="manager" suffix="ddlBackup" />"><spring:message code="manager.menu.ddlbackupmgmt" text="DDL 백업 관리" /></a>
             </li>
             <li>
-               <a href="<varsql:url type="manager" suffix="sqlJob" />"><spring:message code="manager.menu.sqljobmgmt" text="SQL Job" /></a>
+               <a href="<varsql:url type="manager" suffix="taskJob" />"><spring:message code="manager.menu.taskjobmgmt" text="Task Job" /></a>
             </li>
 		</ul>
 	</li>
+    
 </ul>

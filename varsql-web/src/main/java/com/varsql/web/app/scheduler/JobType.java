@@ -1,5 +1,5 @@
 package com.varsql.web.app.scheduler;
 
 public enum JobType {
-	DATA, DDL, SQL, BF_REMOVE // backup file remove
+	DATA, DDL, SQL, BACKUP_FILE_REMOVE // backup file remove
 }

@@ -54,7 +54,7 @@ import com.vartech.common.utils.FileUtils;
  */
 public final class FileServiceUtils {
 	
-	private final static int BUFFER_SIZE = 2048;
+	public final static int BUFFER_SIZE = 2048;
 
 	private FileServiceUtils() {};
 
@@ -115,15 +115,15 @@ public final class FileServiceUtils {
 	private static String getSaveFilePathStr(UploadFileType fileType, String contId, boolean createFlag) {
 		String savePath = "";
 		if(SavePathType.DATE_YY_MM_DD.equals((fileType.getSavePathType()))) {
-			savePath =  FileUtils.getSaveDayPath(fileType.getDiv());
+			savePath =  FileUtils.getSaveDayPath(fileType.getSavePathRoot());
 		}else if(SavePathType.DATE_YY.equals((fileType.getSavePathType()))) {
-			savePath = FileUtils.getSaveYearPath(fileType.getDiv());
+			savePath = FileUtils.getSaveYearPath(fileType.getSavePathRoot());
 		}else if(SavePathType.CONT_ID.equals((fileType.getSavePathType()))) {
-			savePath = FileUtils.pathConcat(fileType.getDiv(), contId);
+			savePath = FileUtils.pathConcat(fileType.getSavePathRoot(), contId);
 		}else if(SavePathType.BLANK.equals((fileType.getSavePathType()))) {
-			savePath = fileType.getDiv();
+			savePath = fileType.getSavePathRoot();
 		}else {
-			savePath = FileUtils.getSaveMonthPath(fileType.getDiv());
+			savePath = FileUtils.getSaveMonthPath(fileType.getSavePathRoot());
 		}
 
 		if(createFlag) {

@@ -9,19 +9,19 @@ package com.varsql.core.db;
  * @변경이력 :
  */
 public enum DBVenderType {
-	MYSQL("mysql", "com.mysql.jdbc.Driver"), 
-	DB2("db2", "com.ibm.db2.jcc.DB2Driver"),
-	ORACLE("oracle", "oracle.jdbc.driver.OracleDriver"),
-	SQLSERVER("sqlserver", "com.microsoft.sqlserver.jdbc.SQLServerDriver", false),
-	MARIADB("mariadb", "org.mariadb.jdbc.Driver"), 
-	DERBY("derby", "org.apache.derby.jdbc.ClientDriver"),
-	HSQLDB("hsqldb", "org.hsqldb.jdbcDriver"), 
-	POSTGRESQL("postgresql", "org.postgresql.Driver"),
-	H2("h2", "org.h2.Driver"), 
-	TIBERO("tibero", "com.tmax.tibero.jdbc.TbDriver"),
-	CUBRID("cubrid", "cubrid.jdbc.driver.CUBRIDDriver"), 
-	SYBASE("sybase", "com.sybase.jdbc4.jdbc.SybDriver"),
-	OTHER("other", null);
+	MYSQL("mysql", "com.mysql.jdbc.Driver",false), 
+	DB2("db2", "com.ibm.db2.jcc.DB2Driver",false),
+	ORACLE("oracle", "oracle.jdbc.driver.OracleDriver",false, "xe"),
+	SQLSERVER("sqlserver", "com.microsoft.sqlserver.jdbc.SQLServerDriver", true),
+	MARIADB("mariadb", "org.mariadb.jdbc.Driver",false), 
+	DERBY("derby", "org.apache.derby.jdbc.ClientDriver",false),
+	HSQLDB("hsqldb", "org.hsqldb.jdbcDriver",false), 
+	POSTGRESQL("postgresql", "org.postgresql.Driver",false),
+	H2("h2", "org.h2.Driver",false), 
+	TIBERO("tibero", "com.tmax.tibero.jdbc.TbDriver",false),
+	CUBRID("cubrid", "cubrid.jdbc.driver.CUBRIDDriver",false), 
+	SYBASE("sybase", "com.sybase.jdbc4.jdbc.SybDriver",false),
+	OTHER("other", null, false);
 
 	private String dbVenderName;
 	
@@ -29,17 +29,19 @@ public enum DBVenderType {
 	
 	private boolean useDatabaseName;
 
-	
-	private DBVenderType(String db, String driverClass){
-		this(db, driverClass, false);
-	}
+	private String defaultDatabaseName;
 	
 	private DBVenderType(String db, String driverClass, boolean useDatabaseName){
+		this(db, driverClass, useDatabaseName, "");
+	}
+	
+	private DBVenderType(String db, String driverClass, boolean useDatabaseName, String defaultDatabaseName){
 		this.dbVenderName =db;
 		this.driverClass =driverClass;
 		this.useDatabaseName =useDatabaseName;
+		this.defaultDatabaseName =defaultDatabaseName;
 	}
-
+	
 	public String getDbVenderName() {
 		return dbVenderName;
 	}
@@ -50,7 +52,6 @@ public enum DBVenderType {
 
 	public static DBVenderType getDBType(String db) {
 		if(db != null) {
-			db = db.toUpperCase();
 			for (DBVenderType dbType : values()) {
 				if(db.equalsIgnoreCase(dbType.name())) {
 					return dbType;
@@ -77,5 +78,9 @@ public enum DBVenderType {
 
 	public String getDriverClass() {
 		return driverClass;
+	}
+
+	public String getDefaultDatabaseName() {
+		return defaultDatabaseName;
 	}
 }

@@ -269,8 +269,10 @@
 <entry key="admim.account.settings">Administrator Account Settings</entry>
 <entry key="admim.default.name">Administrator</entry>
 <entry key="app.settings">App Settings</entry>
+<entry key="app.data.path">Data Path</entry>
 
 <!-- file -->
+<entry key="file">File</entry>
 <entry key="file.new">New File</entry>
 <entry key="file.name">File Name</entry>
 <entry key="file.import_export">Import and Export...</entry>
@@ -393,6 +395,21 @@
 
 <entry key="help">Help</entry>
 <entry key="install">Installation</entry>
-<entry key="install.start"> Installation started</entry>
+<entry key="install.start">Installation started</entry>
+
+<entry key="execute">Execute</entry>
+<entry key="commit.count">Commit Frequency</entry>
+<entry key="sql">SQL</entry>
+<entry key="error.ignore">Ignore error</entry>
+
+<entry key="column.name.copy">Copy Column Name</entry>
+<entry key="column.name.add">Add Column Name</entry>
+<entry key="column.name.value.add"><![CDATA[Add Column Name & Value]]></entry>
+<entry key="page.size">Page Size</entry>
+<entry key="viewer">Viewer</entry>
+<entry key="viewer.view">Viewer View</entry>
+
+<entry key="trigger.info">Trigger Info</entry>
+
 
 </properties>

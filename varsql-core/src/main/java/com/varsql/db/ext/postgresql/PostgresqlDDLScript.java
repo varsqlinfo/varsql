@@ -1,15 +1,12 @@
 package com.varsql.db.ext.postgresql;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.datatype.DataType;
@@ -20,9 +17,9 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.db.valueobject.ddl.DDLTemplateParam;
-import com.varsql.core.sql.SQLTemplateCode;
+import com.varsql.core.sql.DDLTemplateCode;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
-import com.varsql.core.sql.template.SQLTemplateFactory;
+import com.varsql.core.sql.template.DDLTemplateFactory;
 import com.vartech.common.app.beans.DataMap;
 
 /**
@@ -64,9 +61,9 @@ public class PostgresqlDDLScript extends AbstractDDLScript {
 					.commentsList(sqlSession.selectList("tableColumnComments",dataParamInfo))
 				.build();
 				
-				param.setSourceText(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.constraintKey, param));
+				param.setSourceText(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.TABLE.constraintKey, param));
 				
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.TABLE.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -99,7 +96,7 @@ public class PostgresqlDDLScript extends AbstractDDLScript {
 						.commentsList(sqlSession.selectList("tableColumnComments",dataParamInfo))
 					.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.VIEW.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.VIEW.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -131,7 +128,7 @@ public class PostgresqlDDLScript extends AbstractDDLScript {
 					.sourceText(source.getString(MetaColumnConstants.CREATE_SOURCE))
 				.build();
 	
-				ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.INDEX.create, param), dbType));
+				ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.INDEX.create, param), dbType));
 				reval.add(ddlInfo);
 			}
 		}
@@ -165,7 +162,7 @@ public class PostgresqlDDLScript extends AbstractDDLScript {
 					.sourceText(source.getString(MetaColumnConstants.CREATE_SOURCE))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.FUNCTION.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.FUNCTION.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -198,7 +195,7 @@ public class PostgresqlDDLScript extends AbstractDDLScript {
 					.sourceText(source.getString(MetaColumnConstants.CREATE_SOURCE))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PROCEDURE.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.PROCEDURE.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -244,7 +241,7 @@ public class PostgresqlDDLScript extends AbstractDDLScript {
 					.sourceText(source.getString(MetaColumnConstants.CREATE_SOURCE))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TRIGGER.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.TRIGGER.create, param));
 				reval.add(ddlInfo);
 			}
 		}

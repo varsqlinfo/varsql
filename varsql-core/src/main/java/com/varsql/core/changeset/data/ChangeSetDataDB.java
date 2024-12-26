@@ -63,7 +63,7 @@ public class ChangeSetDataDB implements ChangeSetData{
 			PreparedStatement pstmt = conn.prepareStatement(selectQuery);
 			ResultSet rs = pstmt.executeQuery()){
 			
-			List<Map> result = SQLResultSetUtils.resultSetHandler(rs, connectionInfo.getType());
+			List<Map> result = SQLResultSetUtils.resultList(rs, connectionInfo.getType());
 			
 			result.forEach(item->{
 				changeLogInfo.put(item.get("HASH"), item);

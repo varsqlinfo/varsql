@@ -2,11 +2,9 @@ package com.varsql.core.sql.executor;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.code.VarsqlFileType;
+import com.varsql.core.common.job.JobExecuteResult;
 import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.data.importdata.ImportData;
@@ -51,7 +50,7 @@ public class FileImportExecutor extends UpdateExecutor{
 	public static String IMPORT_FILE_PARAM_NAME = "importFile";
 	
 	@Override
-	public SQLExecuteResult execute(SqlStatementInfo statementInfo) throws SQLException {
+	public JobExecuteResult execute(SqlStatementInfo statementInfo) throws SQLException {
 		return execute(statementInfo, new UpdateExecutorHandler() {
 			@Override
 			public boolean handle(UpdateInfo sqlResultVO) {
@@ -61,9 +60,9 @@ public class FileImportExecutor extends UpdateExecutor{
 	}
 
 	@Override
-	public SQLExecuteResult execute(SqlStatementInfo statementInfo, final UpdateExecutorHandler updateHandler) throws SQLException {
+	public JobExecuteResult execute(SqlStatementInfo statementInfo, final UpdateExecutorHandler updateHandler) throws SQLException {
 
-		SQLExecuteResult result = new SQLExecuteResult();
+		JobExecuteResult result = new JobExecuteResult();
 
 		File importFile;
 		try {
@@ -145,15 +144,15 @@ public class FileImportExecutor extends UpdateExecutor{
 					statement.addBatch();
 					statement.clearParameters();
 
-					handlerVariable.addCount();
+					handlerVariable.addTotalCount();
 
-					if(handlerVariable.getCount() % getBatchCount()==0) {
+					if(handlerVariable.getTotalCount() % getBatchCount()==0) {
 						setExecuteBatch(statement, handlerVariable, getBatchCount());
 					}
 				}
 			});
 
-			int lastBatchCount = handlerVariable.getCount() % getBatchCount(); 
+			int lastBatchCount = handlerVariable.getTotalCount() % getBatchCount(); 
 			if(lastBatchCount != 0) {
 				setExecuteBatch(handlerVariable.getStatement(), handlerVariable, lastBatchCount);
 			}
@@ -172,10 +171,10 @@ public class FileImportExecutor extends UpdateExecutor{
 				JdbcUtils.close(conn, handlerVariable.getStatement());
 			}
 		}
-		result.setTotalCount(handlerVariable.getCount() );
+		result.setTotalCount(handlerVariable.getTotalCount() );
 		result.setEndTime(System.currentTimeMillis());
-		result.setExecuteCount(handlerVariable.getCount());
-		result.setResult(handlerVariable.getCount());
+		result.setExecuteCount(handlerVariable.getTotalCount());
+		result.setResult(handlerVariable.getTotalCount());
 
 		return result;
 	}

@@ -70,6 +70,7 @@ import com.varsql.web.security.rememberme.RememberMeUserService;
  */
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	final private String CSRF_TOKEN_NAME = "varsql_ct";
@@ -138,6 +139,9 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 		
 		if(!Configuration.getInstance().isInit()) {
+			System.out.println("is init : " +  Configuration.getInstance().isInit());
+			System.out.println("app filter  ");
+			
 			http.addFilterBefore(new AppInitFilter(), BasicAuthenticationFilter.class);
 			return ;
 		}
@@ -153,7 +157,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 			http.addFilterBefore(new VarsqlSsoFilter(beanFactory.getBean(ResourceConfigConstants.APP_SSO_BEAN_FACTORY, SsoBeanFactory.class)
 					,beanFactory.getBean(ResourceConfigConstants.APP_SSO_COMPONENT, SsoComponent.class)), BasicAuthenticationFilter.class);
 		}
-
+		
 		http.headers()
 			.frameOptions().sameOrigin().httpStrictTransportSecurity()
 			.disable()
@@ -162,11 +166,12 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 			.csrfTokenRepository(getCookieCsrfTokenRepository())
 			.ignoringRequestMatchers(staticRequestMatcher, csrfIgnoreRequestMatcher)
 			.requireCsrfProtectionMatcher(ajaxRequestMatcher)
-		.and() //session
-			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
+		.and() //session  
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 세션 생성 방법 
+			.sessionFixation().newSession() // sessionFixation 세션 id 처리 방법
 			.sessionAuthenticationErrorUrl("/login")  // remmember me error 처리 페이지. 추가.
 			//.maximumSessions(1)	// 중복 로그인 카운트
-			.sessionFixation().changeSessionId()	// session 공격시 session id 변경.
+			//.sessionFixation().changeSessionId()	// session 공격시 session id 변경.
 		.and() // login
 			.formLogin()
 	        .loginPage("/login")
@@ -198,7 +203,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 	        .addLogoutHandler(varsqlAuthenticationLogoutHandler)
 	        .logoutSuccessHandler(varsqlAuthenticationLogoutSuccessHandler)
 	        .invalidateHttpSession(true)
-	        .deleteCookies("JSESSIONID",  SecurityConstants.REMEMBERME_COOKIENAME).permitAll()
+	        .deleteCookies(SecurityConstants.JSESSION_ID_COOKIE_NAME, SecurityConstants.REMEMBERME_COOKIENAME).permitAll()
 	        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 
 		.and()

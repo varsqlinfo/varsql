@@ -39,6 +39,8 @@ public class TemplateFactory {
 //		handlebars.registerHelper("neq", ConditionalHelpers.neq);
 		handlebars.registerHelper("and", ConditionalHelpers.and);
 		handlebars.registerHelper("or", ConditionalHelpers.or);
+		handlebars.registerHelper("isEmpty", isEmpty());
+		handlebars.registerHelper("isNotEmpty", isNotEmpty());
         
         
 		handlebars.registerHelper("camelCase", camelCaseHelper());
@@ -93,6 +95,24 @@ public class TemplateFactory {
 			@Override
 			public Object apply(String text, Options options) throws IOException {
 				return StringUtils.camelCase(text);
+			}
+		};
+	}
+	
+	private static Helper<String> isEmpty() {
+		return new Helper<String>() {
+			@Override
+			public Object apply(String text, Options options) throws IOException {
+				return StringUtils.isBlank(text) ? options.fn() : options.inverse();
+			}
+		};
+	}
+	
+	private static Helper<String> isNotEmpty() {
+		return new Helper<String>() {
+			@Override
+			public Object apply(String text, Options options) throws IOException {
+				return !StringUtils.isBlank(text) ? options.fn() : options.inverse();
 			}
 		};
 	}

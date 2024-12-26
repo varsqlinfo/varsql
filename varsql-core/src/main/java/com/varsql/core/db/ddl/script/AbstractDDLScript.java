@@ -15,7 +15,6 @@ import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.datatype.DataTypeFactory;
-import com.varsql.core.db.datatype.DefaultDataType;
 import com.varsql.core.db.ddl.conversion.ConversionType;
 import com.varsql.core.db.ddl.conversion.DDLConversionFactory;
 import com.varsql.core.db.mybatis.SQLManager;
@@ -30,8 +29,8 @@ import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.db.valueobject.ddl.DDLTemplateParam;
 import com.varsql.core.sql.CommentType;
-import com.varsql.core.sql.SQLTemplateCode;
-import com.varsql.core.sql.template.SQLTemplateFactory;
+import com.varsql.core.sql.DDLTemplateCode;
+import com.varsql.core.sql.template.DDLTemplateFactory;
 import com.vartech.common.utils.StringUtils;
 
 /**
@@ -174,7 +173,7 @@ public abstract class AbstractDDLScript implements DDLScript{
 				.commentsList(commentsList)
 			.build();
 			
-			ddlStrBuf.append(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.create, param));
+			ddlStrBuf.append(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.TABLE.create, param));
 
 			ddlStrBuf.append(BlankConstants.NEW_LINE_TWO);
 
@@ -226,7 +225,7 @@ public abstract class AbstractDDLScript implements DDLScript{
 						.sourceText(sourceSb.toString())
 					.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.VIEW.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.VIEW.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -273,7 +272,7 @@ public abstract class AbstractDDLScript implements DDLScript{
 						.sourceText(sourceSb.toString())
 					.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.INDEX.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.INDEX.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -320,7 +319,7 @@ public abstract class AbstractDDLScript implements DDLScript{
 						.sourceText(sourceSb.toString())
 					.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.FUNCTION.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.FUNCTION.create, param));
 				
 				reval.add(ddlInfo);
 			}
@@ -368,7 +367,7 @@ public abstract class AbstractDDLScript implements DDLScript{
 						.sourceText(sourceSb.toString())
 					.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PROCEDURE.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.PROCEDURE.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -414,7 +413,7 @@ public abstract class AbstractDDLScript implements DDLScript{
 						.sourceText(sourceSb.toString())
 					.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TRIGGER.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.TRIGGER.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -456,7 +455,7 @@ public abstract class AbstractDDLScript implements DDLScript{
 					.item(sqlSesseion.selectOne("sequenceScript", dataParamInfo))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.SEQUENCE.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.SEQUENCE.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -570,9 +569,9 @@ public abstract class AbstractDDLScript implements DDLScript{
 				.commentsList(commentsList)
 			.build();
 			
-			param.setSourceText(SQLTemplateFactory.getInstance().sqlRender(convertDb, SQLTemplateCode.TABLE.constraintKey, param));
+			param.setSourceText(DDLTemplateFactory.getInstance().render(convertDb, DDLTemplateCode.TABLE.constraintKey, param));
 			
-			ddlStrBuf.append(SQLTemplateFactory.getInstance().sqlRender(convertDb, SQLTemplateCode.TABLE.createConversion, param, SQLTemplateCode.TABLE.create));
+			ddlStrBuf.append(DDLTemplateFactory.getInstance().render(convertDb, DDLTemplateCode.TABLE.createConversion, param, DDLTemplateCode.TABLE.create));
 			
 			ddlInfo.setCreateScript(ddlStrBuf.toString());
 			reval.add(ddlInfo);

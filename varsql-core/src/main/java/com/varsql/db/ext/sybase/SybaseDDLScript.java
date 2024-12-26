@@ -15,9 +15,9 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.db.valueobject.ddl.DDLTemplateParam;
-import com.varsql.core.sql.SQLTemplateCode;
+import com.varsql.core.sql.DDLTemplateCode;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
-import com.varsql.core.sql.template.SQLTemplateFactory;
+import com.varsql.core.sql.template.DDLTemplateFactory;
 import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.utils.StringUtils;
 
@@ -64,7 +64,7 @@ public class SybaseDDLScript extends AbstractDDLScript {
 					.commentsList(sqlSession.selectList("tableColumnComments",dataParamInfo))
 				.build();
 	
-				ddlStr.append(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.TABLE.create, param));
+				ddlStr.append(DDLTemplateFactory.getInstance().render(dbType, DDLTemplateCode.TABLE.create, param));
 	
 				ddlInfo.setCreateScript(ddlStr.toString());
 				reval.add(ddlInfo);
@@ -103,7 +103,7 @@ public class SybaseDDLScript extends AbstractDDLScript {
 					.sourceText(StringUtils.trim(sourceSb.toString()))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.VIEW.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.VIEW.create, param));
 				
 				reval.add(ddlInfo);
 			}
@@ -134,7 +134,7 @@ public class SybaseDDLScript extends AbstractDDLScript {
 					.items(sqlSession.selectList("indexScript", dataParamInfo))
 				.build();
 	
-				ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.INDEX.create, param), dbType));
+				ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.INDEX.create, param), dbType));
 	
 				reval.add(ddlInfo);
 			}
@@ -173,7 +173,7 @@ public class SybaseDDLScript extends AbstractDDLScript {
 					.sourceText(StringUtils.trim(sourceSb.toString()))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.FUNCTION.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.FUNCTION.create, param));
 				
 				reval.add(ddlInfo);
 			}
@@ -211,7 +211,7 @@ public class SybaseDDLScript extends AbstractDDLScript {
 					.sourceText(StringUtils.trim(sourceSb.toString()))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PROCEDURE.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.PROCEDURE.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -261,7 +261,7 @@ public class SybaseDDLScript extends AbstractDDLScript {
 					.sourceText(StringUtils.trim(sourceSb.toString()))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TRIGGER.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.TRIGGER.create, param));
 				
 				reval.add(ddlInfo);
 			}

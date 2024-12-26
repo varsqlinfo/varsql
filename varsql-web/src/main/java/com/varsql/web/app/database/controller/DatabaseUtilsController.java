@@ -14,12 +14,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.varsql.core.connection.ConnectionInfoManager;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
-import com.varsql.core.sql.SQLTemplateCode;
-import com.varsql.core.sql.template.SQLTemplateFactory;
+import com.varsql.core.sql.DDLTemplateCode;
+import com.varsql.core.sql.template.DDLTemplateFactory;
 import com.varsql.web.app.database.service.DatabaseSourceGenImpl;
 import com.varsql.web.app.database.service.PreferencesServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
@@ -56,9 +57,6 @@ public class DatabaseUtilsController extends AbstractController  {
 	@Autowired
 	private PreferencesServiceImpl preferencesServiceImpl;
 	
-	@Autowired
-	private DatabaseSourceGenImpl databaseSourceGenImpl;
-
 	/**
 	 * excel -> ddl 변환
 	 *
@@ -88,7 +86,7 @@ public class DatabaseUtilsController extends AbstractController  {
 			, @RequestParam(value = "templateType", required = true) String templateType
 			, HttpServletRequest req) throws Exception {
 		
-		return VarsqlUtils.getResponseResultItemOne(SQLTemplateFactory.getInstance().getTemplate(DBVenderType.getDBType(dbType), SQLTemplateCode.TABLE.create));
+		return VarsqlUtils.getResponseResultItemOne(DDLTemplateFactory.getInstance().getTemplate(DBVenderType.getDBType(dbType), DDLTemplateCode.TABLE.create));
 	}
 	
 	/**
@@ -121,13 +119,12 @@ public class DatabaseUtilsController extends AbstractController  {
 		ModelMap model = mav.getModelMap();
 		
 		DatabaseParamInfo dpi = new DatabaseParamInfo(SecurityUtil.userDBInfo(preferencesInfo.getConuid()));
-		
-		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
 
-		model.addAttribute("currentSchemaName", dpi.getSchema());
+		model.addAttribute("currentSchemaName", ConnectionInfoManager.getInstance().getConnectionInfo(dpi.getVconnid()).getSchema());
 		model.addAttribute("dbTypeList", DBVenderType.values());
 
 		if(SecurityUtil.isSchemaView(dpi)) {
+			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
 			
 			DBVenderType venderType = DBVenderType.getDBType(dpi.getType());
 
@@ -160,11 +157,10 @@ public class DatabaseUtilsController extends AbstractController  {
 		
 		DatabaseParamInfo dpi = new DatabaseParamInfo(SecurityUtil.userDBInfo(preferencesInfo.getConuid()));
 		
-		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
-		
-		model.addAttribute("currentSchemaName", dpi.getSchema());
+		model.addAttribute("currentSchemaName", ConnectionInfoManager.getInstance().getConnectionInfo(dpi.getVconnid()).getSchema());
 		
 		if(SecurityUtil.isSchemaView(dpi)) {
+			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
 			
 			DBVenderType venderType = DBVenderType.getDBType(dpi.getType());
 			

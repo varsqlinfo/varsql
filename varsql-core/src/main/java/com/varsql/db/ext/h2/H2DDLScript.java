@@ -15,8 +15,8 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.db.valueobject.ddl.DDLTemplateParam;
-import com.varsql.core.sql.SQLTemplateCode;
-import com.varsql.core.sql.template.SQLTemplateFactory;
+import com.varsql.core.sql.DDLTemplateCode;
+import com.varsql.core.sql.template.DDLTemplateFactory;
 import com.vartech.common.utils.StringUtils;
 
 /**
@@ -54,7 +54,7 @@ public class H2DDLScript extends AbstractDDLScript {
 				DDLTemplateParam param = getDefaultTemplateParam(ddlOption, dataParamInfo, null);
 				param.setSourceText(StringUtils.trim(sqlSession.selectOne("functionScript", dataParamInfo)));
 				
-				String tempateSource = SQLTemplateFactory.getInstance().sqlRender(DBVenderType.H2, SQLTemplateCode.FUNCTION.create, param);
+				String tempateSource = DDLTemplateFactory.getInstance().render(DBVenderType.H2, DDLTemplateCode.FUNCTION.create, param);
 				
 				ddlInfo.setChangeFormat(false);
 				ddlInfo.setCreateScript(tempateSource);
@@ -82,7 +82,7 @@ public class H2DDLScript extends AbstractDDLScript {
 				dataParamInfo.setObjectName(name);
 	
 				DDLTemplateParam param = getDefaultTemplateParam(ddlOption, dataParamInfo, sqlSession.selectList("indexScript", dataParamInfo));
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.INDEX.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(dbType, DDLTemplateCode.INDEX.create, param));
 				
 				reval.add(ddlInfo);
 			}

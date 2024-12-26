@@ -110,6 +110,27 @@ if (typeof window != "undefined") {
 				'/webstatic/js/plugins/file/dropzone.css'
 			]
 		}
+		, 'toast.editor': {
+			'js': [
+				'/webstatic/js/plugins/board/editor/toast/toastui-editor-all.min.js'
+				,"/webstatic/js/plugins/board/editor/toast/tui-color-picker.min.js"
+				,"/webstatic/js/plugins/board/editor/toast/toastui-editor-plugin-color-syntax.min.js"
+				,"/webstatic/js/plugins/board/editor/toast/toastui-editor-plugin-code-syntax-highlight-all.min.js"
+				,"/webstatic/js/plugins/board/editor/toast/toastui-chart.js"
+				,"/webstatic/js/plugins/board/editor/toast/toastui-editor-plugin-uml.min.js"
+				,"/webstatic/js/plugins/board/editor/toast/toastui-editor-plugin-chart.min.js"
+				,"/webstatic/js/plugins/board/editor/toast/toastui-editor-plugin-table-merged-cell.min.js"
+			]
+			, 'css': [
+				'/webstatic/js/plugins/board/editor/toast/toastui-editor.min.css'
+				,"/webstatic/js/plugins/board/editor/toast/prism-okaidia.min.css"
+				,"/webstatic/js/plugins/board/editor/toast/toastui-chart.css"
+				,"/webstatic/js/plugins/board/editor/toast/toastui-editor-dark.css"
+				,"/webstatic/js/plugins/board/editor/toast/toastui-editor-plugin-code-syntax-highlight.min.css"
+				,"/webstatic/js/plugins/board/editor/toast/toastui-editor-plugin-color-syntax.min.css"
+				,"/webstatic/js/plugins/board/editor/toast/tui-color-picker.css"
+			]
+		}
 	};
 
 	_$base.getContextPathUrl = function(url) {
@@ -549,7 +570,7 @@ if (typeof window != "undefined") {
 						return;
 					}
 
-					$(loadSelector).centerLoadingClose();
+					$(loadSelector).centerLoading('close');
 					alert(_$base.message('error.0004'));
 					_this.isConnectError = true;
 
@@ -575,7 +596,7 @@ if (typeof window != "undefined") {
 				try {
 					option.success.call(this, data, status, jqXHR);
 				} catch (e) {
-					$(loadSelector).centerLoadingClose();
+					$(loadSelector).centerLoading('close');
 					console.log(e);
 				}
 			}
@@ -583,13 +604,13 @@ if (typeof window != "undefined") {
 			$.ajax(ajaxOpt).done(function(xhr) {
 				delete ALL_REQ_STATUS[ajaxUid];
 				if (loadSelector) {
-					$(loadSelector).centerLoadingClose();
+					$(loadSelector).centerLoading('close');
 				}
 			}).fail(function(xhr) {
 				PROGRESS_BAR_STATUS = -1;
 				delete ALL_REQ_STATUS[ajaxUid];
 				if (loadSelector) {
-					$(loadSelector).centerLoadingClose();
+					$(loadSelector).centerLoading('close');
 				}
 			});
 		}
@@ -667,7 +688,7 @@ if (typeof window != "undefined") {
 						if (_this.isConnectError === true) {
 							return;
 						}
-						$('body').centerLoadingClose();
+						$('body').centerLoading('close');
 						alert(_$base.message('error.0004'));
 						_this.isConnectError = true;
 
@@ -681,9 +702,9 @@ if (typeof window != "undefined") {
 					}
 				}
 			}).done(function(xhr) {
-				$('body').centerLoadingClose();
+				$('body').centerLoading('close');
 			}).fail(function(xhr) {
-				$('body').centerLoadingClose();
+				$('body').centerLoading('close');
 			});
 		}
 		, ajaxSubmit: function(formid, opts) {
@@ -725,8 +746,6 @@ if (typeof window != "undefined") {
 
 			tmpParam[$$csrf_param] = $$csrf_token;
 			
-			
-
 			if (VARSQL.isUndefined(tmpParam.progressUid)) {
 				tmpParam.progressUid = VARSQL.generateUUID();
 			}
@@ -794,7 +813,7 @@ if (typeof window != "undefined") {
 							if (_this.isConnectError === true) {
 								return;
 							}
-							$('body').centerLoadingClose();
+							$('body').centerLoading('close');
 							alert(_$base.message('error.0004'));
 							_this.isConnectError = true;
 
@@ -830,7 +849,7 @@ if (typeof window != "undefined") {
 				$.ajax(ajaxOpt).done(function(xhr) {
 					delete ALL_REQ_STATUS[requid];
 					if (loadSelector) {
-						$(loadSelector).centerLoadingClose();
+						$(loadSelector).centerLoading('close');
 					}
 				}).fail(function(xhr) {
 					delete ALL_REQ_STATUS[requid];
@@ -855,7 +874,7 @@ if (typeof window != "undefined") {
 					}
 
 					if (loadSelector) {
-						$(loadSelector).centerLoadingClose();
+						$(loadSelector).centerLoading('close');
 					}
 				})
 
@@ -981,19 +1000,25 @@ if (typeof window != "undefined") {
 	}
 
 	// database request cancel
-	function databaseReqCancel(reqUid) {
+	function databaseReqCancel(reqUid, loadImgFlag) {
 		reqUid = reqUid || _currentAjaxUid;
-
-		if (!_$base.isBlank(reqUid) && ($varsqlConfig || {}).conuid) {
-			var param = setRequestUid({ conuid: ($varsqlConfig || {}).conuid}, reqUid)
-
-			_$base.req.ajax({
-				url: { type: VARSQL.uri.database, url: '/reqCancel' }
+		
+		if (!_$base.isBlank(reqUid)) {
+			var param = setRequestUid({ conuid: ($varsqlConfig || {}).conuid}, reqUid);
+			
+			var ajaxOpt = {
+				url: { type: VARSQL.uri.sql, url: '/base/requestCancel' }
 				, ignoreUid: true
 				, data: param
 				, success: function(resData) {
 				}
-			})
+			}; 
+			
+			if(loadImgFlag===true){
+				ajaxOpt.loadSelector = 'body';
+			}
+			
+			_$base.req.ajax(ajaxOpt)
 		}
 	}
 
@@ -1010,7 +1035,11 @@ if (typeof window != "undefined") {
 		}
 	})
 
-
+	// database request cancel
+	_$base.databaseRequestCancel = function (reqUid){
+		databaseReqCancel(reqUid, true)
+	};
+	
 	_$base.logout = function(callback) {
 		if (_$base.isFunction(callback)) {
 			_$base.req.ajax({
@@ -1053,11 +1082,11 @@ if (typeof window != "undefined") {
 
 	_$base.socket = {
 		stompClient: null
-		, isCreate: false
 		, connRetryCount: 0
 		, maxRetry: 10
 		, subscripeActiveMap: {}
 		, subscripeObj: {}
+		, isCreate: false
 		//알림 수신
 		, addSubscribe: function(endpoint, headers, callback) {
 
@@ -1071,7 +1100,7 @@ if (typeof window != "undefined") {
 	
 			this.subscripeObj[subscribeId] = this.stompClient.subscribe(subscribeId, function (data) {
 	    		if(_$base.isFunction(callback)){
-	          callback.call(null, parseJSON( data.body));
+	          		callback.call(null, parseJSON( data.body));
 	    		}
 	    	}, headers);
 		}
@@ -1088,6 +1117,7 @@ if (typeof window != "undefined") {
 			}
 		}
 		,connect : function(endpoint, headers, callback){
+			
 			var _this = this;
 			headers = headers ||{};
 	
@@ -1117,7 +1147,6 @@ if (typeof window != "undefined") {
 			var url = location.protocol+'//'+location.host +_$base.getContextPathUrl("/ws/"+endpoint);
 	
 			var sockJSConn = new SockJS(url , null, {transports : ['websocket'] ,timeout:60000});
-			//sockJSConn._transportTimeout = function() { console.log('gotcha!!!'); };
 	
 			var stompClient = Stomp.over(sockJSConn);
 			stompClient.heartbeat.outgoing = 20000;
@@ -1161,9 +1190,25 @@ if (typeof window != "undefined") {
 			return this.stompClient; 
 		}
 	}
-
+	
+	var centerLoadingIntervalObj = {};
 	jQuery.fn.centerLoading = function(options) {
-		this.config = {
+		
+		if(options =='close'){
+			this.find('>.centerLoading').remove();
+			var posVal = (this.attr('var-css-key') || '');
+			if (posVal.indexOf('relative') > -1) {
+				this.css('position', '');
+				this.removeAttr('var-css-key');
+			}
+			
+			clearInterval(centerLoadingIntervalObj[this]);
+			delete centerLoadingIntervalObj[this];
+			
+			return; 
+		}
+		
+		var defaultConfig = {
 			closeAutoYn: 'N',
 			timeOut: 1000,
 			action: 'slide',
@@ -1175,6 +1220,7 @@ if (typeof window != "undefined") {
 			left: '0',
 			centerYn: 'Y',
 			bgColor: '#e8e8e8',
+			enableTime : true,
 			loadingImg: _$base.url('/webstatic/css/images/loading.gif'),
 			cursor: 'wait',
 			contentClear: false,
@@ -1182,21 +1228,20 @@ if (typeof window != "undefined") {
 			callback: false,
 		}
 
-		var id, w, h;
-
-		var config = $.extend({}, this.config, options);
-		id = this.attr('id');
-
-		w = config.width == 0 ? this.width() : config.width;
-		h = config.height == 0 ? this.height() : config.height;
-
+		var config = $.extend({}, defaultConfig, options);
+		
 		if ($(this).parent().attr('prevspan') == 'Y') config.contentClear = false;
 
 		var loadStr = '<div class="centerLoading" style="cursor:' + config.cursor + ';top:0px;left:0px;z-index:100;position:absolute;width:100%; height:100%;">';
 
 		loadStr += '<div style="position:absolute;background: ' + config.bgColor + ';opacity: 0.5; width:100%; height:100%;z-index:1;"></div>';
 
-		loadStr += ' <div style="z-index:10; text-align: center; position: absolute; top: 40%;left: 50%; transform: translate(-50%, -50%);"><img src="' + config.loadingImg + '"/> ';
+		loadStr += ' <div style="z-index:10; text-align: center; position: absolute; top: 40%;left: 50%; transform: translate(-50%, -50%);">';
+		if(config.enableTime === true){
+			loadStr += ' <div class="center-loading-time" style="position: absolute;z-index: 99999991;text-align: center;width: 100%;margin-top: 8px;">0</div>';
+		}
+		
+		loadStr += ' <img src="' + config.loadingImg + '"/> ';
 
 		loadStr += ' <div class="center-loading-centent" style="background: #acacac;color: #000;font-size: 12pt;padding: 0px 10px;">' + (config.content || '') + '</div>';
 
@@ -1212,6 +1257,15 @@ if (typeof window != "undefined") {
 			this.prepend(loadStr);
 		} else {
 			this.empty().html(loadStr);
+		}
+		
+		if(config.enableTime === true){
+			var loadingTimeEle = this.find('.center-loading-time');
+			var sec = 0;
+			centerLoadingIntervalObj[this] = setInterval(() =>{ 
+				loadingTimeEle.empty().html(++sec)
+			}, 1000);
+			
 		}
 
 		if (config.enableLoadSelectorBtn === true) {
@@ -1237,16 +1291,6 @@ if (typeof window != "undefined") {
 		config.action == 'slide' ? jQuery(this).slideDown('slow') : config.action == 'fade' ? jQuery(this).fadeIn('slow') : jQuery(this).show();
 
 		return this;
-	};
-
-	jQuery.fn.centerLoadingClose = function(options) {
-
-		this.find('>.centerLoading').remove();
-		var posVal = (this.attr('var-css-key') || '');
-		if (posVal.indexOf('relative') > -1) {
-			this.css('position', '');
-			this.removeAttr('var-css-key');
-		}
 	};
 
 	_$base.progress = {

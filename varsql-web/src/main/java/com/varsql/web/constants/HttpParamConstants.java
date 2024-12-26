@@ -1,12 +1,14 @@
 package com.varsql.web.constants;
 
 public interface HttpParamConstants {
-
+	
 	final public String VCONNID ="vconnid";
 	final public String CONN_UUID ="conuid";
 	final public String SQL ="sql";
 	final public String LIMIT ="limit";
 	final public String SQL_PARAM ="sqlParam";
+	
+	final public String REQ_UID ="requid$$";
 
 	/**
 	 * 사용자 관련 파라미터 정보

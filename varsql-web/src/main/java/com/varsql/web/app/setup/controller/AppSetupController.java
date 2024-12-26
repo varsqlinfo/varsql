@@ -7,6 +7,10 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -26,7 +30,6 @@ import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.dto.setup.SetupConfigDTO;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.utils.VartechUtils;
 
 
 
@@ -37,6 +40,7 @@ import com.vartech.common.utils.VartechUtils;
  *
  */
 @Controller
+@Conditional(AppSetupController.AppSetupControllerCondition.class)
 @RequestMapping("/setup")
 public class AppSetupController extends AbstractController {
 
@@ -49,6 +53,7 @@ public class AppSetupController extends AbstractController {
 	public ModelAndView setup(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) throws Exception {
 		logger.debug("setup page");
 		ModelMap model = mav.getModelMap();
+		model.addAttribute("installRoot", Configuration.getInstance().getInstallRoot());
 		model.addAttribute("isInstall", Configuration.getInstance().existsAppConfigFile());
 		
 		return getModelAndView("/setup", VIEW_PAGE.SETUP, model);
@@ -68,6 +73,11 @@ public class AppSetupController extends AbstractController {
 		return appSetupService.install(setupConfigDTO);
 	}
 	
-		
+	public static class AppSetupControllerCondition implements Condition {
+    	@Override
+    	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+    		return !Configuration.getInstance().existsAppConfigFile();
+    	}
+    }	
 	
 }

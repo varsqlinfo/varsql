@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import com.varsql.core.connection.ConnectionInfoManager;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.web.constants.HttpParamConstants;
 import com.varsql.web.exception.DatabaseInvalidException;
@@ -65,7 +66,7 @@ public class DatabaseAuthInterceptor implements HandlerInterceptor {
 		req.setAttribute(HttpParamConstants.CONN_UUID, conuid);
 		req.setAttribute(HttpParamConstants.DB_TYPE, dataBaseInfo.get(conuid).getType());
 		req.setAttribute(HttpParamConstants.VCONNID, dataBaseInfo.get(conuid).getVconnid());
-		req.setAttribute(HttpParamConstants.DB_SCHEMA, dataBaseInfo.get(conuid).getSchema());
+		req.setAttribute(HttpParamConstants.DB_SCHEMA, ConnectionInfoManager.getInstance().getConnectionInfo(dataBaseInfo.get(conuid).getVconnid()).getSchema());
 		return true;
 	}
 }

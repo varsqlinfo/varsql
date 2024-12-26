@@ -63,7 +63,7 @@ def def_build= [
 ]
 
 ext {
-	varsqlVersion = '1.3.20'
+	varsqlVersion = '1.3.21'
 }
 
 //소스 분석.
@@ -189,7 +189,7 @@ subprojects {
 			// commons
 			,[ group: 'commons-io', name: 'commons-io', version: '2.11.0']
 			,[ group: 'commons-codec', name: 'commons-codec', version: '1.15']
-			,[ group: 'commons-fileupload', name: 'commons-fileupload', version: '1.4']
+			,[ group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5']
 		)
 		
 
@@ -206,6 +206,8 @@ subprojects {
 
 		implementation( // log
 			[ group: 'org.slf4j' , name: 'slf4j-api' , version: def_version.slf4j]
+			, [ group: 'ch.qos.logback', name: 'logback-core', version: '1.2.13']
+			, [ group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13']
 			,[ group: 'org.codehaus.janino' , name: 'janino' , version: '3.0.12']
 		)
 
@@ -244,7 +246,7 @@ subprojects {
 		implementation group: 'org.reflections', name: 'reflections', version: '0.9.9'
 
 
-		implementation group: 'com.alibaba' , name: 'druid' , version: '1.2.11'
+		implementation group: 'com.alibaba' , name: 'druid' , version: '1.2.24'
 
 		implementation group: 'com.thoughtworks.xstream' , name: 'xstream' , version: '1.4.11'
 		implementation group: 'org.antlr' , name: 'stringtemplate' , version: '4.0.2'

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.type.Alias;
 
+import com.varsql.core.connection.ConnectionInfoManager;
 import com.vartech.common.utils.StringUtils;
 
 import lombok.Getter;
@@ -72,13 +73,13 @@ public class DatabaseParamInfo{
 		this.vconnid = databaseInfo.getVconnid();
 		this.type = databaseInfo.getType();
 		this.dbType = databaseInfo.getType();
-		this.baseSchema = databaseInfo.getSchema();
+		this.baseSchema = ConnectionInfoManager.getInstance().getConnectionInfo(this.vconnid).getSchema() ;
+		this.schema = this.baseSchema;
 		this.basetableYn = databaseInfo.isBasetableYn();
 		this.lazyLoad =databaseInfo.isLazyLoad();
 		this.schemaViewYn =databaseInfo.isSchemaViewYn();
 		
-		setSchema(this.schema==null ? databaseInfo.getSchema() : this.schema);
-		setDatabaseName(this.databaseName==null ? databaseInfo.getDatabaseName() : this.databaseName);
+		setDatabaseName(StringUtils.isBlank(this.databaseName) ? ConnectionInfoManager.getInstance().getConnectionInfo(this.vconnid).getDatabaseName() : this.databaseName);
 	}
 
 	public void addCustom(String key, Object val) {
@@ -91,6 +92,10 @@ public class DatabaseParamInfo{
 	
 	public void setRefresh(String refresh) {
 		this.refresh = Boolean.parseBoolean(refresh);
+	}
+	
+	public void setSchema(String schema) {
+		this.schema = StringUtils.isBlank(schema) ?  this.baseSchema  : schema;
 	}
 	
 	public void setDatabaseName(String databaseName) {

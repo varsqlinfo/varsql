@@ -87,41 +87,4 @@ public class DbDiffServiceImpl{
 		return resultObject;
 	}
 
-	/**
-	 * object list
-	 *  
-	 * @method : objectList
-	 * @param vconnid
-	 * @param objectType
-	 * @param schema
-	 * @param databaseName
-	 * @return
-	 */
-	public ResponseResult objectList(String vconnid, String objectType, String schema) {
-
-		ResponseResult resultObject = new ResponseResult();
-
-		DatabaseInfo databaseInfo = dbConnectionEntityRepository.findDatabaseInfo(vconnid);
-
-		if(databaseInfo==null){
-			resultObject.setResultCode(RequestResultCode.ERROR);
-			return resultObject;
-		}else{
-			DatabaseParamInfo dpi = new DatabaseParamInfo(databaseInfo);
-			dpi.setSchema(schema);
-			dpi.setDatabaseName(databaseInfo.getDatabaseName());
-			dpi.setObjectType(objectType);
-
-			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
-			String objectId = ObjectType.getDBObjectType(objectType).getObjectTypeId();
-			if(ObjectType.TABLE.getObjectTypeId().equals(objectId)){ //object type "table" 인 경우는 column 정보도 같이 전송
-				resultObject.setList(dbMetaEnum.getDBObjectMeta(objectId, dpi));
-			}else{ // 테이블이 아닌 경우는 ddl를 비교.
-				List<BaseObjectInfo> objectList = dbMetaEnum.getDBObjectList(objectId, dpi);
-				resultObject.setList(dbMetaEnum.getDDLScript(objectId, dpi, new DDLCreateOption(), objectList.stream().map(tmp-> tmp.getName()).toArray(String[]::new)));
-			}
-		}
-
-		return resultObject;
-	}
 }

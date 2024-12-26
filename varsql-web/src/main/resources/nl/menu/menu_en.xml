@@ -79,13 +79,15 @@
 <entry key="manager.menu.dbcomparemgmt">DB Compare</entry>
 <entry key="manager.menu.sqllogmgmt">SQL Statistics</entry>
 <entry key="manager.menu.sqllog">SQL Logs</entry>
+<entry key="manager.menu.executestat">Execute SQL Statistics</entry>
 <entry key="manager.menu.userlogmgmt">User Log Statistics</entry>
 <entry key="manager.menu.scheduler">Scheduler</entry>
 <entry key="manager.menu.databackupgmgmt">Data Backup Management</entry>
 <entry key="manager.menu.ddlbackupmgmt">DDL Backup Management</entry>
-<entry key="manager.menu.sqljobmgmt">SQL Job</entry>
+<entry key="manager.menu.taskjobmgmt">Task Job</entry>
 <entry key="manager.menu.task">Task</entry>
 <entry key="manager.menu.sqltaskmgmt">SQL Task</entry>
+<entry key="manager.menu.datamigtaskmgmt">Data Migration Task</entry>
 
 <!-- user menu -->
 <entry key="user.prefernces.menu.general">Edit Profile</entry>

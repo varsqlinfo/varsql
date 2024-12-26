@@ -6,13 +6,13 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.vartech.common.io.Resource;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.configuration.beans.pref.AbstractPreferences;
 import com.varsql.core.configuration.beans.pref.PreferencesContextMenu;
 import com.varsql.core.configuration.beans.pref.PreferencesConvertText;
+import com.vartech.common.io.Resource;
 import com.vartech.common.utils.VartechReflectionUtils;
 import com.vartech.common.utils.VartechUtils;
 

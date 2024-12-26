@@ -21,6 +21,8 @@ public class ProgressInfo {
 	private long progressContentLength;
 	private long totalContentLength;
 	
+	private Object customInfo;
+	
 	private List items;
 	
 	public String getRequid() {
@@ -86,7 +88,12 @@ public class ProgressInfo {
 		
 		items.add(item);
 	}
-	
-	
-	
+
+	public Object getCustomInfo() {
+		return customInfo;
+	}
+
+	public void setCustomInfo(Object customInfo) {
+		this.customInfo = customInfo;
+	}
 }

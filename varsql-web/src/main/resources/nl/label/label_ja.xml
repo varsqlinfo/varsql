@@ -269,8 +269,10 @@
 <entry key="admim.account.settings">管理者アカウント設定</entry>
 <entry key="admim.default.name">管理者</entry>
 <entry key="app.settings">サイト設定</entry>
+<entry key="app.data.path">Data Path</entry>
 
 <!-- file -->
+<entry key="file">File</entry>
 <entry key="file.new">新規ファイル</entry>
 <entry key="file.name">ファイル名</entry>
 <entry key="file.import_export">インポートおよびエクスポート...</entry>
@@ -396,4 +398,17 @@
 <entry key="install">Installation</entry>
 <entry key="install.start">インストールを開始します</entry>
 
+<entry key="execute">実行</entry>
+<entry key="commit.count">コミット頻度</entry>
+<entry key="sql">SQL</entry>
+<entry key="error.ignore">エラーを無視</entry>
+
+<entry key="column.name.copy">列名のコピー</entry>
+<entry key="column.name.add">列名の追加</entry>
+<entry key="column.name.value.add"><![CDATA[列名と値の追加]]></entry>
+<entry key="page.size">Page Size</entry>
+<entry key="viewer">Viewer</entry>
+<entry key="viewer.view">Viewer View</entry>
+
+<entry key="trigger.info">Trigger Info</entry>
 </properties>

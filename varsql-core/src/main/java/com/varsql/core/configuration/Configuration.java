@@ -41,6 +41,8 @@ public class Configuration extends AbstractConfiguration{
 	public static final String DEFAULT_JDBC_URL = "jdbc:h2:file:#resourePath#/varsql;AUTO_SERVER=TRUE;CACHE_SIZE=131072;";
 	public static final String DEFAULT_JDBC_DRIVER = "org.h2.Driver";
 	
+	public static final String DEFAULT_UPLOAD_FOLDER = "upload";
+	
 	private Properties props = new Properties();
 
 	private ConnectionInfo vConInfo;
@@ -186,7 +188,7 @@ public class Configuration extends AbstractConfiguration{
 		passwordResetMode = VarsqlConstants.PASSWORD_RESET_MODE.getMode(props.getProperty("varsql.password.reset.mode", "manager"));
 
 		// file upload config
-		fileUploadPath= props.getProperty(FILE_UPLOAD_PATH, getInstallRoot() +File.separator + "upload");
+		fileUploadPath= props.getProperty(FILE_UPLOAD_PATH, getInstallRoot() +File.separator +DEFAULT_UPLOAD_FOLDER);
 		backupPath= props.getProperty(BACKUP_PATH, getInstallRoot() +File.separator + "backup");
 		backupExpireDay= Integer.parseInt(props.getProperty(BACKUP_EXPIRE_PATH, "30"));
 		
@@ -200,7 +202,7 @@ public class Configuration extends AbstractConfiguration{
 		protocol = props.getProperty("varsql.protocol", "http");
 		hostname = props.getProperty("varsql.hostname", "localhost");
 		port = Integer.parseInt(props.getProperty("varsql.port", "12345"));
-		contextPath = props.getProperty("varsql.contextpath", "/vsql");
+		contextPath = props.getProperty("varsql.contextpath", "/varsql");
 		connectiondaoPackage = props.getProperty("varsql.connectiondao.package", "com.varsql");
 		
 		siteAddr = protocol;
@@ -216,11 +218,13 @@ public class Configuration extends AbstractConfiguration{
 		
 		siteAddr = String.format("%s://%s:%d%s", protocol, hostname, port, contextPath);
 		
-		logger.debug("siteAddr : {}", siteAddr);
-		logger.debug("passwordLen : {}",passwordLen);
-		logger.debug("fileUploadPath : {}",fileUploadPath);
-		logger.debug("backupPath : {}",backupPath);
-		logger.debug("fileUpload uploadSize:{}, MaxInMemorySize : {}, sizePerFile: {}, ", fileUploadSize, fileUploadMaxInMemorySize, fileUploadSizePerFile);
+		
+		logger.info("site addr : {}", siteAddr);
+		logger.info("password length : {}",passwordLen);
+		logger.info("file upload path : {}",fileUploadPath);
+		logger.info("backup path : {}",backupPath);
+		logger.info("file upload size:{}, MaxInMemorySize : {}, sizePerFile: {}, ", fileUploadSize, fileUploadMaxInMemorySize, fileUploadSizePerFile);
+		logger.info("backup file expire day : {}", backupExpireDay);
 
 		passwordType = PasswordType.getType(props.getProperty(PASSWORD_INIT_TYPE,""));
 		

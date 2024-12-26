@@ -15,8 +15,8 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.db.valueobject.ddl.DDLTemplateParam;
-import com.varsql.core.sql.SQLTemplateCode;
-import com.varsql.core.sql.template.SQLTemplateFactory;
+import com.varsql.core.sql.DDLTemplateCode;
+import com.varsql.core.sql.template.DDLTemplateFactory;
 import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.utils.StringUtils;
 
@@ -61,7 +61,7 @@ public class MysqlDDLScript extends AbstractDDLScript {
 					.sourceText(StringUtils.trim(source.getString("Create Table")))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.TABLE.create, param));
 	
 				reval.add(ddlInfo);
 			}
@@ -96,7 +96,7 @@ public class MysqlDDLScript extends AbstractDDLScript {
 					.sourceText(source.getString("Create View"))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.VIEW.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.VIEW.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -127,7 +127,7 @@ public class MysqlDDLScript extends AbstractDDLScript {
 					.items(sqlSession.selectList("indexScript", dataParamInfo))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(dbType, SQLTemplateCode.INDEX.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(dbType, DDLTemplateCode.INDEX.create, param));
 				
 				reval.add(ddlInfo);
 			}
@@ -164,7 +164,7 @@ public class MysqlDDLScript extends AbstractDDLScript {
 					.sourceText(source.getString("Create Function"))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.FUNCTION.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.FUNCTION.create, param));
 				ddlInfo.setChangeFormat(false);
 	
 				reval.add(ddlInfo);
@@ -202,7 +202,7 @@ public class MysqlDDLScript extends AbstractDDLScript {
 					.sourceText(source.getString("Create Procedure"))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PROCEDURE.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.PROCEDURE.create, param));
 				ddlInfo.setChangeFormat(false);
 				
 				reval.add(ddlInfo);
@@ -252,7 +252,7 @@ public class MysqlDDLScript extends AbstractDDLScript {
 					.sourceText(source.getString("SQL Original Statement"))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TRIGGER.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.TRIGGER.create, param));
 	
 				reval.add(ddlInfo);
 			}

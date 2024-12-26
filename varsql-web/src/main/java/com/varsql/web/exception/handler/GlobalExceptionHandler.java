@@ -21,7 +21,6 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.util.NestedServletException;
 
-import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.ConnectionFactoryException;
@@ -33,6 +32,7 @@ import com.varsql.web.exception.BoardPermissionException;
 import com.varsql.web.exception.DataDownloadException;
 import com.varsql.web.exception.DatabaseBlockingException;
 import com.varsql.web.exception.DatabaseInvalidException;
+import com.varsql.web.exception.DatabaseNotFoundException;
 import com.varsql.web.exception.VarsqlAccessDeniedException;
 import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.util.SecurityUtil;
@@ -60,8 +60,7 @@ public class GlobalExceptionHandler{
 
 	/**
 	 * sql exception 처리.
-	 *
-	 * @method : sqlExceptionHandler
+	 * 
 	 * @param ex
 	 * @param request
 	 * @param response
@@ -81,8 +80,7 @@ public class GlobalExceptionHandler{
 
 	/**
 	 * var sql error 처리.
-	 *
-	 * @method : varsqlAppExceptionHandler
+	 * 
 	 * @param ex
 	 * @param request
 	 * @param response
@@ -100,12 +98,8 @@ public class GlobalExceptionHandler{
 	}
 
 	/**
-	 *
-	 * @Method Name  : varsqlRuntimeException
-	 * @Method 설명 : runtime error
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 4. 5.
-	 * @변경이력  :
+	 * app runtime error
+	 * 
 	 * @param ex
 	 * @param request
 	 * @param response
@@ -123,12 +117,8 @@ public class GlobalExceptionHandler{
 	}
 
 	/**
-	 *
-	 * @Method Name  : connectionExceptionHandle
-	 * @Method 설명 : 커넥션 에러.
-	 * @작성자   : ytkim
-	 * @작성일   : 2018. 2. 13.
-	 * @변경이력  :
+	 * 커넥션 에러.
+	 * 
 	 * @param ex
 	 * @param request
 	 * @param response
@@ -143,12 +133,8 @@ public class GlobalExceptionHandler{
 	}
 
 	/**
-	 *
-	 * @Method Name  : connectionFactoryException
-	 * @Method 설명 : db connection exception
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 4. 15.
-	 * @변경이력  :
+	 * db connection exception
+	 * 
 	 * @param ex
 	 * @param request
 	 * @param response
@@ -161,14 +147,26 @@ public class GlobalExceptionHandler{
 		ResponseResult result = new ResponseResult();
 		exceptionRequestHandle(ex, request, response ,result,"connCreateError");
 	}
+	
+	/**
+	 * database not found
+	 * 
+	 * @param ex
+	 * @param request
+	 * @param response
+	 */
+	@ExceptionHandler(value=DatabaseNotFoundException.class)
+	public void databaseNotFoundExceptionHandler(DatabaseNotFoundException ex, HttpServletRequest request, HttpServletResponse response){
+		
+		insertExceptionLog("databaseNotFoundException",ex);
+		
+		ResponseResult result = new ResponseResult();
+		exceptionRequestHandle(ex, request, response ,result,"databaseNotFoundException");
+	}
 
 	/**
-	 *
-	 * @Method Name  : databaseInvalidExceptionHandle
-	 * @Method 설명 : database invalid exception
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 4. 12.
-	 * @변경이력  :
+	 * database invalid exception
+	 * 
 	 * @param ex
 	 * @param request
 	 * @param response
@@ -181,10 +179,8 @@ public class GlobalExceptionHandler{
 	}
 
 	/**
-	 * @method  : varsqlAccessDeniedExceptionHandler
-	 * @desc : 접근 체한
-	 * @author   : ytkim
-	 * @date   : 2021. 8. 19.
+	 * 접근 체한
+	 * 
 	 * @param ex
 	 * @param request
 	 * @param response
@@ -197,10 +193,8 @@ public class GlobalExceptionHandler{
 	}
 
 	/**
-	 * @method  : databaseBlockingExceptionHandler
-	 * @desc : database  차된
-	 * @author   : ytkim
-	 * @date   : 2021. 8. 19.
+	 * database 차단
+	 * 
 	 * @param ex
 	 * @param request
 	 * @param response
@@ -213,10 +207,8 @@ public class GlobalExceptionHandler{
 	}
 
 	/**
-	 * @method  : blockingUserExceptionHandler
-	 * @desc : 차단된 사용자
-	 * @author   : ytkim
-	 * @date   : 2021. 8. 19.
+	 * 차단된 사용자
+	 * 
 	 * @param ex
 	 * @param request
 	 * @param response
@@ -231,15 +223,11 @@ public class GlobalExceptionHandler{
 
 
 	/**
-	 *
-	 * @Method Name  : runtimeExceptionHandle
-	 * @Method 설명 : 실행시 에러 처리.
-	 * @작성자   : ytkim
-	 * @작성일   : 2017. 11. 13.
-	 * @변경이력  :
+	 * runtime 에러 처리.
+	 * 
 	 * @param ex
+	 * @param request
 	 * @param response
-	 * @return
 	 */
 	@ExceptionHandler(value=RuntimeException.class)
 	public void runtimeExceptionHandler(RuntimeException ex, HttpServletRequest request, HttpServletResponse response){
@@ -251,12 +239,8 @@ public class GlobalExceptionHandler{
 	}
 
 	/**
-	 *
-	 * @Method Name  : classNotFoundExceptionHandler
-	 * @Method 설명 : class  not found exception 처리.
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 9. 7.
-	 * @변경이력  :
+	 * class  not found exception 처리.
+	 * 
 	 * @param ex
 	 * @param request
 	 * @param response
@@ -270,7 +254,13 @@ public class GlobalExceptionHandler{
 		result.setMessage(ex.getMessage());
 		exceptionRequestHandle(ex, request, response ,result);
 	}
-
+	
+	/**
+	 * 로그 추가. 
+	 * 
+	 * @param string
+	 * @param ex
+	 */
 	private void insertExceptionLog(String string, Throwable ex) {
 		commonLogService.insertExceptionLog("sqlExceptionHandler",ex);
 	}
@@ -294,12 +284,8 @@ public class GlobalExceptionHandler{
 	}
 
 	/**
-	 *
-	 * @Method Name  : multipartexceptionHandler
-	 * @Method 설명 : upload error
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 11. 29.
-	 * @변경이력  :
+	 * file upload error
+	 * 
 	 * @param request
 	 * @param ex
 	 * @return
@@ -316,15 +302,11 @@ public class GlobalExceptionHandler{
     }
 
 	/**
-	 *
-	 * @Method Name  : noHandlerFoundExceptionHandler
-	 * @Method 설명 : 404
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 11. 29.
-	 * @변경이력  :
-	 * @param request
+	 *  404
+	 *  
 	 * @param ex
-	 * @return
+	 * @param request
+	 * @param response
 	 */
 	@ExceptionHandler(NoHandlerFoundException.class)
     public void noHandlerFoundExceptionHandler(NoHandlerFoundException ex,HttpServletRequest request, HttpServletResponse response) {
@@ -335,16 +317,12 @@ public class GlobalExceptionHandler{
     }
 
     /**
-	 *
-	 * @Method Name  : missingServletRequestParameterExceptionHandler
-	 * @Method 설명 : missing parameter exception
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 11. 29.
-	 * @변경이력  :
-	 * @param request
-	 * @param ex
-	 * @return
-	 */
+     * missing parameter exception
+     * 
+     * @param ex
+     * @param request
+     * @param response
+     */
 	@ExceptionHandler(value=MissingServletRequestParameterException.class)
 	public void missingServletRequestParameterExceptionHandler(Exception ex,HttpServletRequest request, HttpServletResponse response){
 
@@ -354,15 +332,11 @@ public class GlobalExceptionHandler{
 	}
 
 	/**
-	 *
-	 * @Method Name  : dataDownloadExceptionHandler
-	 * @Method 설명 : data download exception
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 11. 29.
-	 * @변경이력  :
-	 * @param request
+	 * data download exception
+	 * 
 	 * @param ex
-	 * @return
+	 * @param request
+	 * @param response
 	 */
 	@ExceptionHandler(value=DataDownloadException.class)
 	public void dataDownloadExceptionHandler(DataDownloadException ex, HttpServletRequest request, HttpServletResponse response){
@@ -370,10 +344,8 @@ public class GlobalExceptionHandler{
 	}
 
 	/**
-	 * @method  : boardNotFoundException
-	 * @desc :
-	 * @author   : ytkim
-	 * @date   : 2021. 10. 23.
+	 * board not found exception
+	 * 
 	 * @param ex
 	 * @param request
 	 * @param response
@@ -382,7 +354,14 @@ public class GlobalExceptionHandler{
 	public void boardNotFoundException(BoardNotFoundException ex, HttpServletRequest request, HttpServletResponse response){
 		exceptionRequestHandle(ex, request, response, new ResponseResult(), "boardError");
 	}
-
+	
+	/**
+	 * board permission 
+	 * 
+	 * @param ex
+	 * @param request
+	 * @param response
+	 */
 	@ExceptionHandler(value=BoardPermissionException.class)
 	public void boardPermissionException(BoardPermissionException ex, HttpServletRequest request, HttpServletResponse response){
 		exceptionRequestHandle(ex, request, response, new ResponseResult(), "boardError");
@@ -455,7 +434,6 @@ public class GlobalExceptionHandler{
 					request.setAttribute("errorMessage", result.getResultCode() + " :: " + ex.getClass());
 				}
 			}
-			
 			
 			try {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("/error/"+pageName);

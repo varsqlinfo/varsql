@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Dara Form</title>
+<script defer src="dara.form.js"></script></head>
+
+<body>
+  <div class="header">
+    <div class="form-button">
+      <button type="button" onclick="formObj.addItem()">Add</button>
+      <button type="button" onclick="formObj.getValue()">getValue</button>
+      <button type="button" onclick="formObj.getValuePromise()">getValue(true)</button>
+      <button type="button" onclick="formObj.setValue()">setValue()</button>
+      <button type="button" onclick="formBuilder.isValidForm()">valid check</button>
+      <button type="button" onclick="formBuilder.resetForm()">Reset</button>
+      <button type="button" onclick="formBuilder.setFieldItems()">setFieldItems</button>
+    </div>
+
+    <div>
+      Theme : <label>Light<input type="radio" name="theme-toggle" value="light" checked="true"></label>
+      <label>Dark<input type="radio" name="theme-toggle" value="dark"></label>
+    </div>
+  </div>
+
+  <div style="padding: 0px 20px">
+    <form id="loginForm" class="login-form"></form>
+
+    <form id="formArea" class="test-form aaa-test"></form>
+
+  </div>
+</body>
+
+</html>
+<style>
+  .form-button {
+    text-align: center;
+  }
+
+  :root {
+    --bg: #ffffff;
+    --bg-color: #070d19;
+
+  }
+
+  body.dark {
+    --bg: #070d19;
+    --bg-color: #ffffff;
+
+  }
+
+  body {
+    background-color: var(--bg);
+  }
+
+  .header {
+    color: var(--bg-color);
+  }
+</style>
+<script type="module">
+
+  const THEME_KEY = "form-theme";
+  const theme = localStorage.getItem(THEME_KEY);
+
+  if (theme) setMainTheme(theme);
+
+  function setMainTheme(theme, persist = false) {
+    const classList = document.body.classList;
+
+    classList.remove("light", "dark");
+
+    classList.add(theme);
+
+    if (persist) {
+      localStorage.setItem(THEME_KEY, theme);
+    }
+  }
+
+  function load() {
+    // theme
+    const toggler = document.querySelectorAll('[name="theme-toggle"]');
+    const theme = localStorage.getItem(THEME_KEY);
+
+    if (toggler) {
+      if (theme === "dark") {
+        document.querySelector('[name="theme-toggle"][value="dark"]').checked = true;
+      }
+
+      toggler.forEach((el) => {
+        el.addEventListener("click", (e) => {
+          setMainTheme(el.value, true);
+        });
+      })
+    }
+  }
+  load();
+
+  var formInfo = {
+    message: "This value is not valid",
+    //mode: 'vertical',
+    //autoFocus: false,
+    //useTypeValue: false,
+    style: {
+      //width: '600px',
+      position: 'left-left',
+      labelWidth: '3'
+
+    },
+    // form load 이후 호출. 
+    onMounted: function () {
+      console.log(this)
+    },
+    message: {
+      empty: "{name} 필수 입력사항입니다.",
+      string: {
+        minLength: "{size} 글자 이상 입력해야합니다.",
+        maxLength: "{size} 글자 이상 입력할 수 없습니다.",
+      },
+      number: {
+        minimum: "{size} 보다 커야 합니다",
+        miximum: "{size} 보다 커야 합니다",
+      },
+      regexp: {
+        email: "이메일이 유효하지 않습니다.",
+        url: "URL이 유효하지 않습니다.",
+      },
+    },
+    fields: [
+      {
+        name: "hiddenMode",
+        renderType: "hidden",
+        defaultValue: "asdf",
+      }
+      , {
+        name: "cmpCredId111",
+        label: "credentials",
+        renderType: "checkbox",
+        tooltip: "credentials 넣어주세요.",
+        defaultValue: '222',
+        required: true,
+        listItem1: {
+          labelField: "credName",
+          valueField: "credId",
+          list: [{ credId: "11", credName: "credNam11" }, { credId: "22", credName: "credName" }, { credId: "33", credName: "credName33" }],
+        },
+        description: "drop down 설명",
+        onChange: (aaa) => {
+          console.log(aaa)
+
+          if (aaa.newValue == '22') return false;
+
+          return true;
+        }
+      }
+      , {
+        renderType: 'group'
+        , orientation: "horizontal"
+        , children: [
+          {
+            renderType: 'group'
+            , orientation: "vertical"
+            , label: 'source'
+            , style: {
+              width: '5',
+              position: 'top-center'
+            }
+            , children: [
+              {
+                name: 'aaa',
+                label: 'asdf',
+                renderType: 'text',
+                style: {
+                  position: 'left-left'
+                }
+
+              }
+              , {
+                name: 'bbb',
+                label: 'asdf',
+                renderType: 'text',
+                style: {
+                  position: 'top-left'
+                }
+              }
+            ]
+
+          }
+          , {
+            name: 'test11122',
+            label: 'right-label',
+            renderType: 'text',
+            style: {
+              width: '7',
+              position: 'top-left'
+            }
+          }
+        ]
+      }
+
+      ,
+      {
+        name: "이름222222",
+        label: "이름222222",
+        renderType: 'text',
+        template: '<div id="customElementID">111</div>',
+        required: true,
+        rule: {
+          minLength: 2,
+          maxLength: 100,
+        }
+        , conditional: {
+          show: true,
+          custom: function () {
+
+            return false;
+          }
+        }
+        , renderer: {
+          mounted: () => {
+            console.log(document.getElementById('customElementID'))
+          }
+          , getValue() {
+            return '21';
+          }
+          , valid1(field, rowElement) {
+            const val = this.getValue();
+            return { name: field.name, message: 'custom type not valid' };
+          }
+        }
+      },
+      {
+        name: "sql",
+        label: "SQL",
+        renderType: 'custom',
+        template: '<div id="sqlCont" style="width:100%; height:200px;" class="border"></div>',
+        required: true,
+        onChange: (arg) => {
+          console.log(arg);
+        },
+        renderer: {
+          mounted: (field, element) => {
+            console.log(field, element.querySelector('#sqlCont'))
+
+          }
+          , getValue() {
+            return "custom field value";
+          }
+        }
+      },
+
+
+      /*
+          {
+            name: "uname",
+            label: "이름222222",
+            renderType: 'custom',
+            template: '<div id="customElementID">111</div>',
+            required: true,
+            rule: {
+              minLength: 2,
+              maxLength: 100,
+            },
+            onChange: (arg) => {
+              console.log(arg);
+            },
+            renderer: {
+              mounted: () => {
+                console.log(document.getElementById('customElementID'))
+              }
+              , getValue() {
+                return '21';
+              }
+              , valid1(field, rowElement) {
+                const val = this.getValue();
+                return { name: field.name, message: 'custom type not valid' };
+              }
+            }
+          },
+          {
+            label: '비밀번호'
+            , orientation: 'vertical'
+            , conditional: {
+              show: true,
+              custom: function () {
+     
+                return true;
+              }
+            }
+            , children: [{
+              name: 'upw'
+              , label: '비밀번호'
+              , style: {
+                labelHide: true
+              }
+              , renderType: 'password'
+              , regexpType: 'number-char'
+              , rule: {
+                minLength: 3
+              }
+              , different: {
+                field: 'uid',
+                message: '아이디와 달라야 합니다.'
+              }
+            }
+              , {
+              name: 'confirmUpw'
+              , label: '확인 비밀번호'
+              , style: {
+                labelHide: true
+              }
+              , renderType: 'password'
+              , identical: {
+                field: 'upw',
+                message: '비밀번호가 같아야합니다.'
+              }
+            }]
+          }
+         
+          , {
+            name: "age",
+            label: "생년월일",
+            required: true,
+            renderType: "date",
+            customOptions: {
+              mode: 'datetime'
+            }
+          },
+          {
+            name: "sex",
+            label: "성별",
+            required: true,
+            renderType: "radio",
+            listItem: {
+              list: [
+                { label: "남", value: "Y", selected: true },
+                { label: "여", value: "X" },
+              ],
+            },
+          },
+          {
+            name: "picture",
+            label: "사진",
+            required: true,
+            renderType: "file",
+            listItem: {
+              list: [
+              ],
+            },
+          },
+     
+          {
+            name: "cmpCredId",
+            label: "credentials",
+            renderType: "dropdown",
+            tooltip: "credentials 넣어주세요.",
+            required: true,
+            listItem: {
+              labelField: "credName",
+              valueField: "credId",
+              list: [{ label: "선택하세요." }, { credId: "credId", credName: "credName" }],
+            },
+            description: "awefawfeawefawef",
+          },
+          {
+            label: "checkbox",
+     
+            name: "checkbox11",
+            required: true,
+            renderType: "checkbox",
+            defaultValue: '',
+            listItem: {
+              orientation: "horizontal", // 'vertical , horizontal'
+              list: [
+                { label: "checkbox value", value: "Y", selected: true }
+                , { label: "checkbox value111", value: "Y1" }
+                , { label: "checkbox value222", value: "Y2", disabled: true }
+                , { label: "checkbox value333", value: "Y3" }
+              ],
+            },
+            onChange: (arg) => {
+              console.log(arg);
+            },
+          }
+          , {
+            label: "라벨주소",
+            name: 'newAddress',
+            renderType: 'radio',
+            //defaultValue: 'N',
+            listItem: {
+              orientation: "horizontal", // 'vertical , horizontal'
+              list: [
+                { label: "추가1", value: "Y", selected: true },
+                { label: "추가", value: "N" }
+              ],
+            }
+            , description: `<div><a href="asdf">111111111111111</a></div>`
+            , orientation: "horizontal" // 'vertical , horizontal'
+            , conditional: {
+              show: true,
+              custom: function () {
+                return true;
+              },
+            },
+            children: [
+     
+              {
+                name: "address32",
+                label: "주소",
+                orientation: 'vertical',
+                style: {
+                  labelHide: false,
+                  position: 'left',
+                  labelWidth: '120px',
+                },
+                required: true,
+                rule: {
+                  minLength: 2,
+                  maxLength: 100,
+                },
+                conditional: {
+                  show: false,
+                  field: "newAddress",
+                  eq: "N",
+                  //custom?: OptionCallback
+                }
+              },
+              {
+                name: "address",
+                label: "주소2",
+                hideLabel: true,
+                required: true,
+                style: {
+                  labelHide: false,
+                },
+                rule: {
+                  minLength: 2,
+                  maxLength: 100,
+                },
+                conditional: {
+                  show: true,
+                  custom: function () {
+                    return true;
+                  },
+                },
+              },
+              {
+                name: "address2",
+                label: "주소3",
+                style: {
+                  //width: '200px',
+                  labelHide: false,
+                  position: 'left'
+                },
+                required: true,
+                rule: {
+                  minLength: 2,
+                  maxLength: 100,
+                },
+                conditional: {
+                  show: true,
+                  field: "newAddress",
+                  eq: "Y",
+                  //custom?: OptionCallback
+                },
+              },
+              {
+                renderType: "text",
+                label: "주소 하위1",
+                //childLabelWidth: "",
+                orientation: "horizontal", // 'vertical , horizontal, horizontal-row'
+                style: {
+                  labelWidth: "200px",
+                  labelHide: false
+                },
+                conditional: {
+                  show: true,
+                  custom: function () {
+                    return true;
+                  },
+                },
+                children: [
+                  {
+                    name: "address22222",
+                    label: "주소1",
+                    labelWidth: "150px",
+                  },
+                  {
+                    name: "address222333322",
+                    label: "주소2",
+                    renderType: "text",
+                  },
+                ],
+              },
+              {
+                label: "버튼",
+                hideLabel: true,
+                renderType: "button",
+                onClick: (arg) => {
+                  console.log(arg);
+                },
+              },
+            ],
+          },
+          */
+    ],
+  };
+
+
+  var rowIdx = 0;
+  var formBuilder;
+  var formObj = {
+    load: () => {
+      // formBuilder = loginForm;
+      formBuilder = new DaraForm(document.getElementById("formArea"), formInfo);
+    },
+    addItem: () => {
+      rowIdx += 1;
+      formBuilder.addField({
+        name: `addItem${rowIdx}`,
+        label: `추가컬럼${rowIdx}`,
+        maxLength: 100,
+        required: true,
+      });
+    },
+    getValue: () => {
+      let formValue = formBuilder.getValue();
+      console.log('getValue : ', formValue, JSON.stringify(formValue))
+      alert('파일은 콘솔 확인\n' + JSON.stringify(formValue));
+    },
+    getValuePromise: () => {
+      formBuilder
+        .getValue(true)
+        .then((aa) => {
+          console.log(aa);
+
+          for (let [name, value] of aa.entries()) {
+            console.log(`${name} :  ${value}`);
+          }
+
+          alert("form data console 확인");
+        })
+        .catch((e) => {
+          alert(e.message);
+        });
+    },
+    setFieldItems: () => {
+      formBuilder.setFieldItems("picture", [
+        { fileId: "test1", fileName: "aaa.zip" },
+        { fileId: "test2", fileName: "bbb.zip" },
+      ]);
+      formBuilder.setValue({ sex: "X" }, false);
+    },
+
+    setValue: () => {
+      formBuilder.setValue(
+        {
+          "hiddenMode": "asdf",
+          "이름222222": "이름222222",
+          "tab": {
+            "tab1": {
+              "tabPicture": [{ fileId: "test1", fileName: "aaa.zip" }],
+              "tabPictureRemoveIds": [],
+              "grid": [
+                { key: 'aaa', value: 'bbb', cre: 'credId' },
+                { key: 'key임', value: 'value임', cre: 'credId' }
+              ],
+              "uname222": "uname222vvvv",
+              "uname222333": "uname222333vvvv",
+              "child tab": {
+                "child-tab1": {
+                  "child-uname222": "child-uname222 uname222"
+                },
+                "child-uname2-tab2": {
+                  "child-uname333": "child-uname2-tab2 uname333"
+                }
+              }
+            },
+            "tab2": {
+              "uname333": "tab2 uname333 value"
+            }
+          }
+        }, false);
+    },
+  };
+
+  formObj.load();
+
+  window.formBuilder = formBuilder;
+  window.formObj = formObj;
+</script>

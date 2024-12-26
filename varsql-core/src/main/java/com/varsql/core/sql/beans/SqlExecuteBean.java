@@ -1,8 +1,11 @@
 package com.varsql.core.sql.beans;
 
-import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * -----------------------------------------------------------------------------
@@ -16,54 +19,33 @@ import java.util.List;
 
 *-----------------------------------------------------------------------------
  */
+
+@Getter
+@Setter
+@Builder
 public class SqlExecuteBean {
 
+	private String reqUid;
+	
 	private long threadId;
 	
-	private List<Statement> statement;
+	private List<ExecuteStatementInfo> executeStatements;
+	
+	private String ip;
 	
 	private long startTime;
 	
 	private long entTime;
 	
-
-	public long getThreadId() {
-		return threadId;
-	}
-
-	public void setThreadId(long threadId) {
-		this.threadId = threadId;
-	}
-
-	public List<Statement> getStatement() {
-		return statement;
-	}
-
-	public void setStatement(List<Statement> statement) {
-		this.statement = statement;
+	public void setStatement(List<ExecuteStatementInfo> statement) {
+		this.executeStatements = statement;
 	}
 	
-	public void addStatement(Statement statement) {
-		if(this.statement == null) {
-			this.statement = new LinkedList<Statement>();
+	public void addStatement(ExecuteStatementInfo statement) {
+		if(this.executeStatements == null) {
+			this.executeStatements = new LinkedList<ExecuteStatementInfo>();
 		}
-		this.statement.add(statement);
-	}
-	
-	public long getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(long startTime) {
-		this.startTime = startTime;
-	}
-
-	public long getEntTime() {
-		return entTime;
-	}
-
-	public void setEntTime(long entTime) {
-		this.entTime = entTime;
+		this.executeStatements.add(statement);
 	}
 	
 	@Override
@@ -71,7 +53,7 @@ public class SqlExecuteBean {
 
 		return new StringBuilder()
 				.append("threadId : ").append(threadId)
-				.append(", statement : ").append(statement)
+				.append(", executeStatements : ").append(executeStatements)
 				.append(" startTime : ").append(startTime)
 				.append(" entTime : ").append(entTime)
 				.toString();

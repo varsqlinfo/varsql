@@ -10,7 +10,7 @@ import com.varsql.web.app.manager.service.SchedulerMgmtServiceImpl;
 import com.varsql.web.app.scheduler.job.BackupFileRemoveJob;
 import com.varsql.web.dto.scheduler.JobRequestDTO;
 import com.varsql.web.dto.scheduler.JobVO;
-import com.varsql.web.model.entity.db.DBConnectionEntity;
+import com.varsql.web.model.entity.db.DBConnectionViewEntity;
 import com.varsql.web.model.entity.scheduler.JobEntity;
 import com.varsql.web.repository.scheduler.JobEntityRepository;
 
@@ -74,7 +74,7 @@ public class InitJobBean {
 		entity.setJobData(dto.getJobData());
 		entity.setJobDescription(dto.getJobDescription());
 		entity.setJobGroup("backupFileDeleteJobGroup");
-		entity.setJobDBConnection(DBConnectionEntity.builder().vconnid("empty").build());
+		entity.setJobDBConnection(DBConnectionViewEntity.builder().vconnid("empty").build());
 		entity.setRegId("vasqlAdmin");
 		entity.setUpdId("vasqlAdmin");
 		

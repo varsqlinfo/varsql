@@ -18,7 +18,6 @@ import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
-import com.varsql.core.db.meta.handler.DBMetaHandler;
 import com.varsql.core.db.valueobject.ColumnInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ObjectColumnInfo;

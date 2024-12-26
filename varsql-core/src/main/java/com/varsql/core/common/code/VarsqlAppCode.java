@@ -72,6 +72,10 @@ public enum VarsqlAppCode implements CodeEnumValue {
 	
 	//scheduler error
 	,EC_SCHEDULER(22000)
+	
+	// task error
+	,EC_TASK(23000)
+	,EC_TASK_SELECT(23001)
 
 
 
@@ -110,7 +114,9 @@ public enum VarsqlAppCode implements CodeEnumValue {
 	// db pool close error
 	,EC_DB_POOL_CLOSE(80001)
 	// db connection error;
-	,EC_DB_CONNECTION(80002);
+	,EC_DB_CONNECTION(80002)
+	// db info not found
+	,EC_DB_NOT_FOUND(80003);
 
 	private int code = -1;
 	private String message;

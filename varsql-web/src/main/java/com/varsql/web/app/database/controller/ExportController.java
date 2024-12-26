@@ -192,8 +192,6 @@ public class ExportController extends AbstractController  {
 
 		this.logger.debug("downloadTableData data export : {} ", preferencesInfo);
 
-		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_DATA_EXPORT.key());
-
 		return exportServiceImpl.downloadTableData(preferencesInfo, req, response);
 	}
 }

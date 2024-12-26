@@ -29,4 +29,8 @@ public class AppVO {
 	// export, import 파일 보관 기간 
 	private int fileRetentionPeriod;
 	
+	private String dataPath;
+	
+	private String useTestDb;
+	
 }

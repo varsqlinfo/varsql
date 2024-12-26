@@ -1,5 +1,7 @@
 package com.varsql.core.db.valueobject;
 
+import com.varsql.core.connection.beans.ConnectionInfo;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,28 +20,32 @@ public class DatabaseInfo implements java.io.Serializable {
 	private String vconnid;
 	private String type;
 	private String name;
-	private String databaseName;
-	private String schema;
 	private boolean basetableYn;
 	private boolean lazyLoad;
 	private boolean schemaViewYn;
 	private String version;
 	private int maxSelectCount;
+	
+	public static DatabaseInfo toDatabaseInfo(ConnectionInfo connectionInfo) {
+		return DatabaseInfo.builder()
+				.vconnid(connectionInfo.getConnid())
+				.type(connectionInfo.getType())
+				.name(connectionInfo.getAliasName())
+				.maxSelectCount(connectionInfo.getExportCount())
+				.build();
+	}
 
 	@Builder
-	public DatabaseInfo(String vconnid, String type, String name, 
-			String schema, String basetableYn, String lazyLoad, String version, 
-			String schemaViewYn, int maxSelectCount, String databaseName){
+	public DatabaseInfo(String vconnid, String type, String name, String basetableYn, String lazyLoad, String version, 
+			String schemaViewYn, int maxSelectCount){
 		
 		this.vconnid= vconnid;
 		this.type= type.toUpperCase();
 		this.name= name;
-		this.schema= schema;
 		this.basetableYn= "Y".equals(basetableYn);
 		this.lazyLoad= "Y".equals(lazyLoad);
 		this.schemaViewYn= "Y".equals(schemaViewYn);
 		this.version= version;
 		this.maxSelectCount = maxSelectCount;
-		this.databaseName = databaseName;
 	}
 }

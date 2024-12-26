@@ -33,9 +33,8 @@
 			</ul>
 		</div>
 
-
-		<pre style="width:100%;border:0px solid;" v-html="articleInfo.contents">
-		</pre>
+		<div id="contentViewer" style="width: 100%;padding: 5px;border: 1px solid #dddddd;">
+		</div>
 	</div>
 
 	<strong class="comment-label"><spring:message code="comment" text="댓글"/></strong>
@@ -137,7 +136,7 @@
 </div>
 
 <script>
-VARSQL.loadResource(['fileupload']);
+VARSQL.loadResource(['fileupload',"toast.editor"]);
 VarsqlAPP.vueServiceBean({
 	el: '#vueArea'
 	,data: {
@@ -157,6 +156,25 @@ VarsqlAPP.vueServiceBean({
 		}
 		,init : function (){
 			var _this =this;
+			
+			const viewer  = new toastui.Editor.factory({
+	            el: document.querySelector('#contentViewer'), // 에디터를 적용할 요소 (컨테이너)
+	            height: '500px',  
+	            viewer: true,// 에디터 영역의 높이 값 (OOOpx || auto)
+	            initialValue : this.articleInfo.contents,
+	            //previewStyle: 'vertical'                // 마크다운 프리뷰 스타일 (tab || vertical)
+	            plugins: [
+                    [toastui.Editor.plugin.chart],
+                    [toastui.Editor.plugin.codeSyntaxHighlight, { highlighter: Prism }],
+                    toastui.Editor.plugin.tableMergedCell,
+                    toastui.Editor.plugin.colorSyntax,
+                    [
+                        toastui.Editor.plugin.uml,
+                        { rendererURL: "http://www.plantuml.com/plantuml/svg/" }
+                    ]
+                ],
+	        });
+			
 
 			this.commentList();
 

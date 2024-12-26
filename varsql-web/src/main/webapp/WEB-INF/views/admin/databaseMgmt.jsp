@@ -120,7 +120,7 @@
 							</div>
 						</div>
 
-						<div class="form-group">
+						<div class="form-group hidden">
 							<label class="col-sm-4 control-label"></label>
 							<div class="col-sm-8">
 								<input type="checkbox" v-model="detailItem.urlDirectYn" true-value="Y" false-value="N" /><spring:message code="db.urldirectmsg" />
@@ -151,15 +151,6 @@
 									<div v-if="errors.has('URL')" class="help-block">{{ errors.first('URL') }}</div>
 									<div>ex : <span class="">{{jdbcUrlFormat[selectJdbcProvider.driverId]}}</span> </div>
 								</div>
-							</div>
-						</div>
-
-
-						<div class="form-group" :class="errors.has('DBNAME') ? 'has-error' :''">
-							<label class="col-sm-4 control-label"><spring:message code="db.databasename" /></label>
-							<div class="col-sm-8">
-								<input type="text" v-model="detailItem.vdatabasename" v-validate="'required'" name="DBNAME" class="form-control" />
-								<div v-if="errors.has('DBNAME')" class="help-block">{{ errors.first('DBNAME') }}</div>
 							</div>
 						</div>
 
@@ -201,8 +192,8 @@
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><spring:message code="db.enableConnectionPool" /></label>
 							<div class="col-sm-8">
-								<label><input type="radio" name="enableConnectionPool" value="Y" v-model="detailItem.enableConnectionPool" checked>Y</label>
-								<label><input type="radio" name="enableConnectionPool" value="N" v-model="detailItem.enableConnectionPool">N</label>
+								<label><input type="radio" name="enableConnectionPool" value="Y" v-model="detailItem.enableConnectionPool">Y</label>
+								<label><input type="radio" name="enableConnectionPool" value="N" v-model="detailItem.enableConnectionPool" checked>N</label>
 							</div>
 						</div>
 
@@ -350,7 +341,7 @@ VarsqlAPP.vueServiceBean( {
 		,jdbcUrlFormat : ${jdbcUrlFormat}
 	}
 	,methods:{
-		init : function(){
+		init(){
 			this.setDetailItem();
 
 			$('#passwordViewTemplate').dialog({
@@ -365,7 +356,7 @@ VarsqlAPP.vueServiceBean( {
 
 			this.getJdbcProvider();
 		}
-		,search : function(no){
+		,search(no){
 			var _this = this;
 
 			var param = {
@@ -396,24 +387,28 @@ VarsqlAPP.vueServiceBean( {
 				}
 			})
 		}
-		,itemViewMode : function (mode){
+		,itemViewMode(mode){
 			this.viewArea(mode);
 		}
-		,changeProvider : function (evt){
+		,changeProvider(evt){
 			this.setProviderInfo(evt.target.value)
 		}
-		,setProviderInfo : function (selectVal){
-			this.selectJdbcProvider = {};
+		,setProviderInfo(selectVal){
+			
+			var beforeJdbcProvider = this.selectJdbcProvider;
+			
+			var selectJdbcProvider = {};
 			
 			for(var i =0 ;i < this.jdbcProviderList.length; i++){
 				var item = this.jdbcProviderList[i];
 
 				if(item.driverProviderId == selectVal){
-					this.selectJdbcProvider = item;
+					selectJdbcProvider = item;
 					break; 
 				}
 			}
-			var versionList = this.selectJdbcProvider.versionList ||[];
+			
+			var versionList = selectJdbcProvider.versionList ||[];
 			
 			if(versionList.length > 0){
 				if(this.detailItem.vdbversion ==''){
@@ -421,10 +416,16 @@ VarsqlAPP.vueServiceBean( {
 				}
 			}
 			
-			this.selectJdbcProvider.versionList = versionList;
+			selectJdbcProvider.versionList = versionList;
+			
+			if(this.detailFlag !== true && selectJdbcProvider.dbType != beforeJdbcProvider.dbType){
+				this.detailItem.vurl = this.jdbcUrlFormat[selectJdbcProvider.driverId] ||'';
+			}
+			
+			this.selectJdbcProvider = selectJdbcProvider;
 		}
 		// 상세보기
-		,itemView : function(item){
+		,itemView(item){
 			var _this = this;
 
 			var param = {
@@ -447,13 +448,13 @@ VarsqlAPP.vueServiceBean( {
 				}
 			})
 		}
-		,viewPasswordDialog : function (item){
+		,viewPasswordDialog(item){
 			this.dbPwViewItem= item;
 			this.userPw = '';
 			this.dbPw = '';
 			$('#passwordViewTemplate').dialog('open');
 		}
-		,passwordView : function (){
+		,passwordView(){
 			this.userPw = VARSQL.str.trim(this.userPw);
 
 			if(this.userPw == ''){
@@ -481,7 +482,7 @@ VarsqlAPP.vueServiceBean( {
 				}
 			});
 		}
-		,setDetailItem : function (item){
+		,setDetailItem(item){
 
 			if(VARSQL.isUndefined(item)){
 				this.$validator.reset()
@@ -493,13 +494,11 @@ VarsqlAPP.vueServiceBean( {
 					,maxActive: 5
 					,minIdle: 2
 					,timeout: 18000
-					,vdbschema: ""
-					,vdatabasename: ""
 					,vport: 0
 					,vdriver: ""
 					,vdbversion: ""
 					,useYn: "Y"
-					,urlDirectYn:'N'
+					,urlDirectYn:'Y'
 					,vid: ""
 					,vname: ""
 					,vpoolopt: ""
@@ -522,7 +521,7 @@ VarsqlAPP.vueServiceBean( {
 			this.setProviderInfo(this.detailItem.vdriver);
 
 		}
-		,save : function (mode){
+		,save(mode){
 			var _this = this;
 
 			this.$validator.validateAll().then(function (result){
@@ -561,7 +560,7 @@ VarsqlAPP.vueServiceBean( {
 				}
 			});
 		}
-		,getParamVal : function (item){
+		,getParamVal(item){
 			var param = {};
 			var saveItem = item || this.detailItem;
 			for(var key in saveItem){
@@ -570,7 +569,7 @@ VarsqlAPP.vueServiceBean( {
 			return param;
 		}
 		// 정보 삭제 .
-		,deleteInfo : function (){
+		,deleteInfo(){
 			var _this = this;
 
 			if(typeof this.detailItem.vconnid ==='undefined'){
@@ -594,10 +593,10 @@ VarsqlAPP.vueServiceBean( {
 			});
 		}
 		// edit element, options 처리.
-		,viewArea :function (mode){
+		,viewArea(mode){
 			this.viewMode = mode;
 		}
-		,connectionCheck : function (){
+		,connectionCheck(){
 			var param = this.getParamVal();
 
 			this.$ajax({
@@ -616,7 +615,7 @@ VarsqlAPP.vueServiceBean( {
 				}
 			});
 		}
-		,connectionClose : function (item){
+		,connectionClose(item){
 			if(!VARSQL.confirmMessage('msg.db.pool.close.confirm')){
 				return ;
 			}
@@ -642,8 +641,13 @@ VarsqlAPP.vueServiceBean( {
 				}
 			});
 		}
-		,copy : function (){
+		,copy(){
 			var _this = this;
+			
+			if(!VARSQL.confirmMessage('msg.copy.confirm')){
+				return ;
+			}
+			
 			var param = this.getParamVal();
 
 			this.$ajax({
@@ -663,7 +667,7 @@ VarsqlAPP.vueServiceBean( {
 				}
 			});
 		}
-		,connectionReset : function (item){
+		,connectionReset(item){
 			if(!VARSQL.confirmMessage('msg.db.pool.init.confirm')){
 				return ;
 			}
@@ -690,7 +694,7 @@ VarsqlAPP.vueServiceBean( {
 			});
 		}
 		// db driver list
-		,getJdbcProvider : function (val){
+		,getJdbcProvider(val){
 			var _this = this;
 			var param = {
 				dbtype :val

@@ -4,8 +4,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import com.varsql.core.common.constants.ColumnJavaType;
+import com.varsql.core.db.valueobject.ColumnInfo;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -20,6 +24,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JacksonXmlRootElement(localName = "column")
+@NoArgsConstructor
 public class ExportColumnInfo {
 	// column name
 	@XmlAttribute
@@ -49,6 +54,17 @@ public class ExportColumnInfo {
 	@XmlAttribute
 	@JacksonXmlProperty(isAttribute = true)
 	private boolean lob;
+	
+	@Builder
+	public ExportColumnInfo(String name, String alias, String type,
+			int typeCode, boolean number, boolean lob) {
+		this.name = name; 
+		this.alias = alias; 
+		this.type = type; 
+		this.typeCode = typeCode; 
+		this.number = number; 
+		this.lob = lob; 
+	}
 
 	@Override
 	public String toString() {
@@ -59,6 +75,18 @@ public class ExportColumnInfo {
 				.append(" typeCode : ").append(typeCode)
 				.append(" number : ").append(number)
 				.toString();
+	}
+	
+	public static ExportColumnInfo toColumnInfo(ColumnInfo columnInfo) {
+		ColumnJavaType columnJavaType = ColumnJavaType.getType(columnInfo.getTypeCode()); 
+		return ExportColumnInfo.builder()
+		.name(columnInfo.getName())
+		.alias(columnInfo.getName())
+		.type(columnInfo.getTypeName())
+		.typeCode(columnInfo.getTypeCode())
+		.lob(columnJavaType.isLob())
+		.number(columnJavaType.isNumber())
+		.build();
 	}
 }
 

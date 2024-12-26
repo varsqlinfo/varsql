@@ -17,9 +17,9 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.db.valueobject.ddl.DDLTemplateParam;
-import com.varsql.core.sql.SQLTemplateCode;
+import com.varsql.core.sql.DDLTemplateCode;
 import com.varsql.core.sql.format.VarsqlFormatterUtil;
-import com.varsql.core.sql.template.SQLTemplateFactory;
+import com.varsql.core.sql.template.DDLTemplateFactory;
 
 /**
  *
@@ -62,9 +62,9 @@ public class SqlserverDDLScript extends AbstractDDLScript {
 					.commentsList(sqlSession.selectList("tableColumnComments",dataParamInfo))
 				.build();
 				
-				param.setSourceText(SQLTemplateFactory.getInstance().sqlRender(DBVenderType.SQLSERVER, SQLTemplateCode.TABLE.constraintKey, param));
+				param.setSourceText(DDLTemplateFactory.getInstance().render(DBVenderType.SQLSERVER, DDLTemplateCode.TABLE.constraintKey, param));
 				
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TABLE.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.TABLE.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -101,7 +101,7 @@ public class SqlserverDDLScript extends AbstractDDLScript {
 						.commentsList(sqlSession.selectList("tableColumnComments",dataParamInfo))
 					.build();
 	
-				ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.VIEW.create, param), dbType));
+				ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.VIEW.create, param), dbType));
 				reval.add(ddlInfo);
 			}
 		}
@@ -130,7 +130,7 @@ public class SqlserverDDLScript extends AbstractDDLScript {
 					.items(sqlSession.selectList("indexScriptSource", dataParamInfo))
 				.build();
 	
-				ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.INDEX.create, param), dbType));
+				ddlInfo.setCreateScript(VarsqlFormatterUtil.ddlFormat(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.INDEX.create, param), dbType));
 	
 				reval.add(ddlInfo);
 			}
@@ -169,7 +169,7 @@ public class SqlserverDDLScript extends AbstractDDLScript {
 					.sourceText(StringUtils.trim(sourceSb.toString()))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.FUNCTION.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.FUNCTION.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -206,7 +206,7 @@ public class SqlserverDDLScript extends AbstractDDLScript {
 						.sourceText(StringUtils.trim(sourceSb.toString()))
 					.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.PROCEDURE.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.PROCEDURE.create, param));
 				
 				
 				reval.add(ddlInfo);
@@ -257,7 +257,7 @@ public class SqlserverDDLScript extends AbstractDDLScript {
 					.sourceText(StringUtils.trim(sourceSb.toString()))
 				.build();
 	
-				ddlInfo.setCreateScript(SQLTemplateFactory.getInstance().sqlRender(this.dbType, SQLTemplateCode.TRIGGER.create, param));
+				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.TRIGGER.create, param));
 				reval.add(ddlInfo);
 			}
 		}

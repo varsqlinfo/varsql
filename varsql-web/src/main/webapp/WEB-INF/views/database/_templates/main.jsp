@@ -14,7 +14,7 @@
 </div>
 <div class="varsql-body-wrapper">
 	<div id="varsqlBodyWrapper" class="wh100" ></div>
-	<div id="varsqlBoardWrapper" class="database-board-wrapper">
+	<div id="varsqlBoardWrapper" class="database-board-wrapper" style="width:600px;">
 		<button class="database-board-close-btn fa fa-close" style="position: absolute;left: -24px;top: -1px;"></button>
 		<iframe id="mainArticleFrame" src="" style="width: 100%;height: 100%;border: 0px solid transparent;"></iframe>
 	</div>
@@ -109,7 +109,7 @@ $(document).ready(function(){
 			</li>
 			<li>
 				<button type="button" class="sql-edit-btn varsql-btn-trans sql-btn-default sql_toolbar_linewrapper_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.linewrapper" />">
-					<i class="fa fa-dedent" aria-hidden="true" ></i>
+					<i class="fa fa-text-width" aria-hidden="true" ></i>
 				</button>
 			</li>
 			<li>
@@ -125,7 +125,7 @@ $(document).ready(function(){
 			<li class="sql-btn-divider"></li>
 			<li>
 				<button type="button" class="sql-edit-btn varsql-btn-trans sql_toolbar_format_btn" data-sql-editor-menu="y" title="<spring:message code="toolbar.format" /> Ctrl+Shift+F">
-					<i class="fa fa-align-justify" aria-hidden="true" ></i>
+					<i class="fa fa-indent" aria-hidden="true" ></i>
 				</button>
 			</li>
 			<li>
@@ -185,7 +185,7 @@ $(document).ready(function(){
 		<div id="sql_parameter_wrapper" class="sql-parameter-wrapper">
 			<div class="sql-param-header">
 				<span class="key">Key</span>
-				<span class="val">Value</span>
+				<span class="val" title="Save character limit: 2000">Value(limit 2000)</span>
 				<span class="remove"><button type="button" class="sql-param-add-btn"><i class="fa fa-plus"></i></button></span>
 		    </div>
 			<div id="sql_parameter_area" class="sql-param-body">

@@ -18,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.vartech.common.app.beans.FileInfo;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.PathType;
 import com.varsql.core.common.util.VarsqlJdbcUtil;
@@ -35,11 +34,11 @@ import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.db.DBConnectionRequestDTO;
 import com.varsql.web.dto.db.DBConnectionResponseDTO;
+import com.varsql.web.dto.db.DBTypeDTO;
 import com.varsql.web.dto.db.DBTypeDriverProviderResponseDTO;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverProviderEntity;
-import com.varsql.web.model.entity.db.DBTypeEntity;
 import com.varsql.web.model.mapper.db.DBConnectionDetailMapper;
 import com.varsql.web.model.mapper.db.DBConnectionMapper;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
@@ -56,6 +55,7 @@ import com.varsql.web.util.FileServiceUtils;
 import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlBeanUtils;
 import com.varsql.web.util.VarsqlUtils;
+import com.vartech.common.app.beans.FileInfo;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.RequestResultCode;
@@ -77,13 +77,13 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 	private final Logger logger = LoggerFactory.getLogger(AdminDbMgmtServiceImpl.class);
 
 	@Autowired
-	private DBTypeEntityRepository dbTypeModelRepository;
+	private DBTypeEntityRepository dbTypeEntityRepository;
 
 	@Autowired
-	private DBConnectionEntityRepository dbConnectionModelRepository;
+	private DBConnectionEntityRepository dbConnectionEntityRepository;
 
 	@Autowired
-	private DBTypeDriverEntityRepository dbTypeDriverModelRepository;
+	private DBTypeDriverEntityRepository dbTypeDriverEntityRepository;
 
 	@Autowired
 	private DBGroupMappingDbEntityRepository dbGroupMappingDbEntityRepository;
@@ -117,7 +117,7 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 	 */
 	public ResponseResult selectDblist(SearchParameter searchParameter) {
 
-		Page<DBConnectionEntity> result = dbConnectionModelRepository.findAll(
+		Page<DBConnectionEntity> result = dbConnectionEntityRepository.findAll(
 			DBConnectionSpec.getVnameOrVurl(searchParameter.getKeyword())
 			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
 		);
@@ -135,7 +135,7 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 	}
 
 	public ResponseResult selectDbNameSearch(SearchParameter searchParameter) {
-		Page<DBConnectionEntity> result = dbConnectionModelRepository.findAll(
+		Page<DBConnectionEntity> result = dbConnectionEntityRepository.findAll(
 			DBConnectionSpec.getVname(searchParameter.getKeyword())
 			, VarsqlUtils.convertSearchInfoToPage(searchParameter)
 		);
@@ -154,7 +154,7 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 	 * @return
 	 */
 	public ResponseResult selectDetailObject(String vconnid) {
-		DBConnectionEntity entity= dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(vconnid)).get();
+		DBConnectionEntity entity= dbConnectionEntityRepository.findOne(DBConnectionSpec.detailInfo(vconnid)).get();
 
 		if( entity == null) {
 			return VarsqlUtils.getResponseResultItemOne(null);
@@ -179,13 +179,13 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 
 		ResponseResult resultObject = new ResponseResult();
 
-		this.dbConnectionModelRepository.findByConnInfo(vtConnection.getVconnid());
+		this.dbConnectionEntityRepository.findByConnInfo(vtConnection.getVconnid());
 
 		logger.debug("connection check object param :  {}", VartechUtils.reflectionToString(vtConnection));
 
 		String username = vtConnection.getVid();
 
-		DBConnectionEntity dbInfo = this.dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(vtConnection.getVconnid())).orElseThrow(NullPointerException::new);
+		DBConnectionEntity dbInfo = this.dbConnectionEntityRepository.findOne(DBConnectionSpec.detailInfo(vtConnection.getVconnid())).orElseThrow(NullPointerException::new);
 
 		DBTypeDriverProviderEntity driverProviderEntity = dbInfo.getDbTypeDriverProvider();
 
@@ -193,7 +193,7 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 
 		String defaultDriverValidationQuery = ValidationProperty.getInstance().validationQuery(driverProviderEntity.getDbType());
 		if(!"Y".equals(driverProviderEntity.getDirectYn())){
-			DBTypeDriverEntity dbDriverModel = this.dbTypeDriverModelRepository.findByDriverId(driverProviderEntity.getDriverId());
+			DBTypeDriverEntity dbDriverModel = this.dbTypeDriverEntityRepository.findByDriverId(driverProviderEntity.getDriverId());
 			if (!"Y".equals(vtConnection.getUrlDirectYn())) {
 				url = VarsqlJdbcUtil.getJdbcUrl(dbDriverModel.getUrlFormat(), JdbcURLFormatParam.builder()
 						.serverIp(vtConnection.getVserverip())
@@ -233,7 +233,7 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 			
 		    JdbcUtils.connectionCheck(dbInfo.getDbTypeDriverProvider().getDriverProviderId()
 		    		, dbInfo.getDbTypeDriverProvider().getDriverClass()
-		    		, driverProviderEntity.getDbType(), url, p, driverJarFiles, validation_query, 30, 20);
+		    		, driverProviderEntity.getDbType(), url, p, driverJarFiles, validation_query, 10, 5);
 		    
 		} catch (ClassNotFoundException e) {
 			resultCode = VarsqlAppCode.ERROR;
@@ -270,26 +270,12 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 		ResponseResult resultObject = new ResponseResult();
 		vtConnection.setUserId(SecurityUtil.userViewId());
 
-		DBTypeDriverProviderEntity driverProviderEntity = dbTypeDriverProviderRepository.findByDriverProviderId(vtConnection.getVdriver());
-
-		DBTypeDriverEntity dbDriverModel = this.dbTypeDriverModelRepository.findByDriverId(driverProviderEntity.getDriverId());
-
-		String schemeType = dbDriverModel.getSchemaType();
-		if ("user".equals(schemeType)) {
-			vtConnection.setVdbschema(vtConnection.getVid().toUpperCase());
-		} else if ("orginUser".equals(schemeType)) {
-			vtConnection.setVdbschema(vtConnection.getVid());
-		} else if ("db".equals(schemeType)) {
-			vtConnection.setVdbschema(vtConnection.getVdatabasename());
-		} else {
-			vtConnection.setVdbschema(schemeType);
-		}
 		DBConnectionEntity reqEntity = vtConnection.toEntity();
 		DBConnectionEntity saveEntity = null;
 		DBConnectionEntity currentEntity = null;
 		boolean updateFlag = false;
 		if (reqEntity.getVconnid() != null) {
-			currentEntity = this.dbConnectionModelRepository.findByVconnid(reqEntity.getVconnid());
+			currentEntity = this.dbConnectionEntityRepository.findByVconnid(reqEntity.getVconnid());
 			if (currentEntity != null) {
 				saveEntity = new DBConnectionEntity();
 				BeanUtils.copyProperties(currentEntity, saveEntity);
@@ -305,9 +291,17 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 		if (vtConnection.isPasswordChange()) {
 			saveEntity.setVpw(vtConnection.getVpw());
 		}
+		
+		// 2024.08.20 schema 사용 안함. 
+		// 접속한 스키마 사용하기 위해서 사용하지 않음. 
+		saveEntity.setVdbschema("");
+		
+		if(StringUtils.isBlank(saveEntity.getVdatabasename())) {
+			saveEntity.setVdatabasename("");
+		}
 			
 		logger.debug("saveVtconnectionInfo object param :  {}", VartechUtils.reflectionToString(saveEntity));
-		this.dbConnectionModelRepository.save(saveEntity);
+		this.dbConnectionEntityRepository.save(saveEntity);
 		
 		if (updateFlag) {
 			if (!reqEntity.getVdbschema().equalsIgnoreCase(currentEntity.getVdbschema())) {
@@ -337,10 +331,12 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 	@Transactional(value=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Exception.class)
 	public boolean deleteVtconnectionInfo(String vconnid) {
 
-		DBConnectionEntity dbInfo = dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(vconnid)).orElseThrow(NullPointerException::new);
+		DBConnectionEntity dbInfo = dbConnectionEntityRepository.findOne(DBConnectionSpec.detailInfo(vconnid)).orElseThrow(NullPointerException::new);
+		dbInfo.setUseYn("N");
 		dbInfo.setDelYn(true);
+		dbInfo.setVname("[Delete] "+dbInfo.getVname());
 
-		dbConnectionModelRepository.save(dbInfo);
+		dbConnectionEntityRepository.save(dbInfo);
 		dbGroupMappingDbEntityRepository.deleteByVconnid(vconnid);
 		dbManagerRepository.deleteByVconnid(vconnid);
 
@@ -355,15 +351,20 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 		return true;
 	}
 
-	public List<DBTypeEntity> selectAllDbType() {
-		return dbTypeModelRepository.findAll();
+	public List<DBTypeDTO> selectAllDbType() {
+		return dbTypeEntityRepository.findAll().stream()
+                .map(item -> DBTypeDTO.toDto(item))
+                .collect(Collectors.toList());
 	}
 
 	public Map<String,String> dbTypeUrlFormat() {
 
 		Map<String,String> urlFormat = new HashMap<String,String>();
-		this.dbTypeDriverModelRepository.findAll().forEach(item->{
-			urlFormat.put(item.getDriverId(), VarsqlJdbcUtil.getSampleJdbcUrl(item.getUrlFormat()) );
+		this.dbTypeDriverEntityRepository.findAll().forEach(item->{
+			urlFormat.put(item.getDriverId(), VarsqlJdbcUtil.getSampleJdbcUrl(item.getUrlFormat() , JdbcURLFormatParam.builder()
+					.type(item.getDbtype())
+					.port(item.getDefaultPort())
+					.build()) );
 		});;
 
 		return urlFormat;
@@ -380,7 +381,7 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 	 * @return
 	 */
 	public ResponseResult selectDbDriverList(String dbType) {
-		return VarsqlUtils.getResponseResultItemList(dbTypeDriverModelRepository.findByDbtype(dbType));
+		return VarsqlUtils.getResponseResultItemList(dbTypeDriverEntityRepository.findByDbtype(dbType));
 	}
 
 	/**
@@ -442,7 +443,7 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 			return resultObject;
 		}
 
-		DBConnectionEntity dbInfo = dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(vconnid)).orElseThrow(NullPointerException::new);
+		DBConnectionEntity dbInfo = dbConnectionEntityRepository.findOne(DBConnectionSpec.detailInfo(vconnid)).orElseThrow(NullPointerException::new);
 		try {
 			resultObject.setItemOne(PasswordCryptionFactory.getInstance().decrypt(dbInfo.getVpw()));
 		}catch(VarsqlRuntimeException e) {
@@ -460,14 +461,14 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 	 * @return ResponseResult
 	 */
 	public ResponseResult dbConnectionCopy(String vconnid) {
-		DBConnectionEntity dbInfo = dbConnectionModelRepository.findOne(DBConnectionSpec.detailInfo(vconnid)).orElseThrow(NullPointerException::new);
+		DBConnectionEntity dbInfo = dbConnectionEntityRepository.findOne(DBConnectionSpec.detailInfo(vconnid)).orElseThrow(NullPointerException::new);
 
 		DBConnectionEntity copyEntity = VarsqlBeanUtils.copyEntity(dbInfo);
 
 		copyEntity.setVconnid(null);
 		copyEntity.setVname(copyEntity.getVname()+"-copy");
 
-		dbConnectionModelRepository.save(copyEntity);
+		dbConnectionEntityRepository.save(copyEntity);
 
 		return VarsqlUtils.getResponseResultItemOne(copyEntity.getVconnid());
 	}

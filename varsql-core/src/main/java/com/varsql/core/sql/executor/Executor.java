@@ -2,6 +2,7 @@ package com.varsql.core.sql.executor;
 
 import java.sql.SQLException;
 
+import com.varsql.core.common.job.JobExecuteResult;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 
 /**
@@ -20,5 +21,5 @@ import com.varsql.core.db.valueobject.SqlStatementInfo;
 */
 public interface Executor {
 
-	public SQLExecuteResult execute(SqlStatementInfo statementInfo) throws SQLException;
+	public JobExecuteResult execute(SqlStatementInfo statementInfo) throws SQLException;
 }

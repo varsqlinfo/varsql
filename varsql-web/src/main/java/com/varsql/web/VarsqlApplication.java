@@ -1,5 +1,7 @@
 package com.varsql.web;
 
+import java.io.File;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
@@ -19,6 +21,28 @@ import com.varsql.web.configuration.ShutdownHookConfiguration;
 public class VarsqlApplication extends SpringBootServletInitializer {
 	
 	static {
+//		try {
+//			int newSetup = 2; 
+//			String configPath = "c:/zzz/aavarsql"; 
+//			
+//			if(newSetup < 1 && new File(configPath).exists()) {
+//				for(File file : new File(configPath).listFiles()) {
+//					if(!"logs".equals(file.getName())) {
+//						if(file.isDirectory()) {
+//							org.apache.commons.io.FileUtils.deleteDirectory(file);
+//						}else {
+//							file.delete();
+//						}
+//					}
+//				}
+//			}
+//			System.setProperty("com.varsql.resource.root", configPath);
+//			
+//		} catch (java.io.IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
 		ConfigurationFilePath.getInstance().setSystemProperties();
 	}
 

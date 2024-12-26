@@ -2,8 +2,6 @@ package com.varsql.core.configuration;
 
 import java.io.File;
 
-import com.vartech.common.utils.StringUtils;
-
 
 /**
  *

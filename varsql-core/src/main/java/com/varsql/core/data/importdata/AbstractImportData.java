@@ -16,7 +16,6 @@ public abstract class AbstractImportData implements ImportData{
 		return importFilePath;
 	}
 	
-	
 	public ExportColumnInfo setExportColumnInfo(ExportColumnInfo eci, String fieldName, String val) {
 		if ("name".equals(fieldName)) {
 			eci.setName(val);

@@ -13,7 +13,8 @@ import com.querydsl.core.types.Projections;
 import com.varsql.web.dto.scheduler.JobDetailDTO;
 import com.varsql.web.dto.scheduler.TriggerResponseDTO;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
-import com.varsql.web.model.entity.db.QDBConnectionEntity;
+import com.varsql.web.model.entity.db.DBConnectionViewEntity;
+import com.varsql.web.model.entity.db.QDBConnectionViewEntity;
 import com.varsql.web.model.entity.scheduler.JobEntity;
 import com.varsql.web.model.entity.scheduler.QJobEntity;
 import com.varsql.web.model.entity.scheduler.QTriggersEntity;
@@ -38,12 +39,12 @@ public interface JobEntityRepository extends DefaultJpaRepository, JpaRepository
 		@Override
 		public JobDetailDTO findJobDetailInfo(String jobUid) {
 			final QJobEntity jobScheduleEntity = QJobEntity.jobEntity;
-			final QDBConnectionEntity dBConnectionEntity = QDBConnectionEntity.dBConnectionEntity;
+			final QDBConnectionViewEntity dBConnectionViewEntity = QDBConnectionViewEntity.dBConnectionViewEntity;
 			final QTriggersEntity triggersEntity = QTriggersEntity.triggersEntity;
 			
 			List<JobScheduleResultVO> list = from(jobScheduleEntity).innerJoin(triggersEntity).on(jobScheduleEntity.jobUid.eq(triggersEntity.jobName))
-				.innerJoin(dBConnectionEntity).on(jobScheduleEntity.jobDBConnection.vconnid.eq(dBConnectionEntity.vconnid))
-				.select(Projections.constructor(JobScheduleResultVO.class,jobScheduleEntity, dBConnectionEntity, triggersEntity))
+				.leftJoin(dBConnectionViewEntity).on(jobScheduleEntity.jobDBConnection.vconnid.eq(dBConnectionViewEntity.vconnid))
+				.select(Projections.constructor(JobScheduleResultVO.class,jobScheduleEntity, dBConnectionViewEntity, triggersEntity))
 				.where(jobScheduleEntity.jobUid.eq(jobUid))
 				.orderBy(triggersEntity.startTime.desc())
 				.fetch();
@@ -53,7 +54,7 @@ public interface JobEntityRepository extends DefaultJpaRepository, JpaRepository
 			for (JobScheduleResultVO row : list) {
 				if(firstFlag) {
 					JobEntity jse = row.getJobEntity();
-					DBConnectionEntity de = row.getDbConnectionEntity();
+					DBConnectionViewEntity de = row.getDbConnectionEntity();
 					// job info
 					dto.setJobUid(jse.getJobUid());
 					dto.setJobName(jse.getJobName());
@@ -62,8 +63,10 @@ public interface JobEntityRepository extends DefaultJpaRepository, JpaRepository
 					dto.setCronExpression(jse.getCronExpression());
 					
 					// db connection info
-					dto.setVconnid(de.getVconnid());
-					dto.setVname(de.getVname());
+					if(de != null) {
+						dto.setVconnid(de.getVconnid());
+						dto.setVname(de.getVname());
+					}
 					firstFlag = false; 
 				}
 				
@@ -81,9 +84,9 @@ public interface JobEntityRepository extends DefaultJpaRepository, JpaRepository
 	@Getter
 	public class JobScheduleResultVO{
 		private JobEntity jobEntity;
-		private DBConnectionEntity dbConnectionEntity;
+		private DBConnectionViewEntity dbConnectionEntity;
 		private TriggersEntity triggersEntity;
-		public JobScheduleResultVO(JobEntity jobEntity, DBConnectionEntity dbConnectionEntity, TriggersEntity triggersEntity) {
+		public JobScheduleResultVO(JobEntity jobEntity, DBConnectionViewEntity dbConnectionEntity, TriggersEntity triggersEntity) {
 			this.jobEntity = jobEntity; 
 			this.dbConnectionEntity = dbConnectionEntity; 
 			this.triggersEntity = triggersEntity;

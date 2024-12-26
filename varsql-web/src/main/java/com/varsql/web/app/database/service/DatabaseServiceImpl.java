@@ -12,6 +12,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.varsql.core.connection.ConnectionInfoManager;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
@@ -83,7 +84,7 @@ public class DatabaseServiceImpl{
 		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(venderType);
 
 		json.put("conuid", preferencesRequestDTO.getConuid());
-		json.put("schema", dbinfo.getSchema());
+		json.put("schema", ConnectionInfoManager.getInstance().getConnectionInfo(dbinfo.getVconnid()).getSchema());
 		json.put("type", dbinfo.getType());
 		json.put("lazyload", dbinfo.isLazyLoad());
 		
@@ -153,6 +154,7 @@ public class DatabaseServiceImpl{
 				result.setList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(), dbMetadataRequestDTO, objectNames));
 			}
 		}catch(Exception e){
+			commonLogService.insertExceptionLog("dbObjectListException",e);
 			logger.error("dbObjectList objectType : [{}]",objectType);
 			logger.error("dbObjectList ", e);
 
@@ -191,6 +193,7 @@ public class DatabaseServiceImpl{
 		try{
 			result.setList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(dbMetadataRequestDTO.getObjectType()).getObjectTypeId(),dbMetadataRequestDTO, dbMetadataRequestDTO.getObjectName()));
 		}catch(Exception e){
+			commonLogService.insertExceptionLog("dbObjectMetadataException",e);
 			logger.error("dbObjectMetadataList : {} ", e.getMessage() , e);
 		}
 		return result;
@@ -214,7 +217,8 @@ public class DatabaseServiceImpl{
 		try{
 			result.setItemOne(dbMetaEnum.getDDLScript(ObjectType.getDBObjectType( dbMetadataRequestDTO.getObjectType()).getObjectTypeId(),dbMetadataRequestDTO, dbMetadataRequestDTO.getObjectName()));
 		}catch(Exception e){
-			logger.error("createDDL : ", e);
+			commonLogService.insertExceptionLog("createDDLException",e);
+			logger.error("createDDL : {}", e.getMessage(), e);
 		}
 		return result;
 	}
@@ -237,7 +241,7 @@ public class DatabaseServiceImpl{
 		try{
 			result.setList(dbMetaEnum.getDBInfo(dbMetadataRequestDTO));
 		}catch(Exception e){
-			logger.error("createDDL : ", e);
+			logger.error("dbInfo : {}", e.getMessage(), e);
 		}
 		return result;
 	}

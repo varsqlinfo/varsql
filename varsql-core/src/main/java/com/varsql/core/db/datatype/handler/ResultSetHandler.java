@@ -1,5 +1,7 @@
 package com.varsql.core.db.datatype.handler;
 
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -19,15 +21,19 @@ public interface ResultSetHandler {
 		
 		Class<?> superClass = obj.getClass().getSuperclass(); 
 		
-		if(superClass== java.io.Reader.class) {
+		if(superClass== java.io.Reader.class || obj instanceof Clob) {
 			return DefaultDataType.CLOB.getResultSetHandler().getValue(dataType, rs, columnIndex, dert, isFormatValue);
 		}
 		
-		if(superClass == java.io.InputStream.class) {
+		if(superClass == java.io.InputStream.class || obj instanceof Blob) {
 			return dataType.getTypeName() + " BINARY";
 		}
 		
-		return obj.toString();
+		try {
+			return obj.toString();
+		}catch(Exception e) {
+			return "varsql value error : "+ obj.getClass();
+		}
 	}
 
 	default Object getValue(DataType dataType, ResultSet rs, String columnLabel, DataExceptionReturnType dert) throws SQLException {
@@ -41,15 +47,19 @@ public interface ResultSetHandler {
 		
 		Class<?> superClass = obj.getClass().getSuperclass(); 
 		
-		if(superClass == java.io.Reader.class) {
+		if(superClass== java.io.Reader.class || obj instanceof Clob) {
 			return DefaultDataType.CLOB.getResultSetHandler().getValue(dataType, rs, columnLabel, dert, isFormatValue);
 		}
 		
-		if(obj.getClass().getSuperclass() == java.io.InputStream.class) {
+		if(superClass == java.io.InputStream.class || obj instanceof Blob) {
 			return dataType.getTypeName() + " BINARY";
 		}
 		
-		return obj.toString();
+		try {
+			return obj.toString();
+		}catch(Exception e) {
+			return "varsql value error : "+ obj.getClass();
+		}
 	}
 }
 

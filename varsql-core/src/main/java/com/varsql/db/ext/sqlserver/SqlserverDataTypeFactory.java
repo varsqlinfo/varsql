@@ -9,6 +9,7 @@ import com.varsql.core.db.datatype.AbstractDataTypeFactory;
 import com.varsql.core.db.datatype.DBColumnMetaInfo;
 import com.varsql.core.db.datatype.DataExceptionReturnType;
 import com.varsql.core.db.datatype.DataType;
+import com.varsql.core.db.datatype.DataTypeConfigInfo;
 import com.varsql.core.db.datatype.DataTypeHandler;
 import com.varsql.core.db.datatype.DefaultDataType;
 import com.varsql.core.db.datatype.VenderDataType;
@@ -26,24 +27,27 @@ public class SqlserverDataTypeFactory extends AbstractDataTypeFactory{
 	
 	public SqlserverDataTypeFactory() {
 		
-		addDataType(new VenderDataType("TEXT", DefaultDataType.CLOB.getTypeCode(), DBColumnMetaInfo.TEXT));
-		addDataType(new VenderDataType("NTEXT", DefaultDataType.NCLOB.getTypeCode(), DBColumnMetaInfo.TEXT));
-		addDataType(new VenderDataType("DATETIME2", DefaultDataType.DATETIME.getTypeCode(), DBColumnMetaInfo.DATE));
-		addDataType(new VenderDataType("DATETIMEOFFSET", DefaultDataType.TIMESTAMP_WITH_TIMEZONE.getTypeCode(), DBColumnMetaInfo.DATE));
-		addDataType(new VenderDataType("TIMESTAMP", DefaultDataType.BINARY.getTypeCode(), DBColumnMetaInfo.OTHER, -1, DataTypeHandler.builder().resultSetHandler(new ResultSetHandler() {
-			@Override
-			public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
-				byte[] val = rs.getBytes(columnIndex);
-				
-				if(val == null) return null;
-				
-				try {
-					return Hex.encodeHex(val);
-				}catch(Exception e) {
-					return rs.getObject(columnIndex).toString();
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("TEXT").typeCode(DefaultDataType.CLOB.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.TEXT).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("NTEXT").typeCode(DefaultDataType.NCLOB.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.TEXT).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("DATETIME2").typeCode(DefaultDataType.DATETIME.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.DATE).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("DATETIMEOFFSET").typeCode(DefaultDataType.TIMESTAMP_WITH_TIMEZONE.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.TIMESTAMP).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("TIMESTAMP").typeCode(DefaultDataType.BINARY.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER)
+			.dataTypeHandler(DataTypeHandler.builder().resultSetHandler(new ResultSetHandler() {
+				@Override
+				public Object getValue(DataType dataType, ResultSet rs, int columnIndex, DataExceptionReturnType dert, boolean isFormatValue) throws SQLException {
+					byte[] val = rs.getBytes(columnIndex);
+					
+					if(val == null) return null;
+					
+					try {
+						return Hex.encodeHex(val);
+					}catch(Exception e) {
+						return rs.getObject(columnIndex).toString();
+					}
 				}
-			}
-		}).build(), true));
+			}).build())
+			.excludeImportColumn(true).build()));
+		
 		
 	}
 }

@@ -268,8 +268,10 @@
 <entry key="admim.account.settings">管理员账户设置</entry>
 <entry key="admim.default.name">管理员</entry>
 <entry key="app.settings">站点设置</entry>
+<entry key="app.data.path">Data Path</entry>
 
 <!-- 文件 -->
+<entry key="file">File</entry>
 <entry key="file.new">新建文件</entry>
 <entry key="file.name">文件名</entry>
 <entry key="file.import_export">导入和导出...</entry>
@@ -394,4 +396,19 @@
 <entry key="help">帮助</entry>
 <entry key="install">インストール</entry>
 <entry key="install.start">安装开始</entry>
+
+<entry key="execute">执行</entry>
+<entry key="commit.count">提交频率</entry>
+<entry key="sql">SQL</entry>
+<entry key="error.ignore">忽略错误</entry>
+
+<entry key="column.name.copy">复制列名</entry>
+<entry key="column.name.add">添加列名</entry>
+<entry key="column.name.value.add"><![CDATA[添加列名和值]]></entry>
+<entry key="page.size">Page Size</entry>
+<entry key="viewer">Viewer</entry>
+<entry key="viewer.view">Viewer View</entry>
+
+<entry key="trigger.info">Trigger Info</entry>
+
 </properties>

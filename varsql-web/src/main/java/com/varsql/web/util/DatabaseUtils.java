@@ -55,13 +55,11 @@ public final class DatabaseUtils {
 			.vconnid(dbConnectionEntity.getVconnid())
 			.type(dbConnectionEntity.getDbTypeDriverProvider().getDbType())
 			.name(dbConnectionEntity.getVname())
-			.schema(dbConnectionEntity.getVdbschema())
 			.basetableYn(dbConnectionEntity.getBasetableYn())
 			.lazyLoad(dbConnectionEntity.getLazyloadYn())
 			.version(dbConnectionEntity.getVdbversion())
 			.schemaViewYn(dbConnectionEntity.getSchemaViewYn())
 			.maxSelectCount(ConvertUtils.intValue(dbConnectionEntity.getMaxSelectCount()))
-			.databaseName(dbConnectionEntity.getVdatabasename())
 			.build();
 	}
 	

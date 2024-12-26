@@ -1,5 +1,7 @@
 package com.varsql.core.common.constants;
 
+import java.io.File;
+
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -50,6 +52,8 @@ public interface VarsqlConstants {
 
 
 	final String UPLOAD_PATH = Configuration.getInstance().getFileUploadPath();
+	
+	final String UPLOAD_TEMP_PATH = UPLOAD_PATH +File.separator +"temp";
 
 	final String FILE_ID_DELIMITER = ",";
 	

@@ -1,5 +1,7 @@
 package com.varsql.web.app.manager.service;
 
+import java.sql.SQLException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -8,23 +10,32 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import com.varsql.core.db.valueobject.DatabaseInfo;
+import com.varsql.core.db.valueobject.SqlStatementInfo;
+import com.varsql.core.exception.NotFoundException;
+import com.varsql.core.sql.util.SQLUtils;
+import com.varsql.core.task.Task;
+import com.varsql.core.task.sql.SQLTask;
 import com.varsql.web.dto.task.TaskSqlRequestDTO;
 import com.varsql.web.dto.task.TaskSqlResponseDTO;
-import com.varsql.web.exception.TaskNotFoundException;
+import com.varsql.web.exception.DatabaseNotFoundException;
 import com.varsql.web.model.base.AbstractRegAuditorModel;
 import com.varsql.web.model.entity.task.TaskSqlEntity;
+import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.repository.task.TaskSqlRepository;
 import com.varsql.web.util.VarsqlBeanUtils;
 import com.varsql.web.util.VarsqlUtils;
+import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
+import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.utils.StringUtils;
 
 /**
- * log compoment 관리
-* 
-* @fileName	: CmpLogMgmtService.java
-* @author	: ytkim
+ * sql task service
+ * 
+ * @author ytkim
+ *
  */
 @Component
 public class TaskSqlMgmtService {
@@ -33,6 +44,15 @@ public class TaskSqlMgmtService {
 	@Autowired
 	private TaskSqlRepository taskSqlRepository;
 	
+	@Autowired
+	private DBConnectionEntityRepository dbConnectionEntityRepository;
+	
+	/**
+	 * 목록 
+	 * 
+	 * @param searchParameter
+	 * @return
+	 */
 	public ResponseResult list(SearchParameter searchParameter) {
 		Sort sort =Sort.by(Sort.Direction.DESC, AbstractRegAuditorModel.REG_DT);
 		
@@ -44,18 +64,19 @@ public class TaskSqlMgmtService {
 	/**
 	 * 정보 저장.  
 	 *
-	 * @method : save
 	 * @param dto
 	 * @return
 	 */
 	public ResponseResult save(TaskSqlRequestDTO dto) {
 		TaskSqlEntity tse;
 		
+		logger.debug("save :{}", dto);
+		
 		if(!StringUtils.isBlank(dto.getTaskId())) {
 			tse = taskSqlRepository.findByTaskId(dto.getTaskId());
 			
 			if(tse == null) {
-				throw new TaskNotFoundException("sql task id not found : "+ dto.getTaskId());
+				throw new NotFoundException("id not found : "+ dto.getTaskId());
 			}
 			BeanUtils.copyProperties(dto.toEntity(), tse, "taskId");
 		}else {
@@ -70,7 +91,6 @@ public class TaskSqlMgmtService {
 	/**
 	 * 정보 삭제. 
 	 *
-	 * @method : remove
 	 * @param taskId
 	 * @return
 	 */
@@ -78,7 +98,7 @@ public class TaskSqlMgmtService {
 		TaskSqlEntity deleteItem = taskSqlRepository.findByTaskId(taskId);
 		
 		if(deleteItem == null) {
-			throw new TaskNotFoundException("log component id not found : "+ taskId);
+			throw new NotFoundException("id not found : "+ taskId);
 		}
 		
 		taskSqlRepository.delete(deleteItem);
@@ -89,7 +109,6 @@ public class TaskSqlMgmtService {
 	/**
 	 * 정보 복사 
 	 *
-	 * @method : copyInfo
 	 * @param taskId
 	 * @return
 	 */
@@ -103,7 +122,50 @@ public class TaskSqlMgmtService {
 	    
 	    taskSqlRepository.save(copyEntity);
 	    
-	    return VarsqlUtils.getResponseResultItemOne(TaskSqlResponseDTO.toDto(copyEntity));
+	    return VarsqlUtils.getResponseResultItemOne(1);
+	}
+	
+	/**
+	 * sql task 실행. 
+	 * 
+	 * @param taskId
+	 * @param string 
+	 * @return
+	 * @throws SQLException 
+	 */
+	public ResponseResult execute(String taskId, DataMap reqParam, String ip) {
+		ResponseResult result = new ResponseResult();
+		
+		TaskSqlEntity item = taskSqlRepository.findByTaskId(taskId);
+		
+		if(item == null) {
+			throw new NotFoundException(String.format("[%s] task not found ",  taskId));
+		}
+		
+		DatabaseInfo dbinfo = dbConnectionEntityRepository.findDatabaseInfo(item.getVconnid());
+		
+		if(dbinfo==null) {
+			throw new DatabaseNotFoundException(String.format("[%s] db not found ", item.getVconnid()));
+		}
+		
+		SqlStatementInfo ssi = new SqlStatementInfo();
+		
+		ssi.setDatabaseInfo(dbinfo);
+		ssi.setSql(item.getSql());
+		ssi.setSqlParamMap(SQLUtils.stringParamListToMap(item.getParameter()));
+		
+		ssi.setLimit(-1);
+
+		Task sqlTask = new SQLTask(ssi);
+		
+		try {
+			sqlTask.submit();
+			result = sqlTask.result().getCustomResult();
+		} catch (Exception e) {
+			result = ResponseResult.builder().status(RequestResultCode.ERROR.getCode()).message(e.getMessage()).build();
+		}
+		
+		return result; 
 	}
 
 }

@@ -23,16 +23,17 @@ import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.dto.task.TaskSqlRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
+import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.HttpUtils;
 
 import lombok.RequiredArgsConstructor;
 
 /**
- * log component management
-* 
-* @fileName	: CmpLogMgmtController.java
-* @author	: ytkim
+ * sql task 
+ * 
+ * @author ytkim
+ *
  */
 @Controller
 @RequiredArgsConstructor
@@ -47,7 +48,15 @@ public class TaskSqlMgmtController extends AbstractController {
 	
 	final private ManagerCommonServiceImpl dbnUserServiceImpl;
 	
-	
+	/**
+	 * sql task 관리 페이지 보기
+	 * 
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
 	@GetMapping({"","/"})
 	public ModelAndView main(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
 		
@@ -55,11 +64,19 @@ public class TaskSqlMgmtController extends AbstractController {
 		model.addAttribute("selectMenu", "taskMgmt");
 		model.addAttribute("dbList", dbnUserServiceImpl.selectdbList());
 		
-		return getModelAndView("/sqlTaskMgmt", VIEW_PAGE.MANAGER,model);
+		return getModelAndView("/sqlTaskMgmt", VIEW_PAGE.MANAGER_TASK,model);
 	}
 	
+	/**
+	 * 목록 얻기
+	 * @param req
+	 * @param res
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
 	@PostMapping({"/list" })
-	public @ResponseBody ResponseResult deployList(HttpServletRequest req,
+	public @ResponseBody ResponseResult list(HttpServletRequest req,
 			HttpServletResponse res, ModelAndView mav) throws Exception {
 		
 		return taskSqlMgmtService.list(HttpUtils.getSearchParameter(req));
@@ -107,7 +124,6 @@ public class TaskSqlMgmtController extends AbstractController {
 	/**
 	 * 복사
 	 *
-	 * @method : copy
 	 * @param taskId
 	 * @param req
 	 * @return
@@ -116,5 +132,19 @@ public class TaskSqlMgmtController extends AbstractController {
 	@PostMapping({"/copy" })
 	public @ResponseBody ResponseResult copy(@RequestParam(value = "taskId", required = true) String taskId, HttpServletRequest req) throws Exception {
 		return taskSqlMgmtService.copyInfo(taskId);
+	}
+	
+	/**
+	 * sql task 실행
+	 * 
+	 * @param taskId
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@PostMapping({"/execute" })
+	public @ResponseBody ResponseResult execute(@RequestParam(value = "taskId", required = true) String taskId, HttpServletRequest req) throws Exception {
+		DataMap param = HttpUtils.getServletRequestParam(req);
+		return taskSqlMgmtService.execute(taskId, param, VarsqlUtils.getClientIp(req));
 	}
 }

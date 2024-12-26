@@ -1,10 +1,11 @@
 package com.varsql.core.data.importdata.handler;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.sql.beans.ExportColumnInfo;
+import com.varsql.core.sql.beans.GenQueryInfo;
+import com.varsql.core.sql.util.SQLUtils;
 
 public abstract class AbstractImportDataHandler implements ImportDataHandler{
 
@@ -45,36 +46,9 @@ public abstract class AbstractImportDataHandler implements ImportDataHandler{
 
 	public void setColumns(List<ExportColumnInfo> columns) {
 		
-		StringBuffer querySb = new StringBuffer();
-
-		querySb.append("insert into ").append(this.tableName).append(" (");
-
-		StringBuilder paramSb =new StringBuilder();
-		boolean firstFlag = true;
-		
-		List<ExportColumnInfo> newColumnList = new LinkedList<ExportColumnInfo>();
-		for (ExportColumnInfo eci : columns) {
-			
-			if(this.metaControlBean.getDataTypeImpl().getDataType(eci.getTypeCode(), eci.getType()).isExcludeImportColumn()) {
-				continue;
-			}
-			
-			newColumnList.add(eci);
-			if(firstFlag) {
-				querySb.append(eci.getName());
-				paramSb.append("?");
-				firstFlag = false;
-			}else {
-				querySb.append(", ").append(eci.getName());
-				paramSb.append(", ?");
-			}
-		}
-
-		querySb.append(") values ( ").append(paramSb.toString()).append(") ") ;
-		
-		this.columns = newColumnList;
-		
-		if(this.sql == null) this.sql = querySb.toString();
+		GenQueryInfo insertQueryInfo = SQLUtils.generateInsertQuery(this.tableName, columns, this.metaControlBean.getDataTypeImpl());
+		this.columns = insertQueryInfo.getColumns();
+		if(this.sql == null) this.sql = insertQueryInfo.getSql();
 	}
 
 	public String getSql() {

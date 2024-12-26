@@ -65,9 +65,7 @@ public class SqlSourceBuilder {
 		}catch(Exception e){
 			log.error("parse ",e);
 			result.setMessage(e.getMessage());
-			result.setList(SQLParserUtils.getDefaultSqlSource(query, param));
-
-			//result.setItemList(new OldSqlSourceBuilder().parse(query, param));
+			result.setList(SQLParserUtils.getDefaultSqlSource(query, param, dbType));
 		}
 		return result;
 	}
@@ -86,7 +84,15 @@ public class SqlSourceBuilder {
 		return getSqlSource(sql , param , DBVenderType.OTHER);
 	}
 	public static SqlSource getSqlSource(String sql, Map<String, String> param, DBVenderType dbType) {
-		return SQLParserUtils.getSqlSourceList(sql , param , dbType).get(0);
+		
+		try{
+			return SQLParserUtils.getSqlSourceList(sql , param , dbType).get(0);
+		}catch(Exception e){
+			log.error("dbType : {}, parse {}", dbType, e.getMessage(), e);
+			return SQLParserUtils.getDefaultSqlSource(sql, param, dbType).get(0);
+		}
+		
+		
 	}
 
 }

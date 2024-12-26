@@ -31,9 +31,11 @@ import com.varsql.core.common.code.VarsqlFileType;
 import com.varsql.core.common.constants.ColumnJavaType;
 import com.varsql.core.common.constants.SqlDataConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.common.job.JobExecuteResult;
 import com.varsql.core.common.util.GridUtils;
 import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.core.connection.ConnectionFactory;
+import com.varsql.core.connection.ConnectionInfoManager;
 import com.varsql.core.data.writer.SQLWriter;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
@@ -45,7 +47,6 @@ import com.varsql.core.sql.beans.GridColumnInfo;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
-import com.varsql.core.sql.executor.SQLExecuteResult;
 import com.varsql.core.sql.executor.SelectExecutor;
 import com.varsql.core.sql.executor.handler.SelectExecutorHandler;
 import com.varsql.core.sql.executor.handler.SelectInfo;
@@ -68,7 +69,6 @@ import com.varsql.web.repository.app.FileInfoEntityRepository;
 import com.varsql.web.util.ConvertUtils;
 import com.varsql.web.util.FileServiceUtils;
 import com.varsql.web.util.SecurityUtil;
-import com.varsql.web.util.ValidateUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.app.beans.ResponseResult;
@@ -142,11 +142,11 @@ public class SQLServiceImpl{
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ResponseResult sqlExecute(SqlExecuteDTO sqlExecuteInfo, String ip) throws Exception {
 
-		Map sqlParamMap = VartechUtils.jsonStringToObject(sqlExecuteInfo.getSqlParam(), HashMap.class);
+		ResponseResult result = new ResponseResult();
 
 		DatabaseInfo dbinfo = sqlExecuteInfo.getDatabaseInfo();
 
-		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(sqlExecuteInfo.getSql(), sqlParamMap, DBVenderType.getDBType( dbinfo.getType() ));
+		ResponseResult parseInfo=SqlSourceBuilder.parseResponseResult(sqlExecuteInfo.getSql(), sqlExecuteInfo.getSqlParam(), DBVenderType.getDBType( dbinfo.getType() ));
 
 		List<SqlSource> sqlList = parseInfo.getList();
 
@@ -158,8 +158,6 @@ public class SQLServiceImpl{
 		}
 
 		ArrayList<SqlSourceResultVO> reLst = new ArrayList<SqlSourceResultVO>();
-
-		ResponseResult result = new ResponseResult();
 
 		Connection conn = null;
 		SqlSourceResultVO ssrv =null;
@@ -179,6 +177,7 @@ public class SQLServiceImpl{
 		sqlLogInfo.setSHh(Integer.valueOf(mmddHH[2]));
 
 		sqlLogInfo.setUsrIp(ip);
+		sqlExecuteInfo.setIp(ip);
 
 		SqlSource tmpSqlSource =null;
 		int sqldx =0,sqlSize = sqlList.size();
@@ -198,7 +197,7 @@ public class SQLServiceImpl{
 				tmpSqlSource.setResult(ssrv);
 				ssrv.setStarttime(System.currentTimeMillis());
 
-				ssrv = SQLUtils.getSqlExecute(sqlExecuteInfo, conn, tmpSqlSource, true);
+				ssrv = SQLUtils.sqlExecute(sqlExecuteInfo, conn, tmpSqlSource, true);
 
 				ssrv.setEndtime(System.currentTimeMillis());
 				ssrv.setDelay((ssrv.getEndtime()- ssrv.getStarttime())/1000);
@@ -329,7 +328,7 @@ public class SQLServiceImpl{
 
 		String objectName = sqlExecuteInfo.getObjectName();
 
-		if(!sqlExecuteInfo.getDatabaseInfo().getSchema().equals(sqlExecuteInfo.getSchema())) {
+		if(!ConnectionInfoManager.getInstance().getConnectionInfo(sqlExecuteInfo.getDatabaseInfo().getVconnid()).getSchema().equals(sqlExecuteInfo.getSchema())) {
 			objectName = sqlExecuteInfo.getSchema()+"."+objectName;
 		}
 
@@ -391,7 +390,7 @@ public class SQLServiceImpl{
 
 			final String tableName = sqlExecuteInfo.getExportObjectName();
 
-			SQLExecuteResult ser = new SelectExecutor().execute(sqlExecuteInfo, new SelectExecutorHandler(writer) {
+			JobExecuteResult ser = new SelectExecutor().execute(sqlExecuteInfo, new SelectExecutorHandler(writer) {
 				private boolean firstFlag = true;
 				private int rowIdx = 0;
 
@@ -404,16 +403,13 @@ public class SQLServiceImpl{
 						List<ExportColumnInfo> columns = new LinkedList<ExportColumnInfo>();
 
 						handleParam.getColumnInfoList().forEach(item->{
-							ExportColumnInfo eci = new ExportColumnInfo();
-							
-							eci.setName(item.getLabel());
-							eci.setAlias(item.getKey());
-							eci.setType(item.getDbType());
-							eci.setTypeCode(item.getDbTypeCode());
-							eci.setNumber(item.isNumber());
-							eci.setLob(item.isLob());
-
-							columns.add(eci);
+							columns.add(ExportColumnInfo.builder()
+									.name(item.getLabel())
+									.alias(item.getKey())
+									.type(item.getDbType())
+									.typeCode(item.getDbTypeCode())
+									.number(item.isNumber())
+									.lob(item.isLob()).build());
 						});
 
 						whi.addMetedata("tableName", tableName);

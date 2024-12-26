@@ -22,12 +22,12 @@ import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.ibatis.type.JdbcType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.vartech.common.io.Resource;
 
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.util.JdbcDriverLoader;
 import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.connection.ConnectionFactory;
+import com.varsql.core.connection.ConnectionInfoManager;
 import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.db.datasource.SingleConnectionDataSource;
 import com.varsql.core.db.datasource.SingleDriverDataSource;
@@ -37,10 +37,10 @@ import com.varsql.core.db.valueobject.CommentInfo;
 import com.varsql.core.db.valueobject.ConstraintInfo;
 import com.varsql.core.exception.ConnectionException;
 import com.varsql.core.exception.ConnectionFactoryException;
-import com.varsql.core.exception.FileNotFoundException;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.vartech.common.app.beans.DataMap;
+import com.vartech.common.io.Resource;
 import com.vartech.common.utils.VartechReflectionUtils;
 
 /**
@@ -75,7 +75,7 @@ public final class SQLManager {
 		}
 
 		if (!sqlSessionFactoryMap.containsKey(connid)) {
-			setSQLMapper(ConnectionFactory.getInstance().getConnectionInfo(connid), this);
+			setSQLMapper(ConnectionInfoManager.getInstance().getConnectionInfo(connid), this);
 		}
 
 		return sqlSessionFactoryMap.get(connid).openSession();
@@ -172,9 +172,7 @@ public final class SQLManager {
 			} else {
 				logger.error("jdbc driver load fail : {}", connInfo.getJdbcDriverInfo().getDriverFiles());
 							
-				if(connInfo.getJdbcDriverInfo().getDriverFiles() != null  && connInfo.getJdbcDriverInfo().getDriverFiles().size() > 0) {
-					throw new ConnectionException("jdbc driver load fail : " + connInfo.getJdbcDriverInfo().getDriverFiles());
-				}
+				throw new ConnectionException("jdbc driver load fail : " + connInfo.getJdbcDriverInfo());
 			}
 		}
 		

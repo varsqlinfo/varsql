@@ -4,7 +4,7 @@ import java.io.Serializable;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
-import com.varsql.web.model.entity.db.DBConnectionEntity;
+import com.varsql.web.model.entity.db.DBConnectionViewEntity;
 import com.varsql.web.model.entity.scheduler.JobEntity;
 
 import lombok.Getter;
@@ -43,7 +43,7 @@ public class JobRequestDTO implements Serializable{
 			.jobUid(jobUid)
 			.jobName(jobName)
 			.jobGroup(jobGroup)
-			.jobDBConnection(DBConnectionEntity.builder().vconnid(vconnid).build() )
+			.jobDBConnection(DBConnectionViewEntity.builder().vconnid(vconnid).build() )
 			.cronExpression(cronExpression)
 			.jobDescription(jobDescription)
 			.jobData(jobData)

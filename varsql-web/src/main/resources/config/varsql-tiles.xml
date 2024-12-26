@@ -92,10 +92,6 @@
         <put-attribute name="header" value="/WEB-INF/views/database/_templates/header.jsp" />
     </definition>
 
-    <definition name="/help/**" template="/WEB-INF/views/help/_templates/main.jsp" >
-        <put-attribute name="body" value="/WEB-INF/views/help/{1}.jsp" />
-    </definition>
-
 
 	<definition name="/board/*" template="/WEB-INF/views/app/board/_templates/mainTemplate.jsp">
         <put-attribute name="body"	value="/WEB-INF/views/app/board/{1}.jsp" />
@@ -117,10 +113,20 @@
 		<put-attribute name="body" value="/WEB-INF/views/guest/{1}.jsp" />
 	</definition>
 
-	<!-- error -->
-	<definition name="/error/**" extends="no-template">
-		<put-attribute name="body" value="/WEB-INF/views/error/{1}.jsp" />
+
+	<!-- common  -->
+    <definition name="/common/**" extends="no-template">
+        <put-attribute name="body" value="/WEB-INF/views/common/{1}.jsp" />
+    </definition>
+    
+	<!-- common -->
+	<definition name="/common/*/*" extends="no-template">
+		<put-attribute name="body" value="/WEB-INF/views/common/{1}/{2}.jsp" />
 	</definition>
+	
+	<definition name="/help/**" template="no-template" >
+        <put-attribute name="body" value="/WEB-INF/views/help/{1}.jsp" />
+    </definition>
 	
 	<!-- setup -->
 	<definition name="/setup/**" template="/WEB-INF/views/setup/_templates/main.jsp">

@@ -23,6 +23,10 @@ public class ConnectionInfo implements Serializable {
 	private String type;
 	private String url;
 	private String username;
+	
+	private String schema;
+	
+	private String databaseName;
 
 	@Transient
 	private String password;
@@ -42,6 +46,8 @@ public class ConnectionInfo implements Serializable {
 	
 	private boolean enableConnectionPool;
 	
+	private boolean isCreateConnectionPool;
+	
 	private boolean useColumnLabel;
 
 	private JDBCDriverInfo jdbcDriverInfo;
@@ -50,7 +56,7 @@ public class ConnectionInfo implements Serializable {
 	public ConnectionInfo(String connid, DBVersionInfo version, String aliasName, String type, String url, String username, String password
 			, int connectionTimeOut, int exportCount, int initialSize, int maxActive, int minIdle, int maxIdle, long maxWait
 			, long timebetweenevictionrunsmillis, boolean testWhileIdle, String validationQuery, String useColumnLabel
-			, String connectionOptions, boolean enableConnectionPool, JDBCDriverInfo jdbcDriverInfo) {
+			, String connectionOptions, boolean enableConnectionPool, JDBCDriverInfo jdbcDriverInfo, String schema, String databaseName, boolean isCreateConnectionPool) {
 		
 		this.connid = connid;
 		this.aliasName = aliasName;
@@ -73,10 +79,25 @@ public class ConnectionInfo implements Serializable {
 		this.connectionOptions = connectionOptions;
 		this.enableConnectionPool = enableConnectionPool;
 		this.jdbcDriverInfo = jdbcDriverInfo;
+		this.schema = schema;
+		this.databaseName = databaseName;
+		this.isCreateConnectionPool = isCreateConnectionPool;
 	}
 	
 	public void setEnableConnectionPool(boolean enableConnectionPool){
 		this.enableConnectionPool = enableConnectionPool;
+	}
+	
+	public void setSchema(String schema) {
+		this.schema = schema;
+	}
+	
+	public void setDatabaseName(String databaseName) {
+		this.databaseName = databaseName;
+	}
+	
+	public void setCreateConnectionPool(boolean isCreateConnectionPool) {
+		this.isCreateConnectionPool = isCreateConnectionPool;
 	}
 	
 	@Override
@@ -84,10 +105,12 @@ public class ConnectionInfo implements Serializable {
 
 		StringBuilder result = new StringBuilder();
 
-	    result.append(this.getClass().getName() ).append( " Object { " ).append( BlankConstants.NEW_LINE);
+	    result.append(this.getClass().getName() ).append( " { " ).append( BlankConstants.NEW_LINE);
 	    result.append(" connid: ").append(connid).append(BlankConstants.NEW_LINE);
 	    result.append(" version: ").append(version).append(BlankConstants.NEW_LINE);
 	    result.append(" aliasName: ").append(aliasName).append(BlankConstants.NEW_LINE);
+	    result.append(" schema: ").append(schema).append(BlankConstants.NEW_LINE);
+	    result.append(" databaseName: ").append(databaseName).append(BlankConstants.NEW_LINE);
 	    result.append(" type: " ).append( type ).append( BlankConstants.NEW_LINE);
 	    result.append(" url: " ).append( url ).append( BlankConstants.NEW_LINE);
 	    result.append(" username: " ).append( username ).append( BlankConstants.NEW_LINE);
@@ -108,5 +131,4 @@ public class ConnectionInfo implements Serializable {
 	    return result.toString();
 	}
 
-	
 }

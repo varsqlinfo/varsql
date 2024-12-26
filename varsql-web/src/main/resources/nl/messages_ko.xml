@@ -27,45 +27,51 @@
 <entry key="msg.password.length.check">패스워드는 6자리 이상되어야 합니다</entry>
 <entry key="msg.login.fail">아이디 또는 비밀번호를 잘못 입력하셨습니다</entry>
 <entry key="msg.saveandclose.confirm">저장하고 닫으시겠습니까?</entry>
-<entry key="msg.saveandreload">저장하시겠습니까?\n저장후 페이지 새로고침 이후 반영됩니다.</entry>
-<entry key="msg.create.confirm">생성하시겠습니까?</entry>
+<entry key="msg.saveandreload">저장 하시겠습니까?\n저장후 페이지 새로고침 이후 반영됩니다.</entry>
+<entry key="msg.create.confirm">생성 하시겠습니까?</entry>
 <entry key="msg.create.confirm.param">{item} 생성하시겠습니까?</entry>
 <entry key="msg.create.success">생성되었습니다</entry>
-<entry key="msg.save.confirm">저장하시겠습니까?</entry>
-<entry key="msg.save.success">저장되었습니다</entry>
-<entry key="msg.delete.confirm">삭제하시겠습니까?</entry>
-<entry key="msg.delete.confirm.param">{item} 삭제하시겠습니까?</entry>
+<entry key="msg.save.confirm">저장 하시겠습니까?</entry>
+<entry key="msg.save.success">저장 되었습니다</entry>
+<entry key="msg.delete.confirm">삭제 하시겠습니까?</entry>
+<entry key="msg.delete.confirm.param">{item} 삭제 하시겠습니까?</entry>
 <entry key="msg.delete.success">삭제되었습니다</entry>
-<entry key="msg.apply.confirm">적용하시겠습니까?</entry>
+<entry key="msg.apply.confirm">적용 하시겠습니까?</entry>
 <entry key="msg.apply.success">적용되었습니다.</entry>
+<entry key="msg.copy.confirm">복사 하시겠습니까?</entry>
 <entry key="msg.copy.success">복사되었습니다</entry>
-<entry key="msg.change.confirm">변경하시겠습니까?</entry>
+<entry key="msg.change.confirm">변경 하시겠습니까?</entry>
 <entry key="msg.change.success">변경되었습니다</entry>
-<entry key="msg.confirm.param">{item}하시겠습니까?</entry>
-<entry key="msg.confirm.success.param">{item}되었습니다</entry>
-<entry key="msg.block.confirm">차단하시겠습니까?</entry>
-<entry key="msg.block.success">차단되었습니다</entry>
-<entry key="msg.release.confirm">해제하시겠습니까?</entry>
+<entry key="msg.confirm.param">{item} 하시겠습니까?</entry>
+<entry key="msg.confirm.success.param">{item} 되었습니다</entry>
+<entry key="msg.block.confirm">차단 하시겠습니까?</entry>
+<entry key="msg.block.success">차단 되었습니다</entry>
+<entry key="msg.release.confirm">해제 하시겠습니까?</entry>
 <entry key="msg.release.success">해제되었습니다</entry>
 <entry key="msg.send.confirm">보내시겠습니까?</entry>
 <entry key="msg.send.confirm.param">{item} 을(를) 보내시겠습니까?</entry>
+<entry key="msg.cancel.confirm">취소 하시겠습니까?</entry>
+<entry key="msg.cancel.success">취소 되었습니다</entry>
+<entry key="msg.refresh.confirm">새로고침 하시겠습니까?</entry>
+<entry key="msg.refresh.please">새로고침 해주세요.</entry>
+<entry key="msg.refresh.success">새로고침 되었습니다.</entry>
 
 <entry key="msg.close.confirm">닫으시겠습니까?</entry>
 <entry key="msg.close.confirm.param">[{name}] 을(를) 닫으시겠습니까?</entry>
-<entry key="msg.export.confirm">내보내기하시겠습니까</entry>
-<entry key="msg.export.confirm.param">{item} 내보내기하시겠습니까</entry>
+<entry key="msg.export.confirm">내보내기 하시겠습니까</entry>
+<entry key="msg.export.confirm.param">{item} 내보내기 하시겠습니까</entry>
 <entry key="msg.init.restore.confirm">초기 설정으로 복구하시겠습니까?</entry>
 <entry key="msg.setting.fail">설정 정보가 잘못되었습니다</entry>
-<entry key="msg.setting.fail.restore">설정 정보가 잘못되었습니다\n초기 설정으로 복구하시겠습니까?</entry>
-<entry key="msg.layout.restore.confirm">초기화 하시면 기본 레이아웃으로 구성되고 새로고침 됩니다.\n초기화하시겠습니까?</entry>
+<entry key="msg.setting.fail.restore">설정 정보가 잘못되었습니다\n초기 설정으로 복구 하시겠습니까?</entry>
+<entry key="msg.layout.restore.confirm">초기화 하시면 기본 레이아웃으로 구성되고 새로고침 됩니다.\n초기화 하시겠습니까?</entry>
 
 <entry key="msg.setting.fail">설정 정보가 잘못되었습니다</entry>
-<entry key="msg.setting.fail.restore">설정 정보가 잘못되었습니다\n초기 설정으로 복구하시겠습니까?</entry>
+<entry key="msg.setting.fail.restore">설정 정보가 잘못되었습니다\n초기 설정으로 복구 하시겠습니까?</entry>
 <entry key="msg.setting.fail.check">설정 정보가 잘못되었습니다\n 설정 정보를 확인해주세요.</entry>
 <entry key="msg.setting.invalid">유효 하지 않은 설정입니다.</entry>
 
 
-<entry key="msg.password.change.confirm">비밀번호를 변경하시겠습니까?</entry>
+<entry key="msg.password.change.confirm">비밀번호를 변경 하시겠습니까?</entry>
 <entry key="msg.password.change.success">비밀번호가 변경되었습니다</entry>
 <entry key="msg.password.re.enter">비밀번호를 다시 입력해주세요</entry>
 <entry key="msg.password.lost">비밀번호를 잊어버리셨나요?</entry>
@@ -74,11 +80,11 @@
 <entry key="msg.nodata">데이터가 없습니다.</entry>
 <entry key="msg.search.placeholder">검색어를 입력해주세요.</entry>
 <entry key="msg.data.select">데이터를 선택해주세요.</entry>
-<entry key="msg.accept.msg">선택된 사용자를 수락하시겠습니까?</entry>
-<entry key="msg.denial.msg">선택된 사용자를 거부하시겠습니까?</entry>
-<entry key="msg.add.manager.confirm">선택된 사용자를 매니저로 등록하시겠습니까?</entry>
-<entry key="msg.del.manager.confirm">선택된 사용자를 매니저에서 삭제하시겠습니까?</entry>
-<entry key="msg.saveAndpoolInit.confirm"><![CDATA[저장하시면 현재 풀정보가 초기화 되고 새로운 풀이 생성 됩니다.\n계속하시겠습니까?]]></entry>
+<entry key="msg.accept.msg">선택된 사용자를 수락 하시겠습니까?</entry>
+<entry key="msg.denial.msg">선택된 사용자를 거부 하시겠습니까?</entry>
+<entry key="msg.add.manager.confirm">선택된 사용자를 매니저로 등록 하시겠습니까?</entry>
+<entry key="msg.del.manager.confirm">선택된 사용자를 매니저에서 삭제 하시겠습니까?</entry>
+<entry key="msg.saveAndpoolInit.confirm"><![CDATA[저장하시면 현재 풀정보가 초기화 되고 새로운 풀이 생성 됩니다.\n계속 하시겠습니까?]]></entry>
 <entry key="msg.note.arrived">메모가 도착했습니다.</entry>
 
 <!-- export table spec -->
@@ -121,7 +127,7 @@
 
 <entry key="msg.close.window">창을 닫으시겠습니까?</entry>
 <entry key="msg.loading">로딩중 입니다.</entry>
-<entry key="msg.refresh">새로고침하시겠습니까?</entry>
+<entry key="msg.refresh">새로고침 하시겠습니까?</entry>
 
 <entry key="msg.content.enter">입력해주세요.</entry>
 <entry key="msg.content.enter.param">{item} 을(를) 입력해주세요</entry>
@@ -140,7 +146,7 @@
 <entry key="msg.file.allowed.param">허용하는 확장자 : {accept}</entry>
 <entry key="msg.capsLock">CapsLock이 켜져 있습니다</entry>
 <entry key="msg.user.group.remove.confirm">사용자의 {itemName} 그룹을 제거 하시겠습니까?\n그룹을 제거 하시면 그룹에 속한 모든 db를 접근할수 없습니다.</entry>
-<entry key="msg.user.password.init">{userName}님의 비밀번호를 변경하시겠습니까?\n변경된 패스워드는 5초후에 사라집니다.</entry>
+<entry key="msg.user.password.init">{userName}님의 비밀번호를 변경 하시겠습니까?\n변경된 패스워드는 5초후에 사라집니다.</entry>
 <entry key="msg.group.delete.confirm">{groupName} 그룹을 제거 하시면 그룹에 속한 모든 db맵핑 정보와 사용자 정보가 삭제 됩니다.\n그룹을 삭제 하시겠습니까?</entry>
 
 <!-- validator -->
@@ -195,16 +201,16 @@
 <entry key="msg.file.import.002">SQL 파일을 실행해서 입력합니다</entry>
 
 <!-- board -->
-<entry key="msg.brd.comment.delete">댓글이 삭제되면 복구할 수 없습니다. 그래도 삭제하시겠습니까?</entry>
-<entry key="msg.brd.article.delete">게시글이 삭제되면 복구할 수 없습니다. 그래도 삭제하시겠습니까?</entry>
+<entry key="msg.brd.comment.delete">댓글이 삭제되면 복구할 수 없습니다. 그래도 삭제 하시겠습니까?</entry>
+<entry key="msg.brd.article.delete">게시글이 삭제되면 복구할 수 없습니다. 그래도 삭제 하시겠습니까?</entry>
 
 <!-- error -->
 <entry key="error.400">잘못된 요청 입니다.</entry>
 <entry key="error.403">권한이 없습니다.</entry>
 <entry key="error.404">등록되지 않은 페이지 입니다.</entry>
-<entry key="error.0001">로그아웃 되었습니다.\n로그인창 으로 이동하시겠습니까?</entry>
-<entry key="error.0002">유효하지않은 요청입니다. 새로고침하시겠습니까?</entry>
-<entry key="error.0003">유효하지않은 database 입니다.\n메인 페이지로 이동하시겠습니까?</entry>
+<entry key="error.0001">로그아웃 되었습니다.\n로그인 창으로 이동 하시겠습니까?</entry>
+<entry key="error.0002">유효하지않은 요청입니다. 새로고침 하시겠습니까?</entry>
+<entry key="error.0003">유효하지않은 database 입니다.\n메인 페이지로 이동 하시겠습니까?</entry>
 <entry key="error.0004">연결이 거부 되었습니다.관리자에게 문의해주세요.</entry>
 <entry key="error.80000">연결[80000]이 거부되었습니다.\n관리자에게 문의해주세요.</entry>
 <entry key="error.80001">연결[80001]이 닫혀 있습니다.\n관리자에게 문의해주세요.</entry>
@@ -220,5 +226,9 @@
 <entry key="msg.setting.code.template.desc">DB table 의 컬럼정보를 가지고 코드를 자동 으로 생성할수있게 템플릿을 작성</entry>
 <entry key="msg.install.end">설치 완료 후 서버를 재기동 해주세요.</entry>
 <entry key="msg.install.complete">설치 완료</entry>
+
+<entry key="msg.execute.confirm">실행 하시겠습니까?</entry>
+<entry key="msg.execute.success">실행 되었습니다.</entry>
+<entry key="msg.execute.db.error">사용 할 수 없는 연결 정보 입니다.</entry>
 
 </properties>

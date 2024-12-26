@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.ImmutableMap;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.code.VarsqlFileType;
+import com.varsql.core.common.job.JobExecuteResult;
 import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.core.configuration.Configuration;
 import com.varsql.core.db.MetaControlFactory;
@@ -21,7 +22,6 @@ import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.TableInfo;
 import com.varsql.core.exception.VarsqlRuntimeException;
-import com.varsql.core.sql.executor.SQLExecuteResult;
 import com.varsql.web.app.database.service.ExportServiceImpl;
 import com.varsql.web.app.scheduler.JobType;
 import com.varsql.web.app.scheduler.bean.JobBean;
@@ -90,13 +90,13 @@ public class DataBackupJob extends JobBean {
 		
 		FileInfoEntity fie = exportServiceImpl.exportTableData(databaseInfo, dataExportVO, FileUtils.writeFileCheck(zipFile));
 		
-		Map<String, SQLExecuteResult> tableExportCount = fie.getCustomInfo();
+		Map<String, JobExecuteResult> tableExportCount = fie.getCustomInfo();
 		
 		List tableLog = new ArrayList();
 		
-		for (Map.Entry<String, SQLExecuteResult> entry : tableExportCount.entrySet()) {
+		for (Map.Entry<String, JobExecuteResult> entry : tableExportCount.entrySet()) {
 			String key = entry.getKey();
-			SQLExecuteResult val = entry.getValue();
+			JobExecuteResult val = entry.getValue();
 			
 			tableLog.add(ImmutableMap.<String, Object>builder()
 			        .put("name", key)

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE templateConfig SYSTEM  "sqlTemplate.dtd">
+
+<templateConfig>
+	<table>
+		<select>
+		<![CDATA[
+select * from {{objectName}}
+		]]>
+		</select>
+		
+		<selectCount>
+		<![CDATA[
+SELECT COUNT(*) as "cnt" FROM ({{{selectQuery}}}) AS count_table
+		]]>
+		</selectCount>
+		
+		<selectPaging>
+		<![CDATA[
+{{{selectQuery}}} 
+{{~#isNotEmpty sortColumn}}
+ORDER BY {{sortColumn}} 
+{{/isNotEmpty}}
+LIMIT #{pageSize} OFFSET #{startRow} 
+		]]>
+		</selectPaging>
+
+        <!-- insert query -->
+        <insert>
+        <![CDATA[
+insert into {{objectName}} ( 
+{{#columnList}}
+    {{addChar @index "" ","}}{{name}}
+{{/columnList}}
+)values(
+	{{#columnList}}
+	    {{addChar @index "" ","}} ?
+	{{/columnList}}
+)
+		]]>
+        </insert>
+            
+        <update>
+        <![CDATA[
+update {{objectName}} 
+ set 
+{{#columnList}}
+    {{addChar @index "" ","}}{{name}} = ?
+{{/columnList}}
+		]]>
+        </update>    
+		
+        <delete>
+        <![CDATA[
+delete from {{objectName}}
+		]]>
+        </delete>    
+		
+        <createSelect>
+        <![CDATA[
+CREATE TABLE {{objectName}}_backup AS
+SELECT
+	*
+FROM {{objectName}}
+WHERE condition;
+		]]>
+        </createSelect>    
+		
+        <merge>
+        <![CDATA[
+MERGE INTO {{objectName}} a
+USING dual on (
+	
+)
+when matched then 
+	update 
+	set 
+		{{#columnList}}
+		    {{addChar @index "" ","}}{{name}} = ?
+		{{/columnList}}
+when not matched then
+	insert(
+		{{#columnList}}
+		    {{addChar @index "" ","}}{{name}}
+		{{/columnList}}
+	)values(
+		{{#columnList}}
+		    {{addChar @index "" ","}} ?
+		{{/columnList}}
+	)
+		]]>
+        </merge>
+            
+		
+	</table>
+</templateConfig>

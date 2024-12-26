@@ -6,7 +6,6 @@
 <head>
 <title>- App Setting -</title>
 <%@ include file="/WEB-INF/include/appHead.jsp"%>
-<%@ include file="/WEB-INF/include/appHead.jsp"%>
 </head>
 
 <body style="padding:0px 10px;">

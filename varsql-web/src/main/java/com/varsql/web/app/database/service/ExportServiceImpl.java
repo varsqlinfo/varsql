@@ -34,6 +34,8 @@ import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.code.VarsqlFileType;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
+import com.varsql.core.common.job.JobExecuteResult;
+import com.varsql.core.connection.ConnectionInfoManager;
 import com.varsql.core.data.writer.SQLWriter;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
@@ -46,7 +48,6 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.sql.beans.ExportColumnInfo;
-import com.varsql.core.sql.executor.SQLExecuteResult;
 import com.varsql.core.sql.executor.SelectExecutor;
 import com.varsql.core.sql.executor.handler.SelectExecutorHandler;
 import com.varsql.core.sql.executor.handler.SelectInfo;
@@ -125,13 +126,12 @@ public class ExportServiceImpl{
 		
 		DatabaseParamInfo dpi = new DatabaseParamInfo(SecurityUtil.userDBInfo(preferencesInfo.getConuid()));
 			
-		MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
-
-		model.addAttribute("currentSchemaName", dpi.getSchema());
+		model.addAttribute("currentSchemaName", ConnectionInfoManager.getInstance().getConnectionInfo(dpi.getVconnid()).getSchema());
 		model.addAttribute("userSettingInfo", preferencesServiceImpl.selectPreferencesInfo(preferencesInfo ,true));
 		model.addAttribute("columnInfo", Arrays.stream(VarsqlReportConfig.TABLE_COLUMN.values()).map(EnumMapperValue::new).collect(Collectors.toList()));
 
 		if(SecurityUtil.isSchemaView(dpi)) {
+			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
 			
 			DBVenderType venderType = DBVenderType.getDBType(dpi.getType());
 
@@ -306,10 +306,7 @@ public class ExportServiceImpl{
 				}
 			}
 
-			
-
 			allDDLScript.append(BlankConstants.NEW_LINE).append("--------- // "+objectName+" end----------").append(BlankConstants.NEW_LINE_THREE);
-
 		}
 
 		String exportFileName =settingInfo.getString("exportName","export-ddl");
@@ -334,16 +331,28 @@ public class ExportServiceImpl{
 	public ResponseResult downloadTableData(PreferencesRequestDTO preferencesInfo, HttpServletRequest req, HttpServletResponse res) {
 		String progressUid = HttpUtils.getString(req, "progressUid");
 		String sessAttrKey = HttpSessionConstants.progressKey(progressUid);
+
+		preferencesInfo.setPrefKey(PreferencesConstants.PREFKEY.TABLE_DATA_EXPORT.key());
 		
 		ResponseResult responseResult = new ResponseResult();
 		
 		HttpSession session = req.getSession();
 		
 		try {
-			logger.debug("downloadTableData : {}", preferencesInfo.getPrefVal());
+			String jsonString = preferencesInfo.getPrefVal(); 
+			logger.debug("download table info : {}", jsonString);
 			
-			DataExportVO dataExportVO = VartechUtils.jsonStringToObject(preferencesInfo.getPrefVal(), DataExportVO.class, true);
-	
+			DataExportVO dataExportVO = VartechUtils.jsonStringToObject(jsonString, DataExportVO.class, true);
+			
+			try {
+				logger.debug("ddlExport PreferencesInfo :{}", VartechUtils.reflectionToString(preferencesInfo));
+				logger.debug("settingInfo :{}", jsonString );
+				
+				preferencesServiceImpl.savePreferencesInfo(preferencesInfo); // 설정 정보 저장.
+			}catch(Exception e) {
+				logger.error("downloadTableData : {}", e.getMessage(), e);
+			}
+			
 			ProgressInfo progressInfo = new ProgressInfo();
 	
 			progressInfo.setTotalItemSize(dataExportVO.getExportItems().size());
@@ -360,7 +369,10 @@ public class ExportServiceImpl{
 	
 			session.setAttribute(sessAttrKey, "complete");
 	
-			responseResult.setItemOne(VarsqlURLInfo.FILE_DOWNLOAD.getUrl(new HashMap() {{
+			responseResult.setItemOne(VarsqlURLInfo.FILE_DOWNLOAD.getUrl(new HashMap<String,String>() {
+				private static final long serialVersionUID = 1L;
+
+			{
 				put("fileId", fie.getFileId());
 				put("contId", "");
 			}}));
@@ -398,8 +410,12 @@ public class ExportServiceImpl{
 	 * @throws Exception
 	 */
 	public FileInfoEntity exportTableData(DatabaseInfo databaseInfo, DataExportVO dataExportVO, File zipFile, ProgressInfo progressInfo) throws Exception {
+		String prefixSchema = "";
+		String exportSchema = dataExportVO.getSchema();
+		if(!StringUtils.isBlank(exportSchema) && !exportSchema.equals(ConnectionInfoManager.getInstance().getConnectionInfo(databaseInfo.getVconnid()).getSchema())) {
+			prefixSchema = dataExportVO.getSchema() + ".";
+		}
 		
-		String prefixSchema = StringUtils.isBlank(dataExportVO.getSchema()) ? "" : dataExportVO.getSchema() + ".";
 		String charset = StringUtils.isBlank(dataExportVO.getCharset()) ? VarsqlConstants.CHAR_SET : dataExportVO.getCharset();
 
 		String exportFileName = zipFile.getName();
@@ -410,7 +426,7 @@ public class ExportServiceImpl{
 
 		String exportTempFilePath = FileServiceUtils.getSavePath(UploadFileType.TEMP).toAbsolutePath().toString();
 		
-		Map<String, SQLExecuteResult> tableExportCount = new HashMap<>();
+		Map<String, JobExecuteResult> tableExportCount = new HashMap<>();
 		try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile), Charset.forName(charset));) {
 
 			int idx = 0;
@@ -451,7 +467,7 @@ public class ExportServiceImpl{
 					}
 
 					final String tableName = item.getName();
-					SQLExecuteResult ser = new SelectExecutor().execute(seDto, new SelectExecutorHandler(writer) {
+					JobExecuteResult jer = new SelectExecutor().execute(seDto, new SelectExecutorHandler(writer) {
 						private boolean firstFlag = true;
 						private int rowIdx = 0;
 
@@ -460,16 +476,13 @@ public class ExportServiceImpl{
 								WriteMetadataInfo whi = new WriteMetadataInfo("exportInfo");
 								List<ExportColumnInfo> columns = new LinkedList<>();
 								handleParam.getColumnInfoList().forEach(item -> {
-									ExportColumnInfo eci = new ExportColumnInfo();
-									eci.setName(item.getLabel());
-
-									// 추가 할것.
-									eci.setAlias(item.getKey());
-									eci.setType(item.getDbType());
-									eci.setTypeCode(item.getDbTypeCode());
-									eci.setNumber(item.isNumber());
-									eci.setLob(item.isLob());
-									columns.add(eci);
+									columns.add(ExportColumnInfo.builder()
+											.name(item.getLabel())
+											.alias(item.getKey())
+											.type(item.getDbType())
+											.typeCode(item.getDbTypeCode())
+											.number(item.isNumber())
+											.lob(item.isLob()).build());
 								});
 								whi.addMetedata("tableName", tableName);
 								whi.addMetedata("columns", columns);
@@ -496,15 +509,15 @@ public class ExportServiceImpl{
 						}
 					});
 					
-					logger.debug("data export result :{} ", ser);
+					logger.debug("data export result :{} ", jer);
 					
-					tableExportCount.put(objectName, ser);
+					tableExportCount.put(objectName, jer);
 					writer.writeAndClose();
 
 					String zipFileName = exportType.concatExtension(item.getName());
 
-					if (ser.getResultCode() != null) {
-						VarsqlUtils.textDownload(new FileOutputStream(exportFilePath), ser.getMessage());
+					if (jer.getResultCode() != null) {
+						VarsqlUtils.textDownload(new FileOutputStream(exportFilePath), jer.getMessage());
 						zipFileName = item.getName() + "-export-error.txt";
 					}
 
@@ -657,6 +670,6 @@ public class ExportServiceImpl{
 		
 		model.addAttribute("exportServiceMenu", MetaControlFactory.getDbInstanceFactory(dbMetadataRequestDTO.getDbType()).getServiceMenu());
 		model.addAttribute("schemaList", schemaList(dpi));
-		model.addAttribute("currentSchemaName", dpi.getSchema());
+		model.addAttribute("currentSchemaName", ConnectionInfoManager.getInstance().getConnectionInfo(dpi.getVconnid()).getSchema());
 	}
 }

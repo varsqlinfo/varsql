@@ -541,9 +541,9 @@ FileComponent.prototype = {
 
 				var btnHtml = '<div class="file-add-btn-area wrapper-'+btnClass+'""><button type="button" class="file-add-btn '+btnClass+'">'+VARSQL.message('file.add')+'</button></div>';
 				if(opt.btn == 'top'){
-					$(opt.el).before(btnHtml);
+					$(opt.el).prepend(btnHtml);
 				}else{
-					$(opt.el).after(btnHtml);
+					$(opt.el).append(btnHtml);
 				}
 
 				btnClass = '.'+btnClass;

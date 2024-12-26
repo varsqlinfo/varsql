@@ -5,11 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class HandlerVariable {
-	private int count = 0;
+	private int totalCount = 0;
 	private PreparedStatement statement;
 	private Connection conn;
 	private String sql;
-	private int failIdx = 0;
+	private long failIdx = 0;
 	
 	public HandlerVariable() {
 	}
@@ -18,11 +18,11 @@ public class HandlerVariable {
 		this.conn = conn;
 	}
 
-	public int getCount() {
-		return count;
+	public int getTotalCount() {
+		return totalCount;
 	}
-	public void addCount() {
-		++this.count;
+	public void addTotalCount() {
+		++this.totalCount;
 	}
 
 	public PreparedStatement getStatement() throws SQLException {
@@ -40,11 +40,11 @@ public class HandlerVariable {
 		return sql;
 	}
 
-	public int getFailIdx() {
+	public long getFailIdx() {
 		return failIdx;
 	}
 
-	public void setFailIdx(int failIdx) {
+	public void setFailIdx(long failIdx) {
 		this.failIdx = failIdx;
 	}
 }

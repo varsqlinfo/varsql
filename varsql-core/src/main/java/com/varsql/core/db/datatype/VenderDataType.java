@@ -23,37 +23,32 @@ public class VenderDataType implements DataType{
 	private DBColumnMetaInfo jdbcDataTypeMetaInfo;
 	private DataTypeHandler dataTypeHandler;
 	private boolean excludeImportColumn; // import 시 제외할 컬럼 정보
+	private boolean enableDefaultTypeName; // import 시 제외할 컬럼 정보
+	private String defaultTypeName;
 	
-	public VenderDataType(String typeName, int typeCode, DBColumnMetaInfo jdbcDataTypeMetaInfo){
-		this(typeName, typeCode, jdbcDataTypeMetaInfo, -1, null);
-	};
 	
-	public VenderDataType(String typeName, int typeCode, DBColumnMetaInfo jdbcDataTypeMetaInfo, int defaultSize){
-		this(typeName, typeCode, jdbcDataTypeMetaInfo, defaultSize, null);
-	};
-	
-	public VenderDataType(String typeName, int typeCode, DBColumnMetaInfo jdbcDataTypeMetaInfo, int defaultSize, DataTypeHandler dataTypeHandler){
-		this(typeName, typeCode, jdbcDataTypeMetaInfo, defaultSize, null, false);
-	}
-	
-	public VenderDataType(String typeName, int typeCode, DBColumnMetaInfo jdbcDataTypeMetaInfo, int defaultSize, DataTypeHandler dataTypeHandler, boolean excludeImportColumn){
-		Validate.notNull(typeName, "typeName can't be null");
+	public VenderDataType(DataTypeConfigInfo dataTypeConfigInfo){
 		
-		this.typeName = typeName.toUpperCase(); 
-		this.typeCode = typeCode; 
-		this.jdbcDataTypeMetaInfo = jdbcDataTypeMetaInfo;
-		this.excludeImportColumn = excludeImportColumn;
+		Validate.notNull(dataTypeConfigInfo, "DataTypeConfigInfo can't be null");
+		Validate.notNull(dataTypeConfigInfo.getTypeName(), "typeName can't be null");
+		
+		this.typeName = dataTypeConfigInfo.getTypeName().toUpperCase(); 
+		this.typeCode = dataTypeConfigInfo.getTypeCode(); 
+		this.jdbcDataTypeMetaInfo =  dataTypeConfigInfo.getJdbcDataTypeMetaInfo();
+		this.excludeImportColumn = dataTypeConfigInfo.isExcludeImportColumn();
+		this.enableDefaultTypeName = dataTypeConfigInfo.isEnableDefaultTypeName();
 		
 		DefaultDataType ddt = DefaultDataType.getDefaultDataType(typeCode);
 		
-		if(defaultSize > 0) {
-			this.defaultSize = defaultSize;
+		this.defaultTypeName = ddt.getTypeName();
+		if(dataTypeConfigInfo.getDefaultSize() > 0) {
+			this.defaultSize = dataTypeConfigInfo.getDefaultSize();
 		}else {
 			this.defaultSize = ddt.getDefaultSize();
 		}
 		
-		if(dataTypeHandler != null) {
-			this.dataTypeHandler = dataTypeHandler;
+		if(dataTypeConfigInfo.getDataTypeHandler() != null) {
+			this.dataTypeHandler = dataTypeConfigInfo.getDataTypeHandler();
 		}else {
 			if(ddt.equals(DefaultDataType.OTHER)) {
 				this.dataTypeHandler = DefaultDataType.getDefaultDataType(jdbcDataTypeMetaInfo.name()).getDataTypeHandler();
@@ -93,16 +88,19 @@ public class VenderDataType implements DataType{
 		return this.dataTypeHandler.getMetaDataHandler();
 	}
 	
-	public static VenderDataType newCustomDataType(DefaultDataType dataType, int defaultSize) {
-		return new VenderDataType(dataType.getTypeName(), dataType.getTypeCode(), dataType.getJDBCDataTypeMetaInfo(), defaultSize, dataType.getDataTypeHandler(), dataType.isExcludeImportColumn());
-	}
-	
 	public static VenderDataType newCustomDataType(String typeName, DefaultDataType dataType) {
-		return new VenderDataType(typeName, dataType.getTypeCode(), dataType.getJDBCDataTypeMetaInfo(), -1, dataType.getDataTypeHandler(), dataType.isExcludeImportColumn());
+		return newCustomDataType(typeName, dataType, -1);
 	}
 	
 	public static VenderDataType newCustomDataType(String typeName, DefaultDataType dataType, int defaultSize) {
-		return new VenderDataType(typeName, dataType.getTypeCode(), dataType.getJDBCDataTypeMetaInfo(), defaultSize, dataType.getDataTypeHandler(), dataType.isExcludeImportColumn());
+		return new VenderDataType(DataTypeConfigInfo.builder()
+			.typeName(typeName)
+			.typeCode(dataType.getTypeCode())
+			.jdbcDataTypeMetaInfo(dataType.getJDBCDataTypeMetaInfo())
+			.defaultSize(defaultSize)
+			.dataTypeHandler(dataType.getDataTypeHandler())
+			.excludeImportColumn(dataType.isExcludeImportColumn())
+			.build());
 	}
 	
 	@Override
@@ -113,5 +111,10 @@ public class VenderDataType implements DataType{
 	@Override
 	public int getDefaultSize() {
 		return this.defaultSize;
+	}
+
+	@Override
+	public String getViewTypeName(String typeName) {
+		return this.enableDefaultTypeName ? this.defaultTypeName :typeName;
 	}
 }

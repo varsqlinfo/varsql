@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.varsql.web.app.manager.service.ManagerCommonServiceImpl;
@@ -62,5 +63,36 @@ public class ManagerCommonController extends AbstractController{
 	public @ResponseBody ResponseResult userList(HttpServletRequest req) throws Exception {
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 		return managerCommonServiceImpl.selectUserList(searchParameter);
+	}
+	
+	/**
+	 * db object list 
+	 * 
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "objectMetaList", method = RequestMethod.POST)
+	public @ResponseBody ResponseResult objectMetaList(@RequestParam(value = "vconnid", required = true) String vconnid
+			,@RequestParam(value = "objectType" ,required = true) String objectType
+			,@RequestParam(value = "schema" ,required = true) String schema	) throws Exception {
+
+		return managerCommonServiceImpl.objectMetaList(vconnid, objectType, schema);
+	}
+	
+	/**
+	 * 
+	 * @param vconnid
+	 * @param objectType
+	 * @param schema
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/objectList", method = RequestMethod.POST)
+	public @ResponseBody ResponseResult objectList(@RequestParam(value = "vconnid", required = true) String vconnid
+			,@RequestParam(value = "objectType" ,required = true) String objectType
+			,@RequestParam(value = "schema" ,required = true) String schema	) throws Exception {
+		
+		return managerCommonServiceImpl.objectList(vconnid, objectType, schema);
 	}
 }

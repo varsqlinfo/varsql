@@ -2,6 +2,7 @@ package com.varsql.db.ext.postgresql;
 
 import com.varsql.core.db.datatype.AbstractDataTypeFactory;
 import com.varsql.core.db.datatype.DBColumnMetaInfo;
+import com.varsql.core.db.datatype.DataTypeConfigInfo;
 import com.varsql.core.db.datatype.DefaultDataType;
 import com.varsql.core.db.datatype.VenderDataType;
 
@@ -17,31 +18,33 @@ public class PostgresqlDataTypeFactory extends AbstractDataTypeFactory{
 	
 	// 버전별 데이타를 체크 하기위해서 버전을 받음. 
 	public PostgresqlDataTypeFactory() {
-		addDataType(new VenderDataType("character varying", DefaultDataType.VARCHAR.getTypeCode(), DBColumnMetaInfo.STRING));
-		addDataType(new VenderDataType("character", DefaultDataType.CHAR.getTypeCode(), DBColumnMetaInfo.STRING));
-		//addDataType(new VenderDataType("double precision", DefaultDataType.FLOAT.getTypeCode(), DBColumnMetaInfo.FLOAT));
-		//addDataType(new VenderDataType("bigserial", DefaultDataType.INTEGER.getTypeCode(), DBColumnMetaInfo.NUMERIC));
-		addDataType(new VenderDataType("box", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("bytea", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("cidr", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("circle", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("inet", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("interval", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("line", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("lseg", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("macaddr", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("money", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("path", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("point", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("polygon", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("serial", DefaultDataType.INTEGER.getTypeCode(), DBColumnMetaInfo.NUMERIC));
-		addDataType(new VenderDataType("tsquery", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("tsvector", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("txid_snapshot", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("uuid", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.OTHER));
-		addDataType(new VenderDataType("text", DefaultDataType.CLOB.getTypeCode(), DBColumnMetaInfo.TEXT));
-		addDataType(new VenderDataType("timestamp without time zone", DefaultDataType.TIMESTAMP_WITH_TIMEZONE.getTypeCode(), DBColumnMetaInfo.DATE));
-		addDataType(new VenderDataType("json", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.TEXT));
-		addDataType(new VenderDataType("jsonb", DefaultDataType.OTHER.getTypeCode(), DBColumnMetaInfo.TEXT));
+		
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("character varying").typeCode(DefaultDataType.VARCHAR.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.STRING).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("character").typeCode(DefaultDataType.CHAR.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.STRING).build()));
+		//addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("double precision").typeCode(DefaultDataType.FLOAT.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.FLOAT).build()));
+		//addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("bigserial").typeCode(DefaultDataType.INTEGER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.NUMERIC).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("box").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("bytea").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("cidr").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("circle").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("inet").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("interval").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("line").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("lseg").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("macaddr").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("money").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("path").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("point").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("polygon").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("serial").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("tsquery").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("tsvector").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("txid_snapshot").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("uuid").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.OTHER).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("text").typeCode(DefaultDataType.CLOB.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.TEXT).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("timestamp without time zone").typeCode(DefaultDataType.TIMESTAMP_WITH_TIMEZONE.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.TIMESTAMP).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("json").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.TEXT).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("jsonb").typeCode(DefaultDataType.OTHER.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.TEXT).build()));
+		
 	}
 }

@@ -38,6 +38,7 @@
 <entry key="msg.delete.success">已删除</entry>
 <entry key="msg.apply.confirm">确定应用 ?</entry>
 <entry key="msg.apply.success">已应用</entry>
+<entry key="msg.copy.confirm">您要复制吗?</entry>
 <entry key="msg.copy.success">已复制</entry>
 <entry key="msg.change.confirm">确定更改 ?</entry>
 <entry key="msg.change.success">已更改</entry>
@@ -49,6 +50,11 @@
 <entry key="msg.release.success">已释放</entry>
 <entry key="msg.send.confirm">确定发送 ?</entry>
 <entry key="msg.send.confirm.param">确定发送 {item} ?</entry>
+<entry key="msg.cancel.confirm">您确定要取消吗？</entry>
+<entry key="msg.cancel.success">已取消</entry>
+<entry key="msg.refresh.confirm">您确定要刷新吗？</entry>
+<entry key="msg.refresh.please">请刷新。</entry>
+<entry key="msg.refresh.success">刷新成功。</entry>
 
 <entry key="msg.close.confirm">确定关闭 ?</entry>
 <entry key="msg.close.confirm.param">确定关闭 [{name}] ?</entry>
@@ -214,5 +220,10 @@
 <entry key="msg.setting.code.template.desc">编写模板，以便能够使用DB表的列信息自动生成代码。</entry>
 <entry key="msg.install.end">安装完成后，请重新启动服务器。</entry>
 <entry key="msg.install.complete">安装完成</entry>
+
+<entry key="msg.execute.confirm">您确定要执行吗？</entry>
+<entry key="msg.execute.success">执行成功。</entry>
+<entry key="msg.execute.db.error">无法使用的连接信息。</entry>
+
 
 </properties>

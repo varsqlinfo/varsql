@@ -39,14 +39,14 @@
 				</div>
 				<div class="col-xs-12 padding0">
 					<div class="field-group">
-						<label class="col-xs-2 control-label"><spring:message code="contextmenu.name" text="컨텍스트명"/></label>
-						<div class="col-xs-10">
+						<label class="col-xs-4 control-label"><spring:message code="contextmenu.name" text="컨텍스트명"/></label>
+						<div class="col-xs-8">
 							<input v-model="deteilItem.name" class="form-control text required input-sm">
 						</div>
 					</div>
 					<div class="field-group" v-show="viewItemType=='child'">
-						<label class="col-xs-2 control-label"><spring:message code="view.mode" text="보기 방식"/></label>
-						<div class="col-xs-10">
+						<label class="col-xs-4 control-label"><spring:message code="view.mode" text="보기 방식"/></label>
+						<div class="col-xs-8">
 							<label class="checkbox-container display-inline"><spring:message code="view.mode.editor" text="에디터보기"/>
 							  <input type="radio" v-model="deteilItem.viewMode" value="editor" checked="checked">
 							  <span class="radiomark"></span>
@@ -71,7 +71,7 @@
 			</div>
 			<div class="col-xs-12"  style="height:calc(100% - 220px) ;">
 				<div class="sub-cont-title" style="padding-top: 3px;"><button @click="generate()">Check source</button></div>
-				<textarea id="resultCode" class="wh100" style="height:calc(100% - 30px);">{{resultCode}}</textarea>
+				<textarea v-model="resultCode" class="wh100" style="height:calc(100% - 30px);" readonly></textarea>
 			</div>
 		</div>
 
@@ -311,7 +311,7 @@
 	    		}
 
 	        	var result =VARSQLTemplate.render.generateSource(this.templateInfo, defaultTableColumnInfo, false);
-
+	        	
 				if(result.isError){
 	    			VARSQLUI.toast.open(result.errorInfo.msg);
 	    			return ;

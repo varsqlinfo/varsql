@@ -3,7 +3,6 @@ package com.varsql.core.sql.util;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.SQLUtils.FormatOption;

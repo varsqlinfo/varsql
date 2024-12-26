@@ -1,7 +1,6 @@
 package com.varsql.core.db.datatype;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.varsql.core.db.datatype.handler.MetaDataHandler;

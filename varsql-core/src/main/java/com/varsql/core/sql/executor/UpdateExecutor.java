@@ -1,10 +1,8 @@
 package com.varsql.core.sql.executor;
 
-import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,16 +10,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.code.VarsqlAppCode;
+import com.varsql.core.common.job.JobExecuteResult;
 import com.varsql.core.connection.ConnectionFactory;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
+import com.varsql.core.exception.BatchException;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.executor.handler.UpdateExecutorHandler;
 import com.varsql.core.sql.executor.handler.UpdateInfo;
 import com.varsql.core.sql.util.JdbcUtils;
+import com.varsql.core.sql.util.SQLUtils;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.utils.VartechUtils;
 
 /**
  * -----------------------------------------------------------------------------
@@ -56,15 +56,15 @@ public class UpdateExecutor implements Executor{
 	}
 
 	@Override
-	public SQLExecuteResult execute(SqlStatementInfo statementInfo) throws SQLException {
+	public JobExecuteResult execute(SqlStatementInfo statementInfo) throws SQLException {
 		return execute(statementInfo , null);
 	}
 
-	public SQLExecuteResult execute(SqlStatementInfo statementInfo, UpdateExecutorHandler updateHandler) throws SQLException {
+	public JobExecuteResult execute(SqlStatementInfo statementInfo, UpdateExecutorHandler updateHandler) throws SQLException {
 
-		SQLExecuteResult result = new SQLExecuteResult();
+		JobExecuteResult result = new JobExecuteResult();
 
-		Map sqlParamMap = VartechUtils.jsonStringToObject(statementInfo.getSqlParam(), HashMap.class);
+		Map sqlParamMap = statementInfo.getSqlParam();
 		
 		if(updateHandler==null) {
 			updateHandler = new UpdateExecutorHandler() {
@@ -142,27 +142,15 @@ public class UpdateExecutor implements Executor{
 	}
 	
 	protected void setExecuteBatch(Statement statement, HandlerVariable handlerVariable, int batchCount) throws SQLException {
-		
-	    try {
-	    	statement.executeBatch();
-			statement.clearBatch();
-	    } catch (BatchUpdateException bue) {
-	        int[] updateCounts = bue.getUpdateCounts();
-	        
-	        if (updateCounts != null) {
-		        int failIdx = 1;
-		        for (int uc : updateCounts) {
-		        	if(uc == Statement.EXECUTE_FAILED) {
-		        		break; 
-		        	}
-		        	failIdx++;
-		        }
-		        
-		        handlerVariable.setFailIdx(handlerVariable.getCount() - batchCount +  failIdx );
-	        }
-	        throw bue;
-	    } catch (SQLException se) {
-	    	throw se;
-	    }
+		try {
+			SQLUtils.executeBatch(statement, handlerVariable.getTotalCount(), batchCount);
+		} catch (BatchException bue) {
+			handlerVariable.setFailIdx(bue.getFailIdx());
+			throw bue;
+		} catch (SQLException se) {
+			throw se;
+		}
+	    
+	    
 	}
 }

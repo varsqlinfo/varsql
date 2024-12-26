@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.common.code.VarsqlAppCode;
-import com.varsql.core.db.DBVenderType;
-import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
@@ -22,13 +20,13 @@ import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.scheduler.JobDetailDTO;
 import com.varsql.web.dto.scheduler.JobRequestDTO;
 import com.varsql.web.dto.scheduler.JobVO;
-import com.varsql.web.model.entity.db.DBConnectionEntity;
+import com.varsql.web.model.entity.db.DBConnectionViewEntity;
 import com.varsql.web.model.entity.scheduler.JobEntity;
 import com.varsql.web.model.mapper.scheduler.JobMapper;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
+import com.varsql.web.repository.db.DBConnectionViewEntityRepository;
 import com.varsql.web.repository.scheduler.JobEntityRepository;
 import com.varsql.web.util.DatabaseUtils;
-import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
@@ -52,7 +50,9 @@ public class DataBackupMgmtServiceImpl extends AbstractService{
 	
 	private String TABLE_BACKUP_JOB_GROUP = "TABLE_DATA_BACKUP";
 	
-	final private DBConnectionEntityRepository  dbConnectionEntityRepository;
+	final private DBConnectionViewEntityRepository dbConnectionViewEntityRepository;
+	
+	final private DBConnectionEntityRepository dbConnectionEntityRepository;
 
 	final private JobEntityRepository jobEntityRepository;
 	
@@ -158,7 +158,7 @@ public class DataBackupMgmtServiceImpl extends AbstractService{
 		
 		entity.setJobGroup(TABLE_BACKUP_JOB_GROUP);
 		
-		DBConnectionEntity dbConnectionEntity = dbConnectionEntityRepository.findByVconnid(dto.getVconnid());
+		DBConnectionViewEntity dbConnectionEntity = dbConnectionViewEntityRepository.findByVconnid(dto.getVconnid());
 		entity.setJobDBConnection(dbConnectionEntity);
 		
 		jobEntityRepository.save(entity);

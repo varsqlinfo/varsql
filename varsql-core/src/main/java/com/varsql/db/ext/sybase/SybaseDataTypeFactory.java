@@ -2,6 +2,7 @@ package com.varsql.db.ext.sybase;
 
 import com.varsql.core.db.datatype.AbstractDataTypeFactory;
 import com.varsql.core.db.datatype.DBColumnMetaInfo;
+import com.varsql.core.db.datatype.DataTypeConfigInfo;
 import com.varsql.core.db.datatype.DefaultDataType;
 import com.varsql.core.db.datatype.VenderDataType;
 
@@ -17,6 +18,6 @@ public class SybaseDataTypeFactory extends AbstractDataTypeFactory{
 
 	// 버전별 데이타를 체크 하기위해서 버전을 받음.
 	public SybaseDataTypeFactory() {
-		addDataType(new VenderDataType("DATETIME", DefaultDataType.TIMESTAMP.getTypeCode() , DBColumnMetaInfo.TIMESTAMP));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("DATETIME").typeCode(DefaultDataType.TIMESTAMP.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.TIMESTAMP).build()));
 	}
 }

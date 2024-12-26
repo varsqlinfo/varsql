@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<database>
+  <description>설명</description>
+  <apply>
+    <sql description="data" multiple="true" delimiter=";">
+<![CDATA[
+
+-- board
+INSERT INTO TB_BOARD (ARTICLE_ID, BOARD_CODE, TITLE, CONTENTS, COMMENT_CNT, AUTHOR_NAME, NOTICE_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (1, 'BOARD001', 'Welcome to the Board!', 'This is the welcome post of the board.', 0, 'admin', 'Y', 'admin01', CURRENT_TIMESTAMP, 'admin01', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD (ARTICLE_ID, BOARD_CODE, TITLE, CONTENTS, COMMENT_CNT, AUTHOR_NAME, NOTICE_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (2, 'BOARD001', 'Board Rules', 'Here are the rules for the board...', 5, 'moderator', 'N', 'admin02', CURRENT_TIMESTAMP, 'admin02', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD (ARTICLE_ID, BOARD_CODE, TITLE, CONTENTS, COMMENT_CNT, AUTHOR_NAME, NOTICE_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (3, 'BOARD002', 'Product Updates', 'We have a new product release this month...', 10, 'john_doe', 'N', 'user01', CURRENT_TIMESTAMP, 'user01', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD (ARTICLE_ID, BOARD_CODE, TITLE, CONTENTS, COMMENT_CNT, AUTHOR_NAME, NOTICE_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (4, 'BOARD003', 'Technical Support', 'If you have any technical issues, please post here...', 2, 'tech_support', 'N', 'user02', CURRENT_TIMESTAMP, 'user02', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD (ARTICLE_ID, BOARD_CODE, TITLE, CONTENTS, COMMENT_CNT, AUTHOR_NAME, NOTICE_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (5, 'BOARD001', 'New Features Coming Soon!', 'We are working on some exciting new features...', 3, 'developer', 'N', 'admin03', CURRENT_TIMESTAMP, 'admin03', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD (ARTICLE_ID, BOARD_CODE, TITLE, CONTENTS, COMMENT_CNT, AUTHOR_NAME, NOTICE_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (6, 'BOARD004', 'FAQ', 'Frequently Asked Questions about our services...', 7, 'support_team', 'N', 'admin04', CURRENT_TIMESTAMP, 'admin04', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD (ARTICLE_ID, BOARD_CODE, TITLE, CONTENTS, COMMENT_CNT, AUTHOR_NAME, NOTICE_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (7, 'BOARD002', 'Holiday Sale Announcement', 'We are having a huge sale during the holidays...', 15, 'marketing', 'N', 'user03', CURRENT_TIMESTAMP, 'user03', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD (ARTICLE_ID, BOARD_CODE, TITLE, CONTENTS, COMMENT_CNT, AUTHOR_NAME, NOTICE_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (8, 'BOARD003', 'Service Outage', 'There was an unexpected service outage today...', 4, 'service_team', 'N', 'admin05', CURRENT_TIMESTAMP, 'admin05', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD (ARTICLE_ID, BOARD_CODE, TITLE, CONTENTS, COMMENT_CNT, AUTHOR_NAME, NOTICE_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (9, 'BOARD001', 'How to Use Our Service', 'This is a detailed guide on how to use our service...', 1, 'support_team', 'N', 'admin06', CURRENT_TIMESTAMP, 'admin06', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD (ARTICLE_ID, BOARD_CODE, TITLE, CONTENTS, COMMENT_CNT, AUTHOR_NAME, NOTICE_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (10, 'BOARD005', 'Customer Feedback', 'Please leave your feedback and suggestions here...', 12, 'admin', 'N', 'user04', CURRENT_TIMESTAMP, 'user04', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD (ARTICLE_ID, BOARD_CODE, TITLE, CONTENTS, COMMENT_CNT, AUTHOR_NAME, NOTICE_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (11, 'BOARD002', 'Code of Conduct', 'Please follow the community guidelines...', 3, 'moderator', 'Y', 'admin07', CURRENT_TIMESTAMP, 'admin07', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD (ARTICLE_ID, BOARD_CODE, TITLE, CONTENTS, COMMENT_CNT, AUTHOR_NAME, NOTICE_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (12, 'BOARD001', 'Maintenance Schedule', 'Our system will be down for maintenance on Friday...', 0, 'system_admin', 'Y', 'admin08', CURRENT_TIMESTAMP, 'admin08', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD (ARTICLE_ID, BOARD_CODE, TITLE, CONTENTS, COMMENT_CNT, AUTHOR_NAME, NOTICE_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (13, 'BOARD004', 'Troubleshooting', 'Here are some common troubleshooting tips...', 8, 'support_team', 'N', 'user05', CURRENT_TIMESTAMP, 'user05', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD (ARTICLE_ID, BOARD_CODE, TITLE, CONTENTS, COMMENT_CNT, AUTHOR_NAME, NOTICE_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (14, 'BOARD003', 'Service Update', 'We have updated our terms of service...', 20, 'service_team', 'N', 'admin09', CURRENT_TIMESTAMP, 'admin09', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD (ARTICLE_ID, BOARD_CODE, TITLE, CONTENTS, COMMENT_CNT, AUTHOR_NAME, NOTICE_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (15, 'BOARD005', 'Survey Results', 'Here are the results from our recent survey...', 5, 'research_team', 'N', 'user06', CURRENT_TIMESTAMP, 'user06', CURRENT_TIMESTAMP);
+
+-- comment
+INSERT INTO TB_BOARD_COMMENT (COMMENT_ID, ARTICLE_ID, GRP_COMMENT_ID, PARENT_COMMENT_ID, GRP_SEQ, INDENT, BOARD_CODE, CONTENTS, AUTHOR_NAME, DEL_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (1, 1, NULL, NULL, 1, 1, 'BOARD001', 'Great post! Looking forward to more updates.', 'john_doe', 'N', 'user01', CURRENT_TIMESTAMP, 'user01', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD_COMMENT (COMMENT_ID, ARTICLE_ID, GRP_COMMENT_ID, PARENT_COMMENT_ID, GRP_SEQ, INDENT, BOARD_CODE, CONTENTS, AUTHOR_NAME, DEL_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (2, 1, 1, NULL, 2, 1, 'BOARD001', 'I agree! Exciting news ahead!', 'jane_smith', 'N', 'user02', CURRENT_TIMESTAMP, 'user02', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD_COMMENT (COMMENT_ID, ARTICLE_ID, GRP_COMMENT_ID, PARENT_COMMENT_ID, GRP_SEQ, INDENT, BOARD_CODE, CONTENTS, AUTHOR_NAME, DEL_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (3, 2, NULL, NULL, 1, 1, 'BOARD001', 'I have a question about the rules.', 'alex_jones', 'N', 'user03', CURRENT_TIMESTAMP, 'user03', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD_COMMENT (COMMENT_ID, ARTICLE_ID, GRP_COMMENT_ID, PARENT_COMMENT_ID, GRP_SEQ, INDENT, BOARD_CODE, CONTENTS, AUTHOR_NAME, DEL_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (4, 2, 3, NULL, 2, 1, 'BOARD001', 'The rules are simple, just follow the guidelines.', 'sam_taylor', 'N', 'user04', CURRENT_TIMESTAMP, 'user04', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD_COMMENT (COMMENT_ID, ARTICLE_ID, GRP_COMMENT_ID, PARENT_COMMENT_ID, GRP_SEQ, INDENT, BOARD_CODE, CONTENTS, AUTHOR_NAME, DEL_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (5, 3, NULL, NULL, 1, 1, 'BOARD002', 'Can`t wait to try the new product!', 'chris_miller', 'N', 'user05', CURRENT_TIMESTAMP, 'user05', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD_COMMENT (COMMENT_ID, ARTICLE_ID, GRP_COMMENT_ID, PARENT_COMMENT_ID, GRP_SEQ, INDENT, BOARD_CODE, CONTENTS, AUTHOR_NAME, DEL_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (6, 3, 5, NULL, 2, 1, 'BOARD002', 'I am excited too! How can I pre-order?', 'mike_wilson', 'N', 'user06', CURRENT_TIMESTAMP, 'user06', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD_COMMENT (COMMENT_ID, ARTICLE_ID, GRP_COMMENT_ID, PARENT_COMMENT_ID, GRP_SEQ, INDENT, BOARD_CODE, CONTENTS, AUTHOR_NAME, DEL_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (7, 4, NULL, NULL, 1, 1, 'BOARD003', 'Need help with a technical issue.', 'lily_brown', 'N', 'user07', CURRENT_TIMESTAMP, 'user07', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD_COMMENT (COMMENT_ID, ARTICLE_ID, GRP_COMMENT_ID, PARENT_COMMENT_ID, GRP_SEQ, INDENT, BOARD_CODE, CONTENTS, AUTHOR_NAME, DEL_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (8, 4, 7, NULL, 2, 1, 'BOARD003', 'I am also facing similar issues. Any solutions?', 'oliver_green', 'N', 'user08', CURRENT_TIMESTAMP, 'user08', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD_COMMENT (COMMENT_ID, ARTICLE_ID, GRP_COMMENT_ID, PARENT_COMMENT_ID, GRP_SEQ, INDENT, BOARD_CODE, CONTENTS, AUTHOR_NAME, DEL_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (9, 5, NULL, NULL, 1, 1, 'BOARD001', 'Looking forward to the new features!', 'sophia_white', 'N', 'user09', CURRENT_TIMESTAMP, 'user09', CURRENT_TIMESTAMP);
+
+INSERT INTO TB_BOARD_COMMENT (COMMENT_ID, ARTICLE_ID, GRP_COMMENT_ID, PARENT_COMMENT_ID, GRP_SEQ, INDENT, BOARD_CODE, CONTENTS, AUTHOR_NAME, DEL_YN, REG_ID, REG_DT, UPD_ID, UPD_DT)
+VALUES (10, 5, 9, NULL, 2, 1, 'BOARD001', 'I agree, the new features will be awesome.', 'james_black', 'N', 'user10', CURRENT_TIMESTAMP, 'user10', CURRENT_TIMESTAMP);
+
+
+
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (1, 'Home', '/home', NULL, 1, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (2, 'About Us', '/about-us', NULL, 2, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (3, 'Services', '/services', NULL, 3, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (4, 'Products', '/products', NULL, 4, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (5, 'Support', '/support', NULL, 5, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (6, 'Company History', '/about-us/history', 2, 1, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (7, 'Team', '/about-us/team', 2, 2, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (8, 'Careers', '/about-us/careers', 2, 3, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (9, 'Consulting', '/services/consulting', 3, 1, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (10, 'Development', '/services/development', 3, 2, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (11, 'Design', '/services/design', 3, 3, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (12, 'Product A', '/products/product-a', 4, 1, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (13, 'Product B', '/products/product-b', 4, 2, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (14, 'Product C', '/products/product-c', 4, 3, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (15, 'Product D', '/products/product-d', 4, 4, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (16, 'FAQ', '/support/faq', 5, 1, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (17, 'Contact Us', '/support/contact', 5, 2, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (18, 'Returns', '/support/returns', 5, 3, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (19, 'Shipping Information', '/support/shipping', 5, 4, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (20, 'Dashboard', '/admin/dashboard', NULL, 6, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (21, 'Users', '/admin/users', NULL, 7, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (22, 'Settings', '/admin/settings', NULL, 8, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (23, 'Reports', '/admin/reports', NULL, 9, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (24, 'Logs', '/admin/logs', NULL, 10, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (25, 'Add User', '/admin/users/add', 21, 1, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (26, 'User List', '/admin/users/list', 21, 2, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (27, 'General Settings', '/admin/settings/general', 22, 1, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (28, 'Payment Settings', '/admin/settings/payment', 22, 2, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (29, 'Security Settings', '/admin/settings/security', 22, 3, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (30, 'Sales Report', '/admin/reports/sales', 23, 1, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (31, 'User Activity Report', '/admin/reports/user-activity', 23, 2, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (32, 'Inventory Report', '/admin/reports/inventory', 23, 3, TRUE);
+INSERT INTO Menu (menu_id, name, link, parent_menu_id, sort_order, is_active) VALUES (33, 'Financial Report', '/admin/reports/financial', 23, 4, TRUE);
+
+]]>
+    </sql>
+  </apply>
+  <revert>
+    <sql description="inint db revert">
+delete table TB_BOARD_FILE;
+delete table TB_BOARD_COMMENT;
+delete table TB_BOARD;
+    </sql>
+  </revert>
+</database>

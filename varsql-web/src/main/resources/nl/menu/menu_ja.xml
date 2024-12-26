@@ -79,13 +79,15 @@
 <entry key="manager.menu.dbcomparemgmt">DB 比較</entry>
 <entry key="manager.menu.sqllogmgmt">SQL 統計</entry>
 <entry key="manager.menu.sqllog">SQL ログ</entry>
+<entry key="manager.menu.executestat">SQL 実行統計</entry>
 <entry key="manager.menu.userlogmgmt">ユーザーログ 統計</entry>
 <entry key="manager.menu.scheduler">スケジューラ</entry>
 <entry key="manager.menu.databackupgmgmt">データバックアップ 管理</entry>
 <entry key="manager.menu.ddlbackupmgmt">DDL バックアップ 管理</entry>
-<entry key="manager.menu.sqljobmgmt">SQL Job</entry>
+<entry key="manager.menu.taskjobmgmt">Task Job</entry>
 <entry key="manager.menu.task">Task</entry>
 <entry key="manager.menu.sqltaskmgmt">SQL Task</entry>
+<entry key="manager.menu.datamigtaskmgmt">データ移行タスク</entry>
 
 <!-- ユーザーメニュー -->
 <entry key="user.prefernces.menu.general">プロフィール修正</entry>

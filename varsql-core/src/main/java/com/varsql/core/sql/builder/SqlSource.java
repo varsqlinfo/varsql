@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.varsql.core.sql.mapping.ParameterMapping;
-import com.varsql.core.sql.type.SQLCommand;
 import com.varsql.core.sql.type.SQLCommandType;
 
 public class SqlSource {

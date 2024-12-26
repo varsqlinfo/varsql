@@ -7,7 +7,9 @@ import org.stringtemplate.v4.ST;
 
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.connection.beans.JdbcURLFormatParam;
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.exception.VarsqlRuntimeException;
+import com.vartech.common.utils.StringUtils;
 
 /**
  *
@@ -36,6 +38,31 @@ public class VarsqlJdbcUtil {
 					.optStr("")
 					.build());
 
+		return template.render();
+	}
+	
+	public static String getSampleJdbcUrl(String urlFormat, JdbcURLFormatParam opt) {
+		ST template = new ST(urlFormat, '{', '}');
+		
+		if(StringUtils.isBlank(opt.getServerIp())) {
+			opt.setServerIp("127.0.0.1");
+		}
+		
+		if(StringUtils.isBlank(opt.getDatabaseName())) {
+			DBVenderType dbType = DBVenderType.getDBType(opt.getType());
+			if(dbType.equals(DBVenderType.OTHER)) {
+				opt.setDatabaseName("sampleDb");
+			}else {
+				opt.setDatabaseName( StringUtils.isBlank(dbType.getDefaultDatabaseName()) ?  "sampleDb" : dbType.getDefaultDatabaseName());
+			}
+		}
+		
+		if(0 > opt.getPort() || opt.getPort() > 65535) {
+			opt.setPort(1231);
+		}
+		
+		setArguments(template, opt);
+		
 		return template.render();
 	}
 

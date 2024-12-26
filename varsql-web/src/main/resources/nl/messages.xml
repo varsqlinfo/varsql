@@ -38,6 +38,7 @@
 <entry key="msg.delete.success">Deleted</entry>
 <entry key="msg.apply.confirm">Apply?</entry>
 <entry key="msg.apply.success">Applied</entry>
+<entry key="msg.copy.confirm">Do you want to copy?</entry>
 <entry key="msg.copy.success">Copied</entry>
 <entry key="msg.change.confirm">Change?</entry>
 <entry key="msg.change.success">Changed</entry>
@@ -49,6 +50,11 @@
 <entry key="msg.release.success">Released</entry>
 <entry key="msg.send.confirm">Send?</entry>
 <entry key="msg.send.confirm.param">Send {item}?</entry>
+<entry key="msg.cancel.confirm">Are you sure you want to cancel?</entry>
+<entry key="msg.cancel.success">Cancellation successful</entry>
+<entry key="msg.refresh.confirm">Do you want to refresh?</entry>
+<entry key="msg.refresh.please">Please refresh.</entry>
+<entry key="msg.refresh.success">Refresh completed.</entry>
 
 <entry key="msg.close.confirm">Close?</entry>
 <entry key="msg.close.confirm.param">Close [{name}]?</entry>
@@ -220,5 +226,8 @@
 <entry key="msg.install.end">Please restart the server after installation is complete.</entry>
 <entry key="msg.install.complete">Installation complete</entry>
 
+<entry key="msg.execute.confirm">Are you sure you want to execute?</entry>
+<entry key="msg.execute.success">Execution completed successfully.</entry>
+<entry key="msg.execute.db.error">The connection information is not available.</entry>
 
 </properties>

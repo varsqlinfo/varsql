@@ -41,27 +41,27 @@ public class ErrorController extends AbstractController {
 
 	@RequestMapping(value = {"", "/"}, method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView errorMain(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/defaultErrorPage", VIEW_PAGE.COMMONPAGE);
+		return getModelAndView("/error/defaultErrorPage", VIEW_PAGE.COMMON);
 	}
 
 	@RequestMapping(value = "/error403", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView error403(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/error403", VIEW_PAGE.COMMONPAGE);
+		return getModelAndView("/error/error403", VIEW_PAGE.COMMON);
 	}
 
 	@RequestMapping(value = "/page403csrf", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView page403csrf(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/page403csrf", VIEW_PAGE.COMMONPAGE);
+		return getModelAndView("/error/page403csrf", VIEW_PAGE.COMMON);
 	}
 
 	@RequestMapping(value = "/error404", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView error404(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/error404", VIEW_PAGE.COMMONPAGE);
+		return getModelAndView("/error/error404", VIEW_PAGE.COMMON);
 	}
 
 	@RequestMapping(value = "/error500", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView error500(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/error500", VIEW_PAGE.COMMONPAGE);
+		return getModelAndView("/error/error500", VIEW_PAGE.COMMON);
 	}
 	/**
 	 *
@@ -77,7 +77,7 @@ public class ErrorController extends AbstractController {
 	 */
 	@RequestMapping(value = "/connError", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView connError(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/connError", VIEW_PAGE.COMMONPAGE);
+		return getModelAndView("/error/connError", VIEW_PAGE.COMMON);
 	}
 
 	/**
@@ -94,7 +94,7 @@ public class ErrorController extends AbstractController {
 	 */
 	@RequestMapping(value = "/connCreateError", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView connCreateError(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/connCreateError", VIEW_PAGE.COMMONPAGE);
+		return getModelAndView("/error/connCreateError", VIEW_PAGE.COMMON);
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class ErrorController extends AbstractController {
 	 */
 	@RequestMapping(value = "/blockingUser", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView blockingUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/blockingUser", VIEW_PAGE.COMMONPAGE);
+		return getModelAndView("/error/blockingUser", VIEW_PAGE.COMMON);
 	}
 
 	/**
@@ -128,7 +128,7 @@ public class ErrorController extends AbstractController {
 	 */
 	@RequestMapping(value = "/blockingDatabase", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView blockingDatabase(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/blockingDatabase", VIEW_PAGE.COMMONPAGE);
+		return getModelAndView("/error/blockingDatabase", VIEW_PAGE.COMMON);
 	}
 
 	/**
@@ -168,12 +168,12 @@ public class ErrorController extends AbstractController {
 	 */
 	@RequestMapping(value = "/invalidDatabasePage", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView invalidDatabasePage(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/invalidDatabase", VIEW_PAGE.COMMONPAGE);
+		return getModelAndView("/error/invalidDatabase", VIEW_PAGE.COMMON);
 	}
 
 	@RequestMapping(value = "/invalidToken", method ={RequestMethod.GET})
 	public ModelAndView invalidToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/invalidToken", VIEW_PAGE.COMMONPAGE);
+		return getModelAndView("/error/invalidToken", VIEW_PAGE.COMMON);
 	}
 
 	/**
@@ -190,7 +190,7 @@ public class ErrorController extends AbstractController {
 	 */
 	@RequestMapping(value = "/dataDownloadError", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView dataDownloadError(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/dataDownloadError", VIEW_PAGE.COMMONPAGE);
+		return getModelAndView("/error/dataDownloadError", VIEW_PAGE.COMMON);
 	}
 
 	/**
@@ -205,6 +205,6 @@ public class ErrorController extends AbstractController {
 	 */
 	@RequestMapping(value = "/boardError", method ={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView boardError(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return getModelAndView("/error/boardError", VIEW_PAGE.COMMONPAGE);
+		return getModelAndView("/error/boardError", VIEW_PAGE.COMMON);
 	}
 }

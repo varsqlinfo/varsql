@@ -16,10 +16,11 @@ import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.scheduler.JobDetailDTO;
 import com.varsql.web.dto.scheduler.JobRequestDTO;
 import com.varsql.web.dto.scheduler.JobVO;
-import com.varsql.web.model.entity.db.DBConnectionEntity;
+import com.varsql.web.model.entity.db.DBConnectionViewEntity;
 import com.varsql.web.model.entity.scheduler.JobEntity;
 import com.varsql.web.model.mapper.scheduler.JobMapper;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
+import com.varsql.web.repository.db.DBConnectionViewEntityRepository;
 import com.varsql.web.repository.scheduler.JobEntityRepository;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
@@ -43,6 +44,8 @@ public class DDLBackupMgmtServiceImpl extends AbstractService{
 	private final Logger logger = LoggerFactory.getLogger(DDLBackupMgmtServiceImpl.class);
 	
 	private String DDL_BACKUP_JOB_GROUP = "DDL_BACKUP";
+	
+	final private DBConnectionViewEntityRepository dbConnectionViewEntityRepository;
 	
 	final private DBConnectionEntityRepository  dbConnectionEntityRepository;
 
@@ -145,7 +148,7 @@ public class DDLBackupMgmtServiceImpl extends AbstractService{
 		
 		entity.setJobGroup(DDL_BACKUP_JOB_GROUP);
 		
-		DBConnectionEntity dbConnectionEntity = dbConnectionEntityRepository.findByVconnid(dto.getVconnid());
+		DBConnectionViewEntity dbConnectionEntity = dbConnectionViewEntityRepository.findByVconnid(dto.getVconnid());
 		entity.setJobDBConnection(dbConnectionEntity);
 		
 		jobEntityRepository.save(entity);

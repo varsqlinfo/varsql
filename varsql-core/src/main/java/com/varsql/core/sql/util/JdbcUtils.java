@@ -15,12 +15,18 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import javax.sql.DataSource;
+
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.util.JdbcDriverLoader;
 import com.varsql.core.configuration.prop.ValidationProperty;
+import com.varsql.core.connection.beans.ConnectionInfo;
 import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.db.DBVenderType;
+import com.varsql.core.db.datasource.SingleConnectionDataSource;
+import com.varsql.core.db.datasource.SingleDriverDataSource;
+import com.varsql.core.exception.ConnectionException;
 import com.vartech.common.app.beans.FileInfo;
 
 public final class JdbcUtils {
@@ -73,16 +79,17 @@ public final class JdbcUtils {
 			Driver dbDriver = JdbcDriverLoader.checkDriver(JDBCDriverInfo.builder().driverId(driverId)
 					.driverClass(driverClass).driverFiles(driverJarFiles).build());
 			
-			Executor executor= null; 
-			if (dbType.equalsIgnoreCase("mysql")) {
-				executor = new MysqlExecutor();
-			} else {
-				executor = Executors.newSingleThreadExecutor();
-			}
-			
 			connChk = dbDriver.connect(connectionUrl, p);
 			
 			if(hasMethodName(connChk.getClass(), "setNetworkTimeout")) {
+				
+				Executor executor= null; 
+				if (dbType.equalsIgnoreCase("mysql")) {
+					executor = new MysqlExecutor();
+				} else {
+					executor = Executors.newSingleThreadExecutor();
+				}
+				
 				connChk.setNetworkTimeout(executor, (int) TimeUnit.SECONDS.toMillis(networkTimeout));
 			}
 			
@@ -131,6 +138,23 @@ public final class JdbcUtils {
 		}finally {
 			JdbcUtils.close(connChk, pstmt, null);
 		}
+	}
+	
+	public static DataSource getDataSource(ConnectionInfo connInfo) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
+		Driver dbDriver = null;
+		
+		if (connInfo.getJdbcDriverInfo() != null) {
+			dbDriver = JdbcDriverLoader.getInstance().load(connInfo.getJdbcDriverInfo());
+			if (dbDriver == null) {
+				throw new ConnectionException("jdbc driver load fail : " + connInfo.getJdbcDriverInfo());
+			}
+		}
+		
+    	if(dbDriver != null) {
+    		return new SingleDriverDataSource(dbDriver, connInfo.getUrl(), connInfo.getUsername(), connInfo.getPassword());
+    	}else {
+			return new SingleConnectionDataSource(connInfo.getJdbcDriverInfo().getDriverClass(), connInfo.getUrl(), connInfo.getUsername(), connInfo.getPassword());
+    	}
 	}
 	
 	private static boolean hasMethodName(Class clazz, String methodName) {

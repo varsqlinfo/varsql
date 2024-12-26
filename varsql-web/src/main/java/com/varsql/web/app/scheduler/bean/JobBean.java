@@ -29,7 +29,7 @@ import com.vartech.common.utils.VartechUtils;
 /**
  * 
 *  
-* @fileName	: VarsqlJobBean.java
+* @fileName	: JobBean.java
 * @author	: ytkim
  */
 @PersistJobDataAfterExecution

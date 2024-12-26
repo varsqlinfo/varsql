@@ -20,7 +20,7 @@ ext{
 }
 
 def def_project= [
-	context : '/vsql'
+	context : '/varsql'
 ]
 
 dependencies {
@@ -102,9 +102,12 @@ task webResourceJar(type: Jar) {
 war{
 	archiveClassifier = ''
 	
+	def exportFileName = 'varsql' +appVersion
 	// war name
-	archiveBaseName ='vsql' +appVersion
-
+	archiveBaseName =exportFileName
+	
+	exportFileName =exportFileName +'.war'
+	
 	exclude 'webstatic' ,'WEB-INF/*'
 
 	classpath = classpath - sourceSets.main.output
@@ -119,10 +122,8 @@ war{
 
 	doLast {
 	
-		def exportFileName = new StringBuilder().append('vsql').append(appVersion).append('.war')
-		
 		println("exportFileName : $exportFileName")
-		exportFileRename(exportFileName, 'vsql-docker.war');
+		exportFileRename(exportFileName, 'varsql-docker.war');
 		
 		println("################# export info #######################")
 		println("appVersion : " + appVersion)

@@ -1,5 +1,7 @@
 package com.varsql.core.common.constants;
 
+import java.sql.Types;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum ColumnJavaType{
@@ -53,4 +55,64 @@ public enum ColumnJavaType{
 	}
 	
 	
+	public static ColumnJavaType getType(int columnType) {
+		if(columnType ==Types.NUMERIC || columnType ==Types.DECIMAL){
+			return ColumnJavaType.DECIMAL;
+		}
+		
+		if(columnType ==Types.REAL || columnType == Types.FLOAT) {
+			return ColumnJavaType.FLOAT;
+		}
+		
+		if(columnType ==Types.DOUBLE) {
+			return ColumnJavaType.DOUBLE;
+		}
+		
+		if(columnType == Types.INTEGER||columnType ==Types.BIGINT
+				||columnType ==Types.SMALLINT||columnType ==Types.TINYINT){
+			return ColumnJavaType.INTEGER;
+		}
+		
+		if(columnType == Types.DATE ){
+			return ColumnJavaType.DATE;
+		}
+		
+		if(columnType == Types.TIME ){
+			return ColumnJavaType.TIME;
+		}
+		
+		if(columnType == Types.TIMESTAMP ){
+			return ColumnJavaType.TIMESTAMP;
+		}
+		
+		if(columnType == Types.BLOB ){
+			return ColumnJavaType.BLOB;
+		}
+		
+		if(columnType == Types.CLOB ){
+			return ColumnJavaType.CLOB;
+		} 
+		
+		if(columnType == Types.REF ){
+			return ColumnJavaType.REF;
+		}
+		
+		if(columnType == Types.NCLOB ){
+			return ColumnJavaType.NCLOB;
+		}
+		
+		if(columnType == Types.VARBINARY ||columnType == Types.BINARY || columnType == Types.LONGVARBINARY){
+			return ColumnJavaType.BINARY;
+		}
+		
+		if(columnType == Types.SQLXML ){
+			return ColumnJavaType.SQLXML;
+		}
+		
+		if(columnType == Types.ARRAY){
+			return ColumnJavaType.ARRAY;
+		}
+		
+		return ColumnJavaType.STRING;
+	}
 }

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE templateConfig SYSTEM  "ddlTemplate.dtd">
+
+<templateConfig>
+	<!-- 테이블 생성-->
+	<table>
+		<create>
+		<![CDATA[
+{{~#if ddlOpt.addDropClause}}/* DROP TABLE {{objectName}}; */{{/if}}
+CREATE TABLE {{objectName}}(
+{{#columnList}}
+    {{addChar @index "" ","}} {{name}} {{ddlTableValue 'typeAndLength' this dbType}} {{{ddlTableValue 'default' this dbType}}} {{{ddlTableValue 'nullable' this dbType}}}
+{{/columnList}}
+)
+
+{{#xif sourceText '!=' ''}}{{{sourceText}}}{{/xif}}
+
+{{#commentsList}}
+{{#xif type '==' 'TBL'}}COMMENT ON TABLE {{../objectName}} IS '{{{comment}}}';{{/xif}}
+{{~#xif type '==' 'COL'}}COMMENT ON COLUMN {{../objectName}}.{{name}} is '{{{comment}}}';{{/xif}}
+{{/commentsList}}
+		]]>
+		</create>
+
+        <!-- table comment 추가-->
+        <addComment>
+COMMENT ON TABLE {{name}}  IS '{{{comment}}}'
+        </addComment>    
+		
+		<!-- 테이블명 수정 추가-->
+		<rename>
+rename table  {{TABLE_NAME}} as  {{NEW_TABLE_NAME}}
+		</rename>
+		
+		<!-- 컬럼 추가-->
+		<columnAdd>
+alter table {{TABLE_NAME}} add column {{COLUMN_NAME}} {{TYPE_NAME}} {{DEFAULT_VALUE}}
+		</columnAdd>
+		
+		<!-- 컬럼명 수정 추가-->
+		<columnRename>
+alter table {{TABLE_NAME}} rename column {{COLUMN_NAME}} as {{NEW_COLUMN_NAME}}
+		</columnRename>
+		
+		<!-- 컬럼 수정 추가-->
+		<columnModify>
+alter table {{TABLE_NAME}} modify {{COLUMN_NAME}} {{TYPE_NAME}} {{#equals true ddlOption.isNotNull}} not null {{/equals}} {{DEFAULT_VALUE}}
+		</columnModify>
+		
+		<!-- 컬럼 삭제-->
+		<columnDrop>
+alter table {{TABLE_NAME}} drop  {{COLUMN_NAME}}
+		</columnDrop>
+		
+		<!-- 컬럼 주석 추가 -->
+		<columnAddComment>
+COMMENT ON COLUMN {{TABLE_NAME}}.{{COLUMN_NAME}} IS '{{{comment}}}';
+		</columnAddComment>
+	
+		
+	</table>
+	
+	<!-- view 생성-->
+    <view>
+        <create>
+{{~#if ddlOpt.addDropClause}}/* DROP VIEW {{objectName}}; */{{/if}}
+CREATE OR REPLACE VIEW {{objectName}} ({{item.header}})
+AS
+{{{item.body}}}
+;
+
+{{#commentsList}}
+{{#xif type '==' 'TBL'}}COMMENT ON TABLE {{../objectName}} IS '{{{comment}}}';{{/xif}}
+{{~#xif type '==' 'COL'}}COMMENT ON COLUMN {{../objectName}}.{{name}} is '{{{comment}}}';{{/xif}}
+{{/commentsList}}
+        </create>
+    </view>
+
+	<!-- function 생성-->
+    <function>
+        <create>
+{{#if ddlOpt.addDropClause}}/* DROP FUNCTION {{objectName}}; */{{/if}}
+
+CREATE OR REPLACE {{{sourceText}}}
+        </create>
+    </function>
+    
+    <!-- procedure 생성-->
+    <procedure>
+        <create>
+{{#if ddlOpt.addDropClause}}/* DROP PROCEDURE {{objectName}}; */{{/if}}
+
+CREATE OR REPLACE {{{sourceText}}}
+        </create>
+    </procedure>
+    
+     <!-- package 생성-->
+    <package>
+        <create>
+{{#if ddlOpt.addDropClause}}
+/* 
+DROP PACKAGE BODY {{objectName}}; 
+DROP PACKAGE {{objectName}};
+*/
+{{/if}}
+
+CREATE OR REPLACE {{{item.package}}}
+
+CREATE OR REPLACE {{{item.packageBody}}}
+        </create>
+    </package>
+    
+    <!-- trigger 생성-->
+    <trigger>
+        <create>
+{{#if ddlOpt.addDropClause}}/* DROP TRIGGER {{objectName}}; */{{/if}}
+
+CREATE OR REPLACE {{{sourceText}}}
+        </create>
+    </trigger>
+    
+    <!-- index 생성-->
+	<index>
+		<create>
+{{#if ddlOpt.addDropClause}}/* DROP INDEX {{objectName}}; */{{/if}}
+
+{{#xif sourceText '!=' ''}}{{{sourceText}}}{{/xif~}}
+
+{{#xif sourceText '==' ''}}
+{{#with items.[0]}}
+create {{ddlIndexKeyword 'unique' this}} index {{../schema}}.{{objectName}}
+on
+{{../schema}}.{{tableName}}
+{{/with~}}
+({{~#items}}{{addChar @index "" ","}}{{columnName}} {{ddlIndexKeyword 'ascDesc' this}}{{/items}})
+{{/xif}}
+		</create>
+	</index>
+
+	<!-- sequence 생성-->
+	<sequence>
+		<create>
+{{#if ddlOpt.addDropClause}}/* DROP SEQUENCE {{objectName}}; */{{/if}}
+
+CREATE SEQUENCE {{objectName}}
+START WITH 1
+INCREMENT BY {{item.increment}}
+MINVALUE {{item.minValue}}
+MAXVALUE {{item.maxValue}}
+		</create>
+	</sequence>
+	
+</templateConfig>

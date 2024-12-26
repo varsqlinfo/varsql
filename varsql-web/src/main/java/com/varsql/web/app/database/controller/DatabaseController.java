@@ -252,7 +252,7 @@ public class DatabaseController extends AbstractController {
 	
 	@RequestMapping(value =  "/reqCancel", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseResult connectionCancel(@RequestParam(value = "requid$$", required = true) String requestUid,
+	public ResponseResult connectionCancel(@RequestParam(value = HttpParamConstants.REQ_UID, required = true) String requestUid,
 			@RequestParam(value = "conuid", required = true) String conuid, HttpServletRequest req) throws Exception {
 				
 		String [] reqUid = requestUid.split(",");

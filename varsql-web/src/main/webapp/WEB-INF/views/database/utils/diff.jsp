@@ -13,14 +13,14 @@
 <div class="wh100" id=epViewArea style="padding-top: 5px;height:calc(100% - 35px)">
 	<div style="height:30px;">
 		<template v-if="!isViewer">
-			<button type="button" @click="diffMove('previous')" class="btn btn-default">이전</button>
-			<button type="button" @click="diffMove('next')" class="btn btn-default">다음</button>
-			<button type="button" @click="viewerToggle(true)" class="btn btn-default">뷰어보기</button>
+			<button type="button" @click="diffMove('previous')" class="btn btn-default"><spring:message code="prev" /></button>
+			<button type="button" @click="diffMove('next')" class="btn btn-default"><spring:message code="next" /></button>
+			<button type="button" @click="viewerToggle(true)" class="btn btn-default"><spring:message code="viewer.view" /></button>
 		</template>
 		<template v-else>
-			<button type="button" @click="viewerMove('previous')" class="btn btn-default">이전</button>
-			<button type="button" @click="viewerMove('next')" class="btn btn-default">다음</button>
-			<button type="button" @click="viewerToggle(false)" class="btn btn-default">닫기</button>
+			<button type="button" @click="viewerMove('previous')" class="btn btn-default"><spring:message code="prev" /></button>
+			<button type="button" @click="viewerMove('next')" class="btn btn-default"><spring:message code="next" /></button>
+			<button type="button" @click="viewerToggle(false)" class="btn btn-default"><spring:message code="close" /></button>
 		</template>
 	</div>
 	<div id="diffEditor" class="wh100" style="height:calc(100% - 30px);">

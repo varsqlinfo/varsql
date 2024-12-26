@@ -21,7 +21,6 @@ public class JDBCDriverInfo implements Serializable {
 
 	private String driverClass;
 	
-
 	private List<FileInfo> driverFiles;
 	
 	@SuppressWarnings("unused")
@@ -33,5 +32,13 @@ public class JDBCDriverInfo implements Serializable {
 		this.driverId = driverId;
 		this.driverClass = driverClass;
 		this.driverFiles = driverFiles;
+	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder()
+				.append("driverClass : ").append(driverClass)
+				.append(", driverFiles : ").append(driverFiles)
+				.toString();
 	}
 }

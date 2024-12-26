@@ -10,7 +10,7 @@ import com.varsql.web.model.entity.db.DBTypeDriverEntity;
 import com.varsql.web.repository.DefaultJpaRepository;
 
 @Repository
-public interface DBTypeDriverEntityRepository extends DefaultJpaRepository, JpaRepository<DBTypeDriverEntity, Long>{
+public interface DBTypeDriverEntityRepository extends DefaultJpaRepository, JpaRepository<DBTypeDriverEntity, String>{
 	public List<DBTypeDriverEntity> findByDbtype(String dbType);
 
 	public DBTypeDriverEntity findByDriverId(String driverId);

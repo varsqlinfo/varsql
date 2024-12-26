@@ -29,7 +29,7 @@ VARSQLApi.sql = {
 		
 		VARSQL.req.ajax({
 		    loadSelector : 'body'
-		    ,url:{type:VARSQL.uri.sql, url:'/base/sqlData'}
+		    ,url:{type:VARSQL.uri.sql, url:'/base/execute'}
 		    ,data:params
 		    ,success:function (resData){
 		    	callback(resData)

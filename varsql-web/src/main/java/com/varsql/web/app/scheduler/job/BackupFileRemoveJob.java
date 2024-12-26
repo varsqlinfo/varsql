@@ -30,6 +30,13 @@ public class BackupFileRemoveJob extends JobBean {
 
 		File chkDir = new File(BACKUP_PATH);
 		
+		if(!chkDir.exists()) {
+			return JobResultVO.builder()
+					.jobType(JobType.BACKUP_FILE_REMOVE)
+					.message("Folder not exists")
+					.build();
+		}
+		
 		File[] files = chkDir.listFiles();
 		
 		LocalDate currentLdt = LocalDate.now();
@@ -38,10 +45,10 @@ public class BackupFileRemoveJob extends JobBean {
 			removeExpireFile(chkFile, currentLdt);
 		}
 		
-		logger.debug("## backup file delete job end ## : {}");
+		logger.debug("## backup file delete job end ##");
 		
 		return JobResultVO.builder()
-				.jobType(JobType.BF_REMOVE)
+				.jobType(JobType.BACKUP_FILE_REMOVE)
 				.build(); 
 	}
 	

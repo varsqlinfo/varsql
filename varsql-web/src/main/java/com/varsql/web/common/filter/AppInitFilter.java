@@ -13,12 +13,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.varsql.core.configuration.Configuration;
-import com.varsql.core.sso.SsoHandler;
-import com.varsql.web.common.sso.SsoBeanFactory;
-import com.varsql.web.common.sso.SsoComponent;
-import com.vartech.common.utils.HttpUtils;
-
 /**
  * -----------------------------------------------------------------------------
 * @fileName		: VarsqlSsoFilter.java
@@ -32,6 +26,9 @@ import com.vartech.common.utils.HttpUtils;
 *-----------------------------------------------------------------------------
  */
 public class AppInitFilter extends OncePerRequestFilter {
+	
+	private final Logger logger = LoggerFactory.getLogger(AppInitFilter.class);
+	
 	private OrRequestMatcher setupMatcher = new OrRequestMatcher(
 		 new AntPathRequestMatcher("/setup")
 		, new AntPathRequestMatcher("/i18nMessage")
@@ -41,6 +38,8 @@ public class AppInitFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		
+		logger.info("request uri {}", request.getRequestURI() );
 
 		if (!setupMatcher.matcher(request).isMatch()) {
 			HttpServletRequest httpRequest = (HttpServletRequest) request;

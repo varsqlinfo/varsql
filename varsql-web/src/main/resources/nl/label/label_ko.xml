@@ -269,8 +269,10 @@
 <entry key="admim.account.settings">관리자 계정 설정</entry>
 <entry key="admim.default.name">관리자</entry>
 <entry key="app.settings">사이트 설정</entry>
+<entry key="app.data.path">Data Path</entry>
 
 <!-- file -->
+<entry key="file">File</entry>
 <entry key="file.new">새 파일</entry>
 <entry key="file.name">파일명</entry>
 <entry key="file.import_export">가져오기 및 내보내기...</entry>
@@ -395,4 +397,17 @@
 <entry key="install">설치</entry>
 <entry key="install.start">설치 시작</entry>
 
+<entry key="execute">실행</entry>
+<entry key="commit.count">커밋 주기</entry>
+<entry key="sql">SQL</entry>
+<entry key="error.ignore">에러 무시</entry>
+
+<entry key="column.name.copy">컬럼명 복사</entry>
+<entry key="column.name.add">컬럼명 추가</entry>
+<entry key="column.name.value.add"><![CDATA[컬럼명 & 값 추가]]></entry>
+<entry key="page.size">페이지 크기</entry>
+<entry key="viewer">뷰어</entry>
+<entry key="viewer.view">뷰어보기</entry>
+
+<entry key="trigger.info">Trigger Info</entry>
 </properties>

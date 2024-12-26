@@ -16,7 +16,6 @@ import com.varsql.core.auth.AuthorityTypeImpl;
 import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.model.entity.user.UserEntity;
-import com.varsql.web.repository.user.UserDBMappingInfoEntityRepository;
 import com.varsql.web.security.repository.UserAuthRepository;
 import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.utils.VartechUtils;
@@ -35,9 +34,6 @@ public final class AuthService {
 
 	@Autowired
 	private UserAuthRepository userAuthRepository;
-	
-	@Autowired
-	private UserDBMappingInfoEntityRepository userDBMappingInfoEntityRepository;
 	
 	private PasswordEncoder passwordEncoder;
 	

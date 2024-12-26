@@ -38,15 +38,17 @@ public class UrlDirectYnConstraintValidator  implements ConstraintValidator<Vali
     			context.buildConstraintViolationWithTemplate( "port not valid" ).addConstraintViolation();
     			return false;
     		}
+    		
+        	String databaseName = vtConnection.getVdatabasename();
+
+    		if(databaseName ==null || "".equals(databaseName.trim())) {
+    			context.disableDefaultConstraintViolation();
+    			context.buildConstraintViolationWithTemplate( "databaseName not valid" ).addConstraintViolation();
+    			return false;
+    		}
+
     	}
 
-    	String databaseName = vtConnection.getVdatabasename();
-
-		if(databaseName ==null || "".equals(databaseName.trim())) {
-			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate( "databaseName not valid" ).addConstraintViolation();
-			return false;
-		}
 
         return true;
     }

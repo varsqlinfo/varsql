@@ -1,11 +1,12 @@
 package com.varsql.web.constants;
 
 public enum UploadFileType {
-	IMPORT("import", "importFile")
-	,EXPORT("export", "exportFile")
+	IMPORT("import", "import")
+	,EXPORT("export", "export")
 	,APPFILE("appFile", "appFile")
 	,JDBC_DIRVER("jdbcDriver", "jdbcDriver", true, SavePathType.CONT_ID)
 	,BOARD("board", "board")
+	,BOARD_CONTENT_IMAGE("boardContentImage", "boardContentImage")
 	,TEMP("temp", "temp")
 	,OTHER("other", "other");
 	

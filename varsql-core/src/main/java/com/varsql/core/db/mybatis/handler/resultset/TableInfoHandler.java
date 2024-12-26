@@ -1,7 +1,6 @@
 package com.varsql.core.db.mybatis.handler.resultset;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +57,8 @@ public class TableInfoHandler implements ResultHandler<DataMap> {
 				sb =new StringBuilder();
 				addFlag = false;
 			}
+			
+			tblInfo.setColList(new ArrayList<ColumnInfo>());
 		}
 
 		if(sb.length() > 0){
@@ -87,14 +88,13 @@ public class TableInfoHandler implements ResultHandler<DataMap> {
 
 			if(useTableIndex){
 				currentTableInfo = this.tableInfoList.get(this.tableIndexInfo.get(tblName));
-				currentTableInfo.setColList(new ArrayList<ColumnInfo>());
+				
 				currentTableInfo.setRemarks(StringUtils.nullToString(currentTableInfo.getRemarks(), ""));
 			}else{
 				currentTableInfo = new TableInfo();
 
 				currentTableInfo.setName(tblName);
 				currentTableInfo.setSchema(rowData.getString(MetaColumnConstants.SCHEMA));
-				currentTableInfo.setColList(new ArrayList<ColumnInfo>());
 				currentTableInfo.setRemarks(rowData.getString(MetaColumnConstants.REMARKS,""));
 
 				tableInfoList.add(currentTableInfo);
@@ -112,6 +112,8 @@ public class TableInfoHandler implements ResultHandler<DataMap> {
 		
 		String standardDataType = DbMetaUtils.getTypeName(typeName);
 		DataType dataTypeInfo = dataTypeFactory.getDataType(0, standardDataType);
+		
+		typeName = dataTypeInfo.getViewTypeName(typeName);
 
 		column.setName(cName);
 		column.setTypeCode(dataTypeInfo.getTypeCode());

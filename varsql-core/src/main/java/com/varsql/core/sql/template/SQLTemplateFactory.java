@@ -1,26 +1,15 @@
 package com.varsql.core.sql.template;
 
-import static org.apache.commons.lang3.Validate.isTrue;
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vartech.common.io.RESOURCE_TYPE;
-import com.vartech.common.io.Resource;
-
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Helper;
-import com.github.jknack.handlebars.Options;
-import com.github.jknack.handlebars.TagType;
 import com.github.jknack.handlebars.Template;
-import com.github.jknack.handlebars.helper.ConditionalHelpers;
 import com.varsql.core.common.TemplateFactory;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.VarsqlConstants;
@@ -28,14 +17,16 @@ import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.core.sql.SQLTemplateCode;
-import com.varsql.core.sql.SQLTemplateEnum;
+import com.varsql.core.sql.TemplateEnum;
+import com.vartech.common.io.RESOURCE_TYPE;
+import com.vartech.common.io.Resource;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechUtils;
 
 /**
  * -----------------------------------------------------------------------------
-* @fileName		: SQLTemplateFactory.java
-* @desc		: sql template load factory
+* @fileName		: DDLTemplateFactory.java
+* @desc		: ddl template load factory
 * @author	: ytkim
 *-----------------------------------------------------------------------------
   DATE			AUTHOR			DESCRIPTION
@@ -46,9 +37,8 @@ import com.vartech.common.utils.VartechUtils;
  */
 public class SQLTemplateFactory {
 	private final Logger logger = LoggerFactory.getLogger(SQLTemplateFactory.class);
-	private final String SQL_TEMPLATE_PREFIX = "sql_";
 
-	private final String TEMPLATE_PACKAGE= String.format(RESOURCE_TYPE.CLASSPATH.getPath("db/template/sql/%s*.xml"), SQL_TEMPLATE_PREFIX);
+	private final String TEMPLATE_PACKAGE= RESOURCE_TYPE.CLASSPATH.getPath("db/template/sql/*.xml");
 	//private final String TEMPLATE_PACKAGE= String.format("classpath:db/template/sql/sql_other.xml", SQL_TEMPLATE_PREFIX);
 	private final String DEFAULT_FILE= "other";
 
@@ -87,7 +77,6 @@ public class SQLTemplateFactory {
 			
 			logger.debug("sql template fileName : {} ", fileName);
 
-			fileName = fileName.replaceFirst(SQL_TEMPLATE_PREFIX, "");
 			String dbVender = fileName.replace(".xml", "");
 
 			String xml = ResourceUtils.getResourceString(resource);
@@ -138,11 +127,11 @@ public class SQLTemplateFactory {
 	 * @param param
 	 * @return
 	 */
-	public String sqlRender(DBVenderType dbType, SQLTemplateEnum code, Object param){
+	public String sqlRender(DBVenderType dbType, TemplateEnum code, Object param){
 		return sqlRender(dbType, code, param, null);
 	}
 	
-	public String sqlRender(DBVenderType dbType, SQLTemplateEnum code, Object param, SQLTemplateEnum defaultCode){
+	public String sqlRender(DBVenderType dbType, TemplateEnum code, Object param, TemplateEnum defaultCode){
 		
 		String dbVender= dbType.getDbVenderName();
 		
@@ -165,7 +154,7 @@ public class SQLTemplateFactory {
 		return "";
 	}
 
-	public String getTemplate(DBVenderType dbType, SQLTemplateEnum code) {
+	public String getTemplate(DBVenderType dbType, TemplateEnum code) {
 		String templateId = code.getTemplateId(); 
 		
 		if(sqlTemplateTextInfo.containsKey(dbType.getDbVenderName())){

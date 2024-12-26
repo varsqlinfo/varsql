@@ -107,6 +107,10 @@ public class ConnectionDBCP2 extends AbstractConnectionPool{
 
 	        //PoolabeConnectionFactory에도 커넥션 풀을 연결
 	        poolableConnFactory.setPool(connectionPool);
+	        
+			if(Arrays.stream(driver.getPoolNames()).anyMatch(poolName::equals)) {
+	        	poolShutdown(poolName);
+	        }
 
 	        //위에서 커넥션 풀 드라이버에 생성한 커넥션 풀을 등룍한다. 이름은 cp이다.
 	        driver.registerPool(poolName, connectionPool);

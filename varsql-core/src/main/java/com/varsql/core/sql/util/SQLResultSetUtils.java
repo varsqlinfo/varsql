@@ -3,7 +3,6 @@ package com.varsql.core.sql.util;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,7 +15,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.ColumnJavaType;
 import com.varsql.core.common.util.GridUtils;
-import com.varsql.core.connection.ConnectionFactory;
+import com.varsql.core.connection.ConnectionInfoManager;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.datatype.DataExceptionReturnType;
@@ -97,7 +96,7 @@ public final class SQLResultSetUtils {
 		GridColumnInfo columnInfo;
 		DataType dataType;
 		int columnWidth = count > 10 ? 70 : 0;
-		boolean useColumnLabel = ConnectionFactory.getInstance().getConnectionInfo(sqlExecuteInfo.getDatabaseInfo().getVconnid()).isUseColumnLabel();
+		boolean useColumnLabel = ConnectionInfoManager.getInstance().getConnectionInfo(sqlExecuteInfo.getDatabaseInfo().getVconnid()).isUseColumnLabel();
 
 		for (int idx = 1; idx <= count; idx++) {
 			columnName= useColumnLabel ? rsmd.getColumnLabel(idx) : rsmd.getColumnName(idx);
@@ -120,8 +119,7 @@ public final class SQLResultSetUtils {
 			}
 			
 			dataType = dataTypeFactory.getDataType(0, columnTypeName);
-			resultSetGridList.add(new ResultSetGridInfo(idx, dataType));
-
+			
 			columnInfo = new GridColumnInfo();
 			setColumnTypeInfo(dataType.getTypeCode(), columnInfo);
 			
@@ -130,6 +128,8 @@ public final class SQLResultSetUtils {
 			}else {
 				columnInfo.setKey(columnName);
 			}
+			
+			resultSetGridList.add(new ResultSetGridInfo(idx, dataType, columnInfo.getKey()));
 			
 			gridIdx++;
 			columnInfo.setNo(gridIdx);
@@ -161,7 +161,7 @@ public final class SQLResultSetUtils {
 				for (int colIdx = 0; colIdx < columnSize; colIdx++) {
 					resultSetGridInfo = resultSetGridInfoArr[colIdx];
 					dataType = resultSetGridInfo.getDataType();
-					row.put(columnInfoList.get(colIdx).getKey(), dataType.getResultSetHandler().getValue(dataType, rs, resultSetGridInfo.getIdx(), DataExceptionReturnType.ERROR));
+					row.put(resultSetGridInfo.getColumnName(), dataType.getResultSetHandler().getValue(dataType, rs, resultSetGridInfo.getIdx(), DataExceptionReturnType.ERROR));
 				}
 				
 				rows.add(row);
@@ -191,6 +191,7 @@ public final class SQLResultSetUtils {
 		
 		return viewColumnMap; 
 	}
+	
 	public static void resultSetHandler(ResultSet rs, SqlStatementInfo sqlExecuteInfo, SelectExecutorHandler selectExecutorHandler) throws SQLException {
 		resultSetHandler(rs, sqlExecuteInfo, selectExecutorHandler, false);
 	}
@@ -245,8 +246,7 @@ public final class SQLResultSetUtils {
 			}
 			
 			dataType = dataTypeFactory.getDataType(0, columnTypeName);
-			resultSetGridList.add(new ResultSetGridInfo(idx, dataType));
-
+			
 			columnInfo = new GridColumnInfo();
 			setColumnTypeInfo(dataType.getTypeCode(), columnInfo);
 			
@@ -255,6 +255,10 @@ public final class SQLResultSetUtils {
 			} else {
 				columnInfo.setKey(columnName);
 			}
+			
+			resultSetGridList.add(new ResultSetGridInfo(idx, dataType, columnInfo.getKey()));
+
+			
 			gridIdx++;
 			columnInfo.setNo(gridIdx);
 			columnInfo.setLabel(columnName);
@@ -277,7 +281,7 @@ public final class SQLResultSetUtils {
 				for (int colIdx = 0; colIdx < columnSize; colIdx++) {
 					resultSetGridInfo = resultSetGridInfoArr[colIdx];
 					dataType = resultSetGridInfo.getDataType();
-					row.put(columnInfoList.get(colIdx).getKey(), dataType.getResultSetHandler().getValue(dataType, rs, resultSetGridInfo.getIdx(), DataExceptionReturnType.ERROR, sqlExecuteInfo.isFormatValue()));
+					row.put(resultSetGridInfo.getColumnName(), dataType.getResultSetHandler().getValue(dataType, rs, resultSetGridInfo.getIdx(), DataExceptionReturnType.ERROR, sqlExecuteInfo.isFormatValue()));
 				}
 				boolean addFlag = selectExecutorHandler.handle(SelectInfo.builder().rowObject(row).columnInfoList(columnInfoList).build());
 
@@ -300,8 +304,8 @@ public final class SQLResultSetUtils {
 	 * @return
 	 * @throws SQLException
 	 */
-	public static List<Map> resultSetHandler(ResultSet rs, String dbType) throws SQLException{
-		return resultSetHandler(rs, dbType, false);
+	public static List<Map> resultList(ResultSet rs, String dbType) throws SQLException{
+		return resultList(rs, DBVenderType.getDBType(dbType), false);
 	}
 	
 	/**
@@ -313,24 +317,21 @@ public final class SQLResultSetUtils {
 	 * @return
 	 * @throws SQLException
 	 */
-	public static List<Map> resultSetHandler(ResultSet rs, String dbType, boolean useColumnLabel) throws SQLException{
+	public static List<Map> resultList(ResultSet rs, DBVenderType dbType, boolean useColumnLabel) throws SQLException{
 		if (rs == null) {
 			return Collections.EMPTY_LIST;
 		}
 		
-		DataTypeFactory dataTypeFactory = MetaControlFactory.getDbInstanceFactory(DBVenderType.getDBType(dbType)).getDataTypeImpl();
+		DataTypeFactory dataTypeFactory = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl();
 
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int count = rsmd.getColumnCount();
 		List<ResultSetGridInfo> resultSetGridList = new LinkedList<>(); 
-		List<GridColumnInfo> columnInfoList = new LinkedList<GridColumnInfo>();
 
 		Map<String,Integer> columnKeyCheck = new HashMap<String,Integer>();
 
-		int gridIdx=0;
 		String columnName = "";
 		String columnTypeName;
-		GridColumnInfo columnInfo;
 		DataType dataType;
 
 		for (int idx = 1; idx <= count; idx++) {
@@ -346,26 +347,12 @@ public final class SQLResultSetUtils {
 			}
 			
 			dataType = dataTypeFactory.getDataType(0, columnTypeName);
-			resultSetGridList.add(new ResultSetGridInfo(idx, dataType));
-
-			columnInfo = new GridColumnInfo();
-			setColumnTypeInfo(dataType.getTypeCode(), columnInfo);
-			
-			columnInfo.setKey(columnName);
-			
-			gridIdx++;
-			columnInfo.setNo(gridIdx);
-			columnInfo.setLabel(columnName);
-			columnInfo.setDbType(dataType == DefaultDataType.OTHER ? columnTypeName :dataType.getTypeName());
-			columnInfo.setDbTypeCode(dataType.getTypeCode());
-
-			columnInfoList.add(columnInfo);
+			resultSetGridList.add(new ResultSetGridInfo(idx, dataType, columnName));
 		}
 
 		columnKeyCheck = null;
 
 		List<Map> rows = new LinkedList<Map>();
-		int totalCnt = 0;
 		try {
 			ResultSetGridInfo[] resultSetGridInfoArr = resultSetGridList.toArray(new ResultSetGridInfo[0]);
 			int columnSize = resultSetGridList.size();
@@ -378,7 +365,7 @@ public final class SQLResultSetUtils {
 				for (int colIdx = 0; colIdx < columnSize; colIdx++) {
 					resultSetGridInfo = resultSetGridInfoArr[colIdx];
 					dataType = resultSetGridInfo.getDataType();
-					row.put(columnInfoList.get(colIdx).getKey(), dataType.getResultSetHandler().getValue(dataType, rs, resultSetGridInfo.getIdx(), DataExceptionReturnType.ERROR));
+					row.put(resultSetGridInfo.getColumnName(), dataType.getResultSetHandler().getValue(dataType, rs, resultSetGridInfo.getIdx(), DataExceptionReturnType.ERROR));
 				}
 				
 				rows.add(row);
@@ -390,44 +377,80 @@ public final class SQLResultSetUtils {
 
 		return rows;
 	}
+	
+	/**
+	 * result one item
+	 * @param rs
+	 * @param dbType
+	 * @return
+	 * @throws SQLException
+	 */
+	public static Map resultOne(ResultSet rs, DBVenderType dbType) throws SQLException{
+		return resultOne(rs, dbType, false);
+	}
+	
+	public static Map resultOne(ResultSet rs, DBVenderType dbType, boolean useColumnLabel) throws SQLException{
+		if (rs == null) {
+			return null;
+		}
+		
+		DataTypeFactory dataTypeFactory = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl();
+		
+		ResultSetMetaData rsmd = rs.getMetaData();
+		int count = rsmd.getColumnCount();
+		List<ResultSetGridInfo> resultSetGridList = new LinkedList<>(); 
+		
+		Map<String,Integer> columnKeyCheck = new HashMap<String,Integer>();
+		
+		String columnName = "";
+		String columnTypeName;
+		DataType dataType;
+		
+		for (int idx = 1; idx <= count; idx++) {
+			columnName= useColumnLabel ? rsmd.getColumnLabel(idx) : rsmd.getColumnName(idx);
+			columnTypeName = rsmd.getColumnTypeName(idx);
+			
+			if(columnKeyCheck.containsKey(columnName)){
+				int idxVal =columnKeyCheck.get(columnName)+1;
+				columnKeyCheck.put(columnName, idxVal);
+				columnName = columnName+"_"+idxVal;
+			}else{
+				columnKeyCheck.put(columnName, 0);
+			}
+			
+			dataType = dataTypeFactory.getDataType(0, columnTypeName);
+			resultSetGridList.add(new ResultSetGridInfo(idx, dataType, columnName));
+		}
+		
+		columnKeyCheck = null;
+		
+		try {
+			ResultSetGridInfo[] resultSetGridInfoArr = resultSetGridList.toArray(new ResultSetGridInfo[0]);
+			int columnSize = resultSetGridList.size();
+			Map row = null;
+			ResultSetGridInfo resultSetGridInfo;
+			
+			while (rs.next()) {
+				row = new LinkedHashMap(count);
+				
+				for (int colIdx = 0; colIdx < columnSize; colIdx++) {
+					resultSetGridInfo = resultSetGridInfoArr[colIdx];
+					dataType = resultSetGridInfo.getDataType();
+					row.put(resultSetGridInfo.getColumnName(), dataType.getResultSetHandler().getValue(dataType, rs, resultSetGridInfo.getIdx(), DataExceptionReturnType.ERROR));
+				}
+				
+				return row;
+			}
+		}catch(SQLException e) {
+			throw new ResultSetConvertException(VarsqlAppCode.EC_SQL_RESULT_CONVERT, e);
+		}
+		
+		return null; 
+	}
 
 	private static void setColumnTypeInfo(int columnType, GridColumnInfo columnInfo) {
 		columnInfo.setAlign("left");
-		ColumnJavaType columnJavaType; 
-		
-		if(columnType ==Types.NUMERIC || columnType ==Types.DECIMAL){
-			columnJavaType = ColumnJavaType.DECIMAL;
-		}else if(columnType ==Types.REAL || columnType == Types.FLOAT) {
-			columnJavaType = ColumnJavaType.FLOAT;
-		}else if(columnType ==Types.DOUBLE) {
-			columnJavaType = ColumnJavaType.DOUBLE;
-		}else if(columnType == Types.INTEGER||columnType ==Types.BIGINT
-				||columnType ==Types.SMALLINT||columnType ==Types.TINYINT){
-			
-			columnJavaType = ColumnJavaType.INTEGER;
-		}else if(columnType == Types.DATE ){
-			columnJavaType = ColumnJavaType.DATE;
-		}else if(columnType == Types.TIME ){
-			columnJavaType = ColumnJavaType.TIME;
-		}else if(columnType == Types.TIMESTAMP ){
-			columnJavaType = ColumnJavaType.TIMESTAMP;
-		}else if(columnType == Types.BLOB ){
-			columnJavaType = ColumnJavaType.BLOB;
-		}else if(columnType == Types.CLOB ){
-			columnJavaType = ColumnJavaType.CLOB;
-		}else if(columnType == Types.REF ){
-			columnJavaType = ColumnJavaType.REF;
-		}else if(columnType == Types.NCLOB ){
-			columnJavaType = ColumnJavaType.NCLOB;
-		}else if(columnType == Types.VARBINARY ||columnType == Types.BINARY || columnType == Types.LONGVARBINARY){
-			columnJavaType = ColumnJavaType.BINARY;
-		}else if(columnType == Types.SQLXML ){
-			columnJavaType = ColumnJavaType.SQLXML;
-		}else if(columnType == Types.ARRAY){
-			columnJavaType = ColumnJavaType.ARRAY;
-		}else{
-			columnJavaType = ColumnJavaType.STRING;
-		}
+		ColumnJavaType columnJavaType = ColumnJavaType.getType(columnType); 
 		
 		if(columnJavaType.isNumber()) {
 			columnInfo.setAlign("right");
@@ -444,9 +467,11 @@ public final class SQLResultSetUtils {
 class ResultSetGridInfo{
 	int idx;
 	DataType dataType;
+	String columnName;
 	
-	public ResultSetGridInfo(int idx, DataType dataType) {
+	public ResultSetGridInfo(int idx, DataType dataType, String columnName) {
 		this.idx = idx; 
 		this.dataType = dataType; 
+		this.columnName = columnName; 
 	}
 }

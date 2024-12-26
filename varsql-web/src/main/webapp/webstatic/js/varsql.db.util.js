@@ -215,7 +215,7 @@ var DefaultChecker = /*#__PURE__*/function () {
           this.lineCount = 1;
         }
 
-        return this.lineCount > 2 ? true : false; // 공백 2줄 이상이면 분리
+        return this.lineCount > 1 ? true : false; // 공백 2줄 이상이면 분리
       }
 
       this.lineCount = 0;
@@ -324,13 +324,15 @@ var Splitter = /*#__PURE__*/function () {
   _createClass(Splitter, [{
     key: "checker",
     value: function checker() {
-      throw new Error('checker() not implemented by subclass');
+      throw new Error("checker() not implemented by subclass");
     }
   }, {
     key: "split",
     value: function split(sql, findLine, findCharPos) {
-      findLine = typeof findLine == 'undefined' ? -1 : findLine;
-      findCharPos = typeof findCharPos == 'undefined' ? -1 : findCharPos;
+      findLine = typeof findLine == "undefined" ? 0 : findLine - 1;
+      findCharPos = typeof findCharPos == "undefined" ? 0 : findCharPos - 1;
+      findLine = findLine < 1 ? 0 : findLine;
+      findCharPos = findCharPos < 1 ? 0 : findCharPos;
       var statementList = [];
       var statement = [];
       var g_idx = 0;
@@ -338,41 +340,61 @@ var Splitter = /*#__PURE__*/function () {
       var lineIdx = 0;
       var startLine = 0;
       var startCharPos = 0;
-      var c1 = '',
-          c2 = '';
+      var emptyLineCount = 0;
+      var c1 = "",
+          c2 = "";
       var beforeCh1;
       var orginCh;
       var startCommand = false;
-      var command = '';
-      var word = '';
-      var beforeWord = '';
+      var command = "";
+      var word = "";
+      var beforeWord = "";
       var endCheckerInter = null;
       var textCheckerInter = null;
-      var currentEndTokenKey = '';
+      var currentEndTokenKey = "";
       var lineStartCharIdx = 0;
       var overflowFlag = false; //찾는 문자 영역을 벋어 났는지 여부
 
       var overflowNextSplitChk = false; // 찾는 문자 라인에 쿼리가 있는지 여부
+
+      var lineStr = "";
+      var lineStrLength = 0;
 
       for (var i = 0; i < sqlLen; i++) {
         beforeCh1 = c1; // 이전 값 넣기.
 
         orginCh = sql.charAt(i);
         c1 = orginCh.toLowerCase();
-        c2 = c1 + (i + 1 < sqlLen ? sql.charAt(i + 1) : '0');
+        c2 = c1 + (i + 1 < sqlLen ? sql.charAt(i + 1) : "0");
         c2 = c2.toLowerCase();
 
         if (c1 == constants_1.LINE_CHAR) {
           lineStartCharIdx = i;
           ++lineIdx;
+          var newLineIdx = sql.indexOf(constants_1.LINE_CHAR, i + 1);
+          lineStr = sql.substring(i + 1, newLineIdx > -1 ? newLineIdx : sqlLen);
+          lineStr = (0, utils_1.trim)(lineStr);
+
+          if (lineStr == "") {
+            emptyLineCount += 1;
+          } else {
+            emptyLineCount = 0;
+            lineStrLength = lineStr.length;
+          }
         }
 
         if (c1 == beforeCh1) {
           g_idx++;
 
           if (g_idx > 1000) {
-            console.log('split error');
-            break;
+            return [{
+              command: "error",
+              startLine: -1,
+              startCharPos: -1,
+              endLine: -1,
+              endCharPos: -1,
+              statement: "split error"
+            }];
           }
         } else {
           g_idx = 0;
@@ -410,24 +432,26 @@ var Splitter = /*#__PURE__*/function () {
 
         statement.push(orginCh);
         /*
-        if(/[(),]/.test(c1)){
-            continue;
-        }
-        */
-        // 공백체크. ( 체크 
+          if(/[(),]/.test(c1)){
+              continue;
+          }
+          */
+        // 공백체크. ( 체크
 
         if (/[\s(]/.test(c1)) {
           if (startCommand) startCommand = false;
           beforeWord = word;
-          word = '';
+          word = "";
         } else {
-          if (command == '') {
+          if (command == "") {
             if (/[;/!@#$%^&()+=?\-]/.test(c1)) {
-              // command 시작 문자가 특수 문자면 command로 처리 안함. 
+              // command 시작 문자가 특수 문자면 command로 처리 안함.
               continue;
             }
 
             startLine = lineIdx;
+            statement = [];
+            statement.push(orginCh);
             startCharPos = i - lineStartCharIdx;
             startCommand = true;
           }
@@ -439,40 +463,36 @@ var Splitter = /*#__PURE__*/function () {
           word += c1;
         }
 
-        if (startCommand === false && endCheckerInter == null && command != '') {
+        if (startCommand === false && endCheckerInter == null && command != "") {
           currentEndTokenKey = command;
 
           if (this.endChecker.hasKey(command)) {
             endCheckerInter = this.endChecker.get(command);
           } else {
-            endCheckerInter = this.endChecker.get('default');
+            endCheckerInter = this.endChecker.get("default");
           }
         } else {
-          if (this.endChecker.hasKey(currentEndTokenKey + '_' + word)) {
-            currentEndTokenKey = currentEndTokenKey + '_' + word;
+          if (this.endChecker.hasKey(currentEndTokenKey + "_" + word)) {
+            currentEndTokenKey = currentEndTokenKey + "_" + word;
             endCheckerInter = this.endChecker.get(currentEndTokenKey);
           }
         }
 
-        if (!overflowNextSplitChk && !overflowFlag && findLine != -1 && lineIdx >= findLine && findCharPos <= i - lineStartCharIdx) {
+        if (!overflowNextSplitChk && !overflowFlag && findLine != 0 && lineIdx >= findLine) {
           overflowFlag = true;
 
-          if (command.trim() == '' && statementList.length > 0) {
-            var newLineIdx = sql.indexOf(constants_1.LINE_CHAR, i + 1);
+          if (command.trim() == "" && statementList.length > 0) {
+            // 라인 끝 체크, 체크 해서 문자가 있으면 다음 query 리턴하게 처리.
+            var firstChar = lineStr.charAt(0);
 
-            if (newLineIdx > -1) {
-              // 라인 끝 체크, 체크 해서 문자가 있으면 다음 query 리턴하게 처리.
-              var lineStr = sql.substring(i + 1, newLineIdx);
-              lineStr = (0, utils_1.trim)(lineStr);
-              var firstChar = lineStr.charAt(0);
-
-              if (lineStr != '' && !/[;/!@#$%^&()+=?\-]/.test(firstChar)) {
-                overflowNextSplitChk = true;
-                continue;
-              }
+            if (lineStr != "" && !/[;/!@#$%^&()+=?\-]/.test(firstChar)) {
+              overflowNextSplitChk = true;
+              continue;
             }
 
-            return [statementList[statementList.length - 1]];
+            if ((0, utils_1.trim)(lineStr) == "") {
+              return [statementList[statementList.length - 1]];
+            }
           }
         }
 
@@ -481,16 +501,16 @@ var Splitter = /*#__PURE__*/function () {
             command: command,
             startLine: startLine,
             startCharPos: startCharPos,
-            endLine: lineIdx,
-            endCharPos: i - lineStartCharIdx,
-            statement: statement.join('')
-          }; //console.log(endCheckerInter, sqlSplitInfo)
+            endLine: lineIdx - emptyLineCount,
+            endCharPos: lineStrLength,
+            statement: statement.join("")
+          };
 
           if (overflowFlag) {
             return [sqlSplitInfo];
           }
 
-          if (findLine != -1) {
+          if (findLine != 0) {
             if (startLine <= findLine && findLine <= lineIdx) {
               // 라인이 다를경우
               if (startLine == lineIdx && findLine == lineIdx) {
@@ -504,8 +524,8 @@ var Splitter = /*#__PURE__*/function () {
           }
 
           statementList.push(sqlSplitInfo);
-          command = '';
-          word == '';
+          command = "";
+          word == "";
           statement = [];
           endCheckerInter = null;
           startCommand = false;

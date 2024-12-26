@@ -11,7 +11,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.varsql.web.model.base.AbstractAuditorModel;
-import com.varsql.web.model.entity.db.DBConnectionEntity;
+import com.varsql.web.model.entity.db.DBConnectionViewEntity;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -44,8 +44,8 @@ public class JobEntity extends AbstractAuditorModel{
 
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "VCONNID", nullable = false)
-	private DBConnectionEntity jobDBConnection;
+	@JoinColumn(name = "VCONNID")
+	private DBConnectionViewEntity jobDBConnection;
 
 	@Column(name ="JOB_DATA")
 	private String jobData; 
@@ -57,7 +57,7 @@ public class JobEntity extends AbstractAuditorModel{
 	private String jobDescription; 
 	
 	@Builder
-	public JobEntity (String jobUid, String jobName, String jobGroup, DBConnectionEntity jobDBConnection, String jobData, String cronExpression, String jobDescription) {
+	public JobEntity (String jobUid, String jobName, String jobGroup, DBConnectionViewEntity jobDBConnection, String jobData, String cronExpression, String jobDescription) {
 		this.jobUid = jobUid;
 		this.jobName = jobName;
 		this.jobGroup = jobGroup;

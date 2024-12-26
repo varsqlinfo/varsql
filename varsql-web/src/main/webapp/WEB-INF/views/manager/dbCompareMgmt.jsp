@@ -549,7 +549,7 @@ VarsqlAPP.vueServiceBean( {
 
 			// source data load
 			this.$ajax({
-				url : {type:VARSQL.uri.manager, url:'/diff/objectList'}
+				url : {type:VARSQL.uri.manager, url:'/comm/objectMetaList'}
 				,loadSelector : '#sourceObjectMeta'
 				,disableResultCheck : true
 				,data :  {
@@ -582,7 +582,7 @@ VarsqlAPP.vueServiceBean( {
 
 			// target data load
 			this.$ajax({
-				url : {type:VARSQL.uri.manager, url:'/diff/objectList'}
+				url : {type:VARSQL.uri.manager, url:'/comm/objectMetaList'}
 				,loadSelector : '#targetObjectMeta'
 				,disableResultCheck : true
 				,data :  {
@@ -828,7 +828,7 @@ VarsqlAPP.vueServiceBean( {
 				}else {
 					_self.emptyInfo.htm.push(key);
 					++_self.emptyInfo.cnt;
-					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.message('msg.db.compare.006')+' <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+'</a> '+VARSQL.message('msg.db.compare.011')+'</span>');
+					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.message('msg.db.compare.008')+' [<a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+'</a>] '+VARSQL.message('msg.db.compare.011')+'</span>');
 				}
 
 				delete targetCompareNameMap[key];
@@ -837,7 +837,7 @@ VarsqlAPP.vueServiceBean( {
 			this.compareItem.objectColNameMap =objectColNameMap;
 
 			for(var key in targetCompareNameMap){
-				compareResult.push('<span style="color:#b55e34;">'+VARSQL.message('msg.db.compare.008')+' [ <a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] '+VARSQL.message('msg.db.compare.011')+'</span>');
+				compareResult.push('<span style="color:#b55e34;">'+VARSQL.message('msg.db.compare.006')+' [<a href="javascript:;" class="table-name" data-table-name="'+key+'">'+key+ '</a>] '+VARSQL.message('msg.db.compare.011')+'</span>');
 			}
 
 			return compareResult.join('\n');
@@ -867,7 +867,7 @@ VarsqlAPP.vueServiceBean( {
 					}
 					,tColItem : [
 						{key :'name', label:'Table', width:60}
-						,{key :'remarks', label:'설명', width:40 }
+						,{key :'remarks', label:VARSQL.message('desc'), width:40 }
 					]
 					,tbodyItem :itemArr
 					,rowOptions :{
@@ -911,7 +911,7 @@ VarsqlAPP.vueServiceBean( {
 					}
 					,tColItem : [
 						{key :'name', label:'Table', width:60}
-						,{key :'remarks', label:'설명', width:40 }
+						,{key :'remarks', label:VARSQL.message('desc'), width:40 }
 					]
 					,tbodyItem :itemArr
 					,rowOptions :{
@@ -1100,16 +1100,15 @@ VarsqlAPP.vueServiceBean( {
 			if(sourceColumnGridObj){
 				sourceColumnGridObj.setData(compareSourceColList,'reDraw');
 			}else{
-
 				$.pubGrid('#sourceColumn', {
 					asideOptions :{lineNumber : {enabled : true, width : 30}}
 					,tColItem : [
-						{ label: '컬럼명', key: 'name',width:80 , renderer:{type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
-						{ label: '데이터타입', key: 'typeAndLength', renderer:{type: 'html'}, formatter : errorFormatter, styleClass: styleClass },
+						{ label: VARSQL.message('column.name'), key: 'name',width:80 , renderer:{type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
+						{ label: VARSQL.message('data.type'), key: 'typeAndLength', renderer:{type: 'html'}, formatter : errorFormatter, styleClass: styleClass },
 						{ label: 'Key', key: 'constraints', align:'center', width:45, renderer:{type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
-						{ label: '기본값', key: 'defaultVal',width:45 , renderer:{type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
-						{ label: '널여부', key: 'nullable',width:45 , renderer:{type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
-						{ label: '설명', key: 'comment',width:45 , renderer:{type: 'html'}, formatter : errorFormatter, styleClass: styleClass}
+						{ label: VARSQL.message('default.value'), key: 'defaultVal',width:45 , renderer:{type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
+						{ label: VARSQL.message('nullable'), key: 'nullable',width:45 , renderer:{type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
+						{ label: VARSQL.message('column.comment'), key: 'comment',width:45 , renderer:{type: 'html'}, formatter : errorFormatter, styleClass: styleClass}
 					]
 					,tbodyItem : compareSourceColList
 					,headerOptions:{
@@ -1156,16 +1155,16 @@ VarsqlAPP.vueServiceBean( {
 			if(targetColumnGridObj){
 				targetColumnGridObj.setData(compareTargetColList,'reDraw');
 			}else{
-
+				
 				$.pubGrid('#targetColumn', {
 					asideOptions :{lineNumber : {enabled : true, width : 30}}
 					,tColItem : [
-						{ label: '컬럼명', key: 'name',width:80, renderer: {type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
-						{ label: '데이터타입', key: 'typeAndLength', renderer: {type: 'html'}, formatter : errorFormatter, styleClass: styleClass },
+						{ label: VARSQL.message('column.name'), key: 'name',width:80, renderer: {type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
+						{ label: VARSQL.message('data.type'), key: 'typeAndLength', renderer: {type: 'html'}, formatter : errorFormatter, styleClass: styleClass },
 						{ label: 'Key', key: 'constraints', align:'center', width:45, renderer: {type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
-						{ label: '기본값', key: 'defaultVal',width:45, renderer: {type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
-						{ label: '널여부', key: 'nullable',width:45, renderer: {type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
-						{ label: '설명', key: 'comment',width:45, renderer: {type: 'html'}, formatter : errorFormatter, styleClass: styleClass}
+						{ label: VARSQL.message('default.value'), key: 'defaultVal',width:45, renderer: {type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
+						{ label: VARSQL.message('nullable'), key: 'nullable',width:45, renderer: {type: 'html'}, formatter : errorFormatter, styleClass: styleClass},
+						{ label: VARSQL.message('column.comment'), key: 'comment',width:45, renderer: {type: 'html'}, formatter : errorFormatter, styleClass: styleClass}
 					]
 					,tbodyItem : compareTargetColList
 					,headerOptions:{
@@ -1335,7 +1334,8 @@ VarsqlAPP.vueServiceBean( {
 				compareLog = [];
 				compareFlag = false;
 				if(targetCompareNameMap.hasOwnProperty(key)){
-					compareLog.push('<a href="javascript:;" class="table-info object-name" data-object-name="'+key+'">'+key +'</a> 정보가 다릅니다.<div class="column-compare-log" data-tbl-name="'+key+'">');
+					
+					compareLog.push('##  <a href="javascript:;" class="table-info object-name" data-object-name="'+key+'">'+key +'</a><div class="column-compare-log" data-tbl-name="'+key+'">');
 					sourceItem = sourceNameMap[key];
 					targetItem = targetCompareNameMap[key];
 
@@ -1367,7 +1367,7 @@ VarsqlAPP.vueServiceBean( {
 				}else {
 					_self.emptyInfo.htm.push(key);
 					++_self.emptyInfo.cnt;
-					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.message('msg.db.compare.006')+' <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+'</a> '+VARSQL.message('msg.db.compare.011')+' </span>');
+					compareResult.push('<span style="color:#f60b0b;">'+VARSQL.message('msg.db.compare.008')+' [<a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+'</a>] '+VARSQL.message('msg.db.compare.011')+' </span>');
 				}
 
 				delete targetCompareNameMap[key];
@@ -1376,7 +1376,7 @@ VarsqlAPP.vueServiceBean( {
 			this.compareItem.objectColNameMap =objectColNameMap;
 
 			for(var key in targetCompareNameMap){
-				compareResult.push('<span style="color:#b55e34;">'+VARSQL.message('msg.db.compare.008')+' [ <a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+ '</a>] '+VARSQL.message('msg.db.compare.011')+'</span>');
+				compareResult.push('<span style="color:#b55e34;">'+VARSQL.message('msg.db.compare.006')+' [<a href="javascript:;" class="object-name" data-object-name="'+key+'">'+key+ '</a>] '+VARSQL.message('msg.db.compare.011')+'</span>');
 			}
 
 			return compareResult.join('\n');

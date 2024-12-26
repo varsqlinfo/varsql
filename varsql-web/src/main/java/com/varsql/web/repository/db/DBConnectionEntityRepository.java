@@ -41,7 +41,8 @@ public interface DBConnectionEntityRepository extends DefaultJpaRepository, JpaR
 			ConnectionInfoDTO resultDto = from(dBConnectionEntity).leftJoin(dBTypeDriverProviderEntity).on(dBConnectionEntity.dbTypeDriverProvider.driverProviderId.eq(dBTypeDriverProviderEntity.driverProviderId))
 			.leftJoin(dBTypeDriverEntity).on(dBTypeDriverProviderEntity.driverId.eq(dBTypeDriverEntity.driverId))
 			.select(Projections.constructor(ConnectionInfoDTO.class, dBConnectionEntity, dBTypeDriverProviderEntity, dBTypeDriverEntity))
-			.where(dBConnectionEntity.vconnid.eq(vconnid)).fetchOne();
+			.where(dBConnectionEntity.vconnid.eq(vconnid).and(dBConnectionEntity.delYn.eq(false)))
+			.fetchOne();
 			
 			if(resultDto == null) {
 				throw new ConnectionFactoryException(VarsqlAppCode.EC_FACTORY_CONNECTION_INFO_EMPTY, "connection id : [" + vconnid + "] Connection info is null");
@@ -63,19 +64,20 @@ public interface DBConnectionEntityRepository extends DefaultJpaRepository, JpaR
 			ConnectionInfoDTO dto = from(dBConnectionEntity).innerJoin(dBTypeDriverProviderEntity)
 				.on(dBConnectionEntity.dbTypeDriverProvider.driverProviderId.eq(dBTypeDriverProviderEntity.driverProviderId))
 				.select(Projections.constructor(ConnectionInfoDTO.class, dBConnectionEntity, dBTypeDriverProviderEntity))
-				.where(dBConnectionEntity.vconnid.eq(vconnid)).fetchOne();
+				.where(dBConnectionEntity.vconnid.eq(vconnid).and(dBConnectionEntity.delYn.isNull().or(dBConnectionEntity.delYn.eq(false))))
+				.fetchOne();
+			
+			if(dto == null) return null;
 			
 			return DatabaseInfo.builder()
 					.vconnid(dto.getConnection().getVconnid())
 					.type(dto.getProvider().getDbType())
 					.name(dto.getConnection().getVname())
-					.schema(dto.getConnection().getVdbschema())
 					.basetableYn(dto.getConnection().getBasetableYn())
 					.lazyLoad(dto.getConnection().getLazyloadYn())
 					.version(dto.getConnection().getVdbversion())
 					.schemaViewYn(dto.getConnection().getSchemaViewYn())
 					.maxSelectCount(ConvertUtils.intValue(dto.getConnection().getMaxSelectCount()))
-					.databaseName(dto.getConnection().getVdatabasename())
 					.build();
 			
 		}

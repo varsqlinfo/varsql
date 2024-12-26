@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sql>
+	<!-- 테스트 db 생성 쿼리  -->
+	<providerInfo>
+		insert    into VTDBTYPE_DRIVER_PROVIDER (
+		          REG_DT,
+		          REG_ID,
+		          UPD_DT,
+		          UPD_ID,
+		          DB_TYPE,
+		          DIRECT_YN,
+		          DRIVER_CLASS,
+		          DRIVER_DESC,
+		          DRIVER_ID,
+		          DRIVER_PATH,
+		          PATH_TYPE,
+		          PROVIDER_NAME,
+		          VALIDATION_QUERY,
+		          DRIVER_PROVIDER_ID
+		) values (
+	          current_timestamp,
+	          '0000001',
+	          current_timestamp,
+	          '0000001',
+	          'h2',
+	          'N',
+	          'org.h2.Driver',
+	          '',
+	          '004',
+	          '',
+	          'file',
+	          'h2-2.1.214.jar-test db',
+	          'select 1',
+	          ?
+		)
+	</providerInfo>
+
+	<providerFileInfo>
+		insert into VTDBTYPE_DRIVER_FILE (FILE_ID, FILE_DIV, FILE_CONT_ID,	FILE_SIZE, FILE_PATH, FILE_NAME, FILE_EXT, REG_ID, REG_DT )
+		values
+		('de8e75af852c4cdea9664c8cfcac0289','jdbcDriver',?,2543012,?,'h2-2.1.214.jar','jar','0000001',current_timestamp)
+	</providerFileInfo>
+
+	<connectionInfo>
+		insert    into VTCONNECTION (
+	          REG_DT,
+	          REG_ID,
+	          UPD_DT,
+	          UPD_ID,
+	          BASETABLE_YN,
+	          VDRIVER,
+	          DEL_YN,
+	          ENABLE_CONNECTION_POOL,
+	          EXPORTCOUNT,
+	          LAZYLOAD_YN,
+	          MAX_ACTIVE,
+	          MAX_SELECT_COUNT,
+	          MIN_IDLE,
+	          SCHEMA_VIEW_YN,
+	          TEST_WHILE_IDLE,
+	          TIMEOUT,
+	          URL_DIRECT_YN,
+	          USE_COLUMN_LABEL,
+	          USE_YN,
+	          VCONNOPT,
+	          VDATABASENAME,
+	          VDBSCHEMA,
+	          VDBVERSION,
+	          VID,
+	          VNAME,
+	          VPOOLOPT,
+	          VPORT,
+	          VPW,
+	          VSERVERIP,
+	          VURL,
+	          VCONNID
+		) values (
+	          current_timestamp,
+	          '0000001',
+	          current_timestamp,
+	          '0000001',
+	          'Y',
+	          '643fe89742fe42b6bdc824e9edfe24e4',
+	          'N',
+	          'Y',
+	          1000,
+	          'N',
+	          5,
+	          10000,
+	          2,
+	          'N',
+	          'N',
+	          18000,
+	          'Y',
+	          'Y',
+	          'Y',
+	          null,
+	          '',
+	          '',
+	          '2.1.214',
+	          ?,
+	          'testdb',
+	          null,
+	          0,
+	          '',
+	          '',
+	          ?,
+	          '00001'
+		)
+	</connectionInfo>
+
+</sql>

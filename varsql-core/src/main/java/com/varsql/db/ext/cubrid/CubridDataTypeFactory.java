@@ -2,6 +2,7 @@ package com.varsql.db.ext.cubrid;
 
 import com.varsql.core.db.datatype.AbstractDataTypeFactory;
 import com.varsql.core.db.datatype.DBColumnMetaInfo;
+import com.varsql.core.db.datatype.DataTypeConfigInfo;
 import com.varsql.core.db.datatype.DefaultDataType;
 import com.varsql.core.db.datatype.VenderDataType;
 
@@ -17,10 +18,17 @@ public class CubridDataTypeFactory extends AbstractDataTypeFactory{
 	
 	// 버전별 데이타를 체크 하기위해서 버전을 받음. 
 	public CubridDataTypeFactory() {
-		addDataType(new VenderDataType("TIMESTAMP", DefaultDataType.TIMESTAMP.getTypeCode(), DBColumnMetaInfo.TIMESTAMP));
-		addDataType(new VenderDataType("TIMESTAMPLTZ", DefaultDataType.TIMESTAMP.getTypeCode(), DBColumnMetaInfo.TIMESTAMP));
-		addDataType(new VenderDataType("TIMESTAMPTZ", DefaultDataType.TIMESTAMP.getTypeCode(), DBColumnMetaInfo.TIMESTAMP));
-		addDataType(new VenderDataType("DATETIMELTZ", DefaultDataType.TIMESTAMP.getTypeCode(), DBColumnMetaInfo.TIMESTAMP));
-		addDataType(new VenderDataType("DATETIMETZ", DefaultDataType.TIMESTAMP.getTypeCode(), DBColumnMetaInfo.TIMESTAMP));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("STRING").typeCode(DefaultDataType.VARCHAR.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.STRING).enableDefaultTypeName(true).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("TIMESTAMP").typeCode(DefaultDataType.TIMESTAMP.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.TIMESTAMP).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("TIMESTAMPLTZ").typeCode(DefaultDataType.TIMESTAMP.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.TIMESTAMP).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("TIMESTAMPTZ").typeCode(DefaultDataType.TIMESTAMP.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.TIMESTAMP).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("DATETIMELTZ").typeCode(DefaultDataType.TIMESTAMP.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.TIMESTAMP).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("DATETIMETZ").typeCode(DefaultDataType.TIMESTAMP.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.TIMESTAMP).build()));
+		
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("SET").typeCode(DefaultDataType.ARRAY.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.ARRAY).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("MULTISET").typeCode(DefaultDataType.ARRAY.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.ARRAY).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("LIST").typeCode(DefaultDataType.ARRAY.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.ARRAY).build()));
+		addDataType(new VenderDataType(DataTypeConfigInfo.builder().typeName("SEQUENCE").typeCode(DefaultDataType.ARRAY.getTypeCode()).jdbcDataTypeMetaInfo(DBColumnMetaInfo.ARRAY).build()));
+		
 	}
 }

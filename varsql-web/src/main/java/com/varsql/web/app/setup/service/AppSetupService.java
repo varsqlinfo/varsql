@@ -12,22 +12,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.FieldError;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.varsql.core.changeset.DatabaseChangeExecutor;
 import com.varsql.core.common.TemplateFactory;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.ResourceUtils;
 import com.varsql.core.configuration.Configuration;
-import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.ConnectionContext;
 import com.varsql.core.connection.beans.ConnectionInfo;
-import com.varsql.core.connection.beans.JDBCDriverInfo;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.core.sql.util.JdbcUtils;
+import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.dto.setup.AdminVO;
 import com.varsql.web.dto.setup.DatabaseVO;
+import com.varsql.web.dto.setup.SampleDBSqlVO;
 import com.varsql.web.dto.setup.SetupConfigDTO;
+import com.varsql.web.util.FileServiceUtils;
 import com.varsql.web.util.PasswordUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
@@ -37,6 +39,7 @@ import com.vartech.common.crypto.password.PasswordUtil;
 import com.vartech.common.io.RESOURCE_TYPE;
 import com.vartech.common.io.Resource;
 import com.vartech.common.prop.PropertyResource;
+import com.vartech.common.utils.FileUtils;
 import com.vartech.common.utils.IOUtils;
 import com.vartech.common.utils.StringUtils;
 
@@ -75,12 +78,16 @@ public class AppSetupService{
 		try {
 			installAppProp(setupConfigDTO);
 			installDbInfo(setupConfigDTO);
-			createDbInfo(setupConfigDTO);
+			DatabaseChangeExecutor mainDce = createDbInfo(setupConfigDTO);
+			
+			if("Y".equals(setupConfigDTO.getAppInfo().getUseTestDb())) {
+				createTestDbInfo(setupConfigDTO, mainDce);
+			}
 		} catch (Exception e) {
 			resultObject.setResultCode(RequestResultCode.ERROR);
 			resultObject.setMessage(e.getMessage());
 			
-			e.printStackTrace();
+			logger.error("install error : {}", e.getMessage(), e); 
 			
 			return resultObject;
 		}
@@ -90,13 +97,58 @@ public class AppSetupService{
 	}
 
 
+	private void createTestDbInfo(SetupConfigDTO setupConfigDTO, DatabaseChangeExecutor mainDce) throws IOException, Exception {
+		
+		String installPath = Configuration.getInstance().getInstallRoot(); 
+		ConnectionInfo connectionInfo= ConnectionInfo.builder()
+			.connid("00002")
+			.aliasName("testdb")
+			.type("h2")
+			.url("jdbc:h2:file:#resourePath#/testdb/testdb;AUTO_SERVER=TRUE;CACHE_SIZE=131072;".replace("#resourePath#", installPath))
+			.username("sa")
+			.password("")
+		.build();
+		
+		//db.test.h2
+		DatabaseChangeExecutor dce = new DatabaseChangeExecutor(connectionInfo, false,
+				Configuration.getInstance().getInstallRoot(), RESOURCE_TYPE.CLASSPATH.getPath("db/test/h2/*.xml"));
+		dce.changeApply();
+		
+		
+		XmlMapper xmlMapper = new XmlMapper();
+
+        // XML 데이터를 Java 객체로 변환
+		SampleDBSqlVO sampleDBSqlVO = xmlMapper.readValue(ResourceUtils.getResourceString(RESOURCE_TYPE.CLASSPATH.getPath("db/test/testdb-info.xml")), SampleDBSqlVO.class);
+
+		String fileContId = "643fe89742fe42b6bdc824e9edfe24e4";
+		
+		mainDce.executeSQL(sampleDBSqlVO.getProviderInfo(), fileContId);
+		
+		mainDce.executeSQL(sampleDBSqlVO.getProviderFileInfo(), fileContId, String.format("jdbcDriver/%s/h2-2.1.214.jar",fileContId));
+		
+		final UploadFileType fileType = UploadFileType.JDBC_DIRVER;
+		Resource resource = ResourceUtils.getResource(RESOURCE_TYPE.CLASSPATH.getPath("db/test/lib/h2-2.1.214.jar"));
+		String filePath = FileUtils.pathConcat(setupConfigDTO.getAppInfo().getDataPath(), Configuration.DEFAULT_UPLOAD_FOLDER, FileServiceUtils.getSaveRelativePath(fileType, fileContId), resource.getFileName());
+		
+		File libWritePath = new File(filePath);
+		
+		if(!libWritePath.getParentFile().exists()) {
+			libWritePath.getParentFile().mkdirs();
+		}
+		
+		IOUtils.write(resource.getInputStream(), libWritePath);
+		
+		mainDce.executeSQL(sampleDBSqlVO.getConnectionInfo(), connectionInfo.getUsername(), connectionInfo.getUrl());
+	}
+
+
 	/**
 	 * db table & 초기 data 생성.
 	 * @param setupConfigDTO
 	 * @throws Exception 
 	 * @throws IOException 
 	 */
-	private void createDbInfo(SetupConfigDTO setupConfigDTO) throws IOException, Exception {
+	private DatabaseChangeExecutor createDbInfo(SetupConfigDTO setupConfigDTO) throws IOException, Exception {
 		DatabaseVO dbInfo = setupConfigDTO.getDbInfo();
 		
 		ConnectionInfo connectionInfo= ConnectionInfo.builder()
@@ -112,6 +164,8 @@ public class AppSetupService{
 		dce.changeApply();
 		
 		createManagerInfo(dce, setupConfigDTO);
+		
+		return dce; 
 	}
 	
 	/**
@@ -202,6 +256,7 @@ public class AppSetupService{
 
 			props.replaceProperty("varsql.default.charset", StringUtils.isBlank(setupConfigDTO.getAppInfo().getCharset())? VarsqlConstants.CHAR_SET :setupConfigDTO.getAppInfo().getCharset());
 			props.replaceProperty("backup.expire.day", setupConfigDTO.getAppInfo().getFileRetentionPeriod()+"");
+			props.replaceProperty("file.upload.path", FileUtils.pathConcat(setupConfigDTO.getAppInfo().getDataPath(), Configuration.DEFAULT_UPLOAD_FOLDER));
 			
 			if(!isExsits) {
 				props.replaceProperty("varsql.db.pw.secret.key", PasswordUtil.createPassword(PasswordType.MULTIPLE, 45));

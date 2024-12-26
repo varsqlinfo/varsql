@@ -1,6 +1,7 @@
 package com.varsql.web.repository.task;
 
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,7 +18,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.task.TaskSqlResponseDTO;
-import com.varsql.web.model.entity.task.QTaskEntity;
+import com.varsql.web.model.entity.db.QDBConnectionViewEntity;
 import com.varsql.web.model.entity.task.QTaskSqlEntity;
 import com.varsql.web.model.entity.task.TaskEntity;
 import com.varsql.web.model.entity.task.TaskSqlEntity;
@@ -26,8 +27,13 @@ import com.varsql.web.repository.DefaultJpaRepository;
 
 import lombok.Getter;
 
+/**
+ * task sql repository
+ * @author ytkim
+ *
+ */
 @Repository
-public interface TaskSqlRepository extends DefaultJpaRepository, JpaRepository<TaskSqlEntity, Long>, JpaSpecificationExecutor<TaskSqlEntity>, TaskSqlEntityCustom  {
+public interface TaskSqlRepository extends DefaultJpaRepository, JpaRepository<TaskSqlEntity, String>, JpaSpecificationExecutor<TaskSqlEntity>, TaskSqlEntityCustom  {
 
 	TaskSqlEntity findByTaskId(String taskId);
 	
@@ -38,17 +44,24 @@ public interface TaskSqlRepository extends DefaultJpaRepository, JpaRepository<T
 			super(TaskSqlEntity.class);
 		}
 		
+		/**
+		 * 목록 
+		 */
 		@Override
 		public Page<TaskSqlResponseDTO> findAllByNameContaining(String keyword, Pageable convertSearchInfoToPage) {
-			//final QTaskEntity taskEntity = QTaskEntity.taskEntity;
 			final QTaskSqlEntity taskSqlEntity = QTaskSqlEntity.taskSqlEntity;
+			final QDBConnectionViewEntity dbConnectionViewEntity = QDBConnectionViewEntity.dBConnectionViewEntity; 
 			
 			JPQLQuery<TaskSqlEntityCustomResultVO> query = from(taskSqlEntity)
+					.innerJoin(dbConnectionViewEntity).on(taskSqlEntity.vconnid.eq(dbConnectionViewEntity.vconnid))
 					.select(Projections.constructor(TaskSqlEntityCustomResultVO.class, taskSqlEntity))
 					.where(taskSqlEntity.taskName.contains(keyword));
 			
-			
 			long totalCount = query.fetchCount();
+			
+			if(totalCount  < 1) {
+				return new PageImpl<>(Collections.EMPTY_LIST, convertSearchInfoToPage, totalCount);
+			}
 			
 			List<TaskSqlEntityCustomResultVO> results = getQuerydsl().applyPagination(convertSearchInfoToPage, query).fetch();
 			
@@ -57,60 +70,19 @@ public interface TaskSqlRepository extends DefaultJpaRepository, JpaRepository<T
 			}).collect(Collectors.toList()), convertSearchInfoToPage, totalCount);
 		}
 		
-		public Page<TaskSqlResponseDTO> findAllByNameContaining1(String keyword, Pageable convertSearchInfoToPage) {
-			final QTaskEntity taskEntity = QTaskEntity.taskEntity;
-			final QTaskSqlEntity taskSqlEntity = QTaskSqlEntity.taskSqlEntity;
-			
-			JPQLQuery<TaskSqlEntityCustomResultVO> query = from(taskEntity).innerJoin(taskSqlEntity).on(taskEntity.taskId.eq(taskSqlEntity.taskId))
-			.select(Projections.constructor(TaskSqlEntityCustomResultVO.class, taskEntity, taskSqlEntity))
-			.where(taskEntity.taskName.contains(keyword));
-			
-			
-			long totalCount = query.fetchCount();
-			
-			List<TaskSqlEntityCustomResultVO> results = getQuerydsl().applyPagination(convertSearchInfoToPage, query).fetch();
-			
-			return new PageImpl<>(results.stream().map(item->{
-				TaskSqlResponseDTO dto = new TaskSqlResponseDTO();
-				
-				dto.setTaskId(item.getTaskEntity().getTaskId());
-				dto.setTaskName(item.getTaskEntity().getTaskName());
-				dto.setTaskType(item.getTaskEntity().getTaskType());
-				dto.setUseYn(item.getTaskEntity().isUseYn());
-				dto.setDescription(item.getTaskEntity().getDescription());
-				
-				dto.setSql(item.getTaskSqlEntity().getSql());
-				dto.setVconnid(item.getTaskSqlEntity().getVconnid());
-				dto.setParameter(item.getTaskSqlEntity().getParameter());
-				
-				return dto;
-			}).collect(Collectors.toList()), convertSearchInfoToPage, totalCount);
-		}
-
+		/**
+		 * task 정보 얻기
+		 */
 		@Override
 		public TaskSqlResponseDTO findTaskInfo(String taskId) {
-			final QTaskEntity taskEntity = QTaskEntity.taskEntity;
 			final QTaskSqlEntity taskSqlEntity = QTaskSqlEntity.taskSqlEntity;
 			
-			TaskSqlEntityCustomResultVO customVo = from(taskEntity).innerJoin(taskSqlEntity).on(taskEntity.taskId.eq(taskSqlEntity.taskId))
-			.select(Projections.constructor(TaskSqlEntityCustomResultVO.class, taskEntity, taskSqlEntity))
-			.where(taskEntity.taskId.contains(taskId)).fetchOne();
+			TaskSqlEntityCustomResultVO customVo = from(taskSqlEntity)
+			.select(Projections.constructor(TaskSqlEntityCustomResultVO.class, taskSqlEntity))
+			.where(taskSqlEntity.taskId.contains(taskId)).fetchOne();
 			
-			TaskSqlResponseDTO dto = new TaskSqlResponseDTO();
-			
-			dto.setTaskId(customVo.getTaskEntity().getTaskId());
-			dto.setTaskName(customVo.getTaskEntity().getTaskName());
-			dto.setTaskType(customVo.getTaskEntity().getTaskType());
-			dto.setUseYn(customVo.getTaskEntity().isUseYn());
-			dto.setDescription(customVo.getTaskEntity().getDescription());
-			
-			dto.setSql(customVo.getTaskSqlEntity().getSql());
-			dto.setVconnid(customVo.getTaskSqlEntity().getVconnid());
-			dto.setParameter(customVo.getTaskSqlEntity().getParameter());
-			
-			return dto;
+			return TaskSqlMapper.INSTANCE.toDto(customVo.getTaskSqlEntity());
 		}
-
 	}
 	
 	@Getter
@@ -119,11 +91,6 @@ public interface TaskSqlRepository extends DefaultJpaRepository, JpaRepository<T
 		private TaskSqlEntity taskSqlEntity;
 		
 		public TaskSqlEntityCustomResultVO( TaskSqlEntity taskSqlEntity) {
-			this.taskSqlEntity = taskSqlEntity; 
-		}
-		
-		public TaskSqlEntityCustomResultVO(TaskEntity taskEntity, TaskSqlEntity taskSqlEntity) {
-			this.taskEntity = taskEntity; 
 			this.taskSqlEntity = taskSqlEntity; 
 		}
 	}

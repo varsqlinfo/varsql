@@ -89,7 +89,7 @@ public class DatabaseChangeExecutor {
 		String resourcePath = String.format(this.resourcePath, connectionInfo.getType().toLowerCase()); 
 		try {
 			changeXmls = ResourceUtils.getResources(resourcePath);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			logger.error("database changeset not found : {}, message : {}", resourcePath, e.getMessage());
 			return ;
 		}
@@ -222,21 +222,21 @@ public class DatabaseChangeExecutor {
 	}
 	
 	public void executeSQL(String sql, Object... params) throws ClassNotFoundException, SQLException {
-		Connection connChk = null;
+		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
-			connChk = getConnection();
+			conn = getConnection();
 			
-			pstmt = connChk.prepareStatement(sql);
+			pstmt = conn.prepareStatement(sql);
 			
 			for (int i = 0; i < params.length; i++) {
 				pstmt.setObject(i+1, params[i]);
 			}
 			pstmt.execute();
 			
-			connChk.close();
+			conn.close();
 		}finally {
-			JdbcUtils.close(connChk, pstmt, null);
+			JdbcUtils.close(conn, pstmt, null);
 		}
 	}
 
