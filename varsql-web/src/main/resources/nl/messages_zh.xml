@@ -225,5 +225,11 @@
 <entry key="msg.execute.success">执行成功。</entry>
 <entry key="msg.execute.db.error">无法使用的连接信息。</entry>
 
+<!-- task -->
+<entry key="msg.sql.create.warning.msg"><![CDATA[
+1. 编写查询时，目标表的列名和选择查询的列名必须相同。<br/>
+2. 请包括排序查询。
+]]></entry>
+
 
 </properties>

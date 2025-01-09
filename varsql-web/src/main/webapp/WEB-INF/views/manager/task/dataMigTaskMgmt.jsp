@@ -261,29 +261,6 @@ VarsqlAPP.vueServiceBean( {
 							        }
 							    }
 				            	,{
-							        name: "sortColumns",
-							        label: "Sort Column",
-							        renderType: 'custom',
-							        template: '<div id="tableSortRow" style="width:100%; height:150px;position: relative;"></div>',
-							        required: true,
-							        renderer: {
-						        	  mounted: (field, element) => {
-						        		  
-						              }
-							          ,getValue(){
-							            return _self.sortRowObj.getCheckItems();
-							          }
-							          ,setValue(value){
-							        	  if(_self.sortRowObj){
-							        	  	_self.sortRowObj.setData([]);
-							        	  }
-							          }
-							          ,focus(){
-							        	  //_self.sortRowObj.focus();
-							          }
-							        }
-							      }
-				            	,{
 							        name: "readType",
 							        label: 'Data Read Type',
 							        defaultValue : 'page',
@@ -306,12 +283,41 @@ VarsqlAPP.vueServiceBean( {
 					                }
 				            	  }
 				            	,{
+							        name: "sortColumns",
+							        label: "Sort Column",
+							        renderType: 'custom',
+							        template: '<div id="tableSortRow" style="width:100%; height:150px;position: relative;"></div>',
+							        required: false,
+							        conditional: {
+					                  show: true,
+					                  field: "sourceType",
+					                  eq: "table",
+					                }
+							        ,renderer: {
+						        	  mounted: (field, element) => {
+						        		  
+						              }
+							          ,getValue(){
+							            return _self.sortRowObj.getCheckItems();
+							          }
+							          ,setValue(value){
+							        	  if(_self.sortRowObj){
+							        	  	_self.sortRowObj.setData([]);
+							        	  }
+							          }
+							          ,focus(){
+							        	  //_self.sortRowObj.focus();
+							          }
+							        }
+							      }
+				            	,{
 							        name: "readSql",
 							        label: "SQL",
 							        renderType: 'custom',
+							        description: '<div style="color: #f21111;">'+VARSQL.message('msg.sql.create.warning.msg')+'</div>',
 							        template: '<div id="readSqlCont" style="width:100%; height:200px;" class="border"></div>',
 							        required: true ,
-							       conditional: {
+							        conditional: {
 					                  show: false,
 					                  field: "sourceType",
 					                  eq: "sql",
@@ -500,14 +506,12 @@ VarsqlAPP.vueServiceBean( {
 	        		,rowSelector: {
 		                enabled: true,
 		                key: 'checkbox',
-		                name: 'Key',
-		                width: 25
+		                name: 'Sort',
+		                width: 30
 		            }
   				}
   				,tColItem : [
   					{ label: VARSQL.message('column'), key: 'name',width:30 },
-  					{ label: VARSQL.message('data.type'), key: 'typeAndLength',width:30},
-  					{ label: VARSQL.message('constraints.key'), key: 'constraints',width:20},
   				]
   				,tbodyItem : []
   			});
@@ -525,8 +529,6 @@ VarsqlAPP.vueServiceBean( {
   				}
   				,tColItem : [
   					{ label: VARSQL.message('column'), key: 'name',width:30 },
-  					{ label: VARSQL.message('data.type'), key: 'typeAndLength',width:30},
-  					{ label: VARSQL.message('constraints.key'), key: 'constraints',width:20},
   				]
   				,tbodyItem : []
   			});

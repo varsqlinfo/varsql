@@ -50,7 +50,7 @@ if (typeof window != "undefined") {
 		version: '0.1'
 		, logLevel: 1
 		, author: 'ytkim'
-		, contextPath: (typeof global_page_context_path === 'undefined' ? '/vsql' : global_page_context_path)
+		, contextPath: (typeof global_page_context_path === 'undefined' ? '/varsql' : global_page_context_path)
 		, uri: {
 			'admin': '/admin'
 			, 'manager': '/manager'

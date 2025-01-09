@@ -34,43 +34,39 @@
 			</div>
 			
 			<label class="col-xs-12 control-label">Export Type</label>
-			
-			<div class="col-xs-6">
-				<ul class="process-type-select">
-					<li>
-						<label class="checkbox-container">INSERT
-						  <input type="radio" v-model="exportType" value="sql" checked="checked">
-						  <span class="radiomark"></span>
-						</label>
-						<div class="checkbox-container-desc">SQL <spring:message code="file.export" text="File Export"/></div>
-					</li>
-					<li>
-						<label class="checkbox-container">XML
-						  <input type="radio" v-model="exportType" value="xml">
-						  <span class="radiomark"></span>
-						</label>
-						<div class="checkbox-container-desc">XML <spring:message code="file.export" text="File Export"/></div>
-					</li>
-				</ul>
-			</div>
-			<div class="col-xs-6">
+			<div style="padding-top: 10px;clear: both;">
 				<ul>
-					<li>
+					<li class="col-xs-6">
 						<label class="checkbox-container">JSON
 						  <input type="radio" v-model="exportType" value="json">
 						  <span class="radiomark"></span>
 						</label>
 						<div class="checkbox-container-desc">JSON <spring:message code="file.export" text="File Export"/></div>
 					</li>
-					<li>
+					<li class="col-xs-6">
+						<label class="checkbox-container">XML
+						  <input type="radio" v-model="exportType" value="xml">
+						  <span class="radiomark"></span>
+						</label>
+						<div class="checkbox-container-desc">XML <spring:message code="file.export" text="File Export"/></div>
+					</li>
+					<li class="col-xs-6">
 						<label class="checkbox-container">CSV
 						  <input type="radio" v-model="exportType" value="csv">
 						  <span class="radiomark"></span>
 						</label>
 						<div class="checkbox-container-desc">CSV <spring:message code="file.export" text="File Export"/></div>
 					</li>
+					<li class="col-xs-6">
+						<label class="checkbox-container">INSERT
+						  <input type="radio" v-model="exportType" value="sql" checked="checked">
+						  <span class="radiomark"></span>
+						</label>
+						<div class="checkbox-container-desc">SQL <spring:message code="file.export" text="File Export"/></div>
+					</li>
 				</ul>
 			</div>
+			
 		</div>
 		
 		<div class="process-step" :class="step==2?'active':''">
@@ -127,7 +123,7 @@
 VarsqlAPP.vueServiceBean({
 	el: '#<varsql:namespace/>'
 	,data: {
-		exportType : 'sql'
+		exportType : 'json'
 		,exportInfo : {
 			fileName : 'table-data-export'
 			,limit : 1000

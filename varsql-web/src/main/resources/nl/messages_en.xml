@@ -229,4 +229,10 @@
 <entry key="msg.execute.success">Execution completed successfully.</entry>
 <entry key="msg.execute.db.error">The connection information is not available.</entry>
 
+<!-- task -->
+<entry key="msg.sql.create.warning.msg"><![CDATA[
+1. When writing the query, the column names of the Target table and the select query must be the same.<br/>
+2. Please include the sorting query.
+]]></entry>
+
 </properties>

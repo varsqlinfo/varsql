@@ -231,4 +231,11 @@
 <entry key="msg.execute.success">실행 되었습니다.</entry>
 <entry key="msg.execute.db.error">사용 할 수 없는 연결 정보 입니다.</entry>
 
+<!-- task -->
+<entry key="msg.sql.create.warning.msg"><![CDATA[
+1.쿼리 작성시 Target테이블의 컬럼명 과<br/> select 쿼리 컬럼명이 동일해야합니다.<br/> 
+2.정렬쿼리 포함해서 작성해주세요.
+]]></entry>
+
+
 </properties>

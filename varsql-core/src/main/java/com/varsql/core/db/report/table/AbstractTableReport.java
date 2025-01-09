@@ -112,8 +112,9 @@ public abstract class AbstractTableReport implements TableReport{
 		report.setColumnArr(columnList.toArray(new ExcelReportVO[columnList.size()]));
 		report.setHaderInfoList(getHeaderInfoList());
 		
+		int sheetNameIdx = 0; 
 		if(multiSheetFlag){
-			report.createSheet(tableList.get(0).getName());
+				report.createSheet(getSheetName( ++sheetNameIdx ,tableList.get(0).getName()));
 		}else{
 			report.createSheet("Table Column Info");
 		}
@@ -127,7 +128,7 @@ public abstract class AbstractTableReport implements TableReport{
 			tableNm = tableInfo.getName();
 			
 			if(multiSheetFlag && !firstFlag){
-				report.createSheet(tableNm);
+				report.createSheet(getSheetName(++sheetNameIdx,tableNm));
 			}
 			
 			headerInfo.put("{tableName}", tableNm);
@@ -152,6 +153,10 @@ public abstract class AbstractTableReport implements TableReport{
 		return report; 
 	}
 	
+	private String getSheetName(int idx, String name) {
+		return String.format("%d)%s",idx, name);
+	}
+
 	protected List<List<ExcelHeaderVO>> getHeaderInfoList() {
 		List<List<ExcelHeaderVO>> haderInfoList = new ArrayList<List<ExcelHeaderVO>>();
 		

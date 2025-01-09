@@ -117,10 +117,10 @@ CREATE OR REPLACE VIEW {{objectName}} AS
 {{#if ddlOpt.addDropClause}}/* DROP SEQUENCE {{objectName}}; */{{/if}}
 
 CREATE SEQUENCE {{objectName}}
-INCREMENT {{item.increment}}
+START WITH {{item.startValue}}
+INCREMENT BY {{item.increment}}
 MINVALUE {{item.minValue}}
 MAXVALUE {{item.maxValue}}
-START {{startValue}}
 {{#equals YES cycleOption}}CYCLE{{/equals}}
 		</create>
 	</sequence>

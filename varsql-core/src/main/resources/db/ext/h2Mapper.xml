@@ -46,18 +46,18 @@
 				ind.CONSTRAINTS,
 			col.REMARKS as "COMMENT"
 		from
-			INFORMATION_SCHEMA.TABLES tbl inner join information_schema.columns col 
+			INFORMATION_SCHEMA.TABLES tbl inner join INFORMATION_SCHEMA.COLUMNS col 
 			on tbl.TABLE_NAME = col.TABLE_NAME	and tbl.TABLE_TYPE in ('TABLE','BASE TABLE')
 			left outer join (
 				select a.TABLE_NAME , b.COLUMN_NAME, 'PK' as "CONSTRAINTS"
-				from  information_schema.INDEXES a inner join information_schema.INDEX_COLUMNS b
+				from  INFORMATION_SCHEMA.INDEXES a inner join INFORMATION_SCHEMA.INDEX_COLUMNS b
 				on a.INDEX_NAME = b.INDEX_NAME 
 				where a.TABLE_SCHEMA = #{schema}
 				and a.INDEX_TYPE_NAME = 'PRIMARY KEY'
 				<if test="custom != null and custom.objectNameList != null">
 					and
 					<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
-						a.table_name in (${item})
+						a.TABLE_NAME in (${item})
 					</foreach>
 				</if>
 				group by a.TABLE_NAME, b.COLUMN_NAME
@@ -66,7 +66,7 @@
 		<if test="custom != null and custom.objectNameList != null">
 			and
 			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
-				col.table_name in (${item})
+				col.TABLE_NAME in (${item})
 			</foreach>
 		</if>
 		order by col.TABLE_NAME , col.ORDINAL_POSITION
@@ -112,18 +112,18 @@
 			''	as CONSTRAINTS,
 			col.REMARKS as "COMMENT"
 		from
-			INFORMATION_SCHEMA.TABLES tbl inner join information_schema.columns col 
+			INFORMATION_SCHEMA.TABLES tbl inner join INFORMATION_SCHEMA.COLUMNS col 
 			on tbl.TABLE_NAME = col.TABLE_NAME	and tbl.TABLE_TYPE in ('VIEW')
 		where col.TABLE_SCHEMA = #{schema}
 		<choose>
 			<when test="custom != null and custom.objectNameList != null">
 				and
 				<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
-					col.table_name in (${item})
+					col.TABLE_NAME in (${item})
 				</foreach>
 			</when>
 			<otherwise>
-				and col.TABLE_NAME in (select TABLE_NAME  from information_schema.views where TABLE_SCHEMA = #{schema})
+				and col.TABLE_NAME in (select TABLE_NAME  from INFORMATION_SCHEMA.VIEWS where TABLE_SCHEMA = #{schema})
 			</otherwise>
 		</choose>
 		order by col.TABLE_NAME , col.ORDINAL_POSITION
@@ -152,7 +152,7 @@
 	<!-- procedure arguments list -->
 	<select id="objectMetadataList" parameterType="databaseParamInfo" resultMap="objectInfoMap">
 		select
-			a.routine_name as "OBJECT_NAME"
+			a.ROUTINE_NAME as "OBJECT_NAME"
 			,'' as "COMMENT"
 			,'' as "CREATED"
 			,'' as "STATUS"
@@ -161,29 +161,29 @@
 			,p.parameter_mode as "IN_OUT"
 			,p.ORDINAL_POSITION as "SEQUENCE"
 		from
-			information_schema.ROUTINES a left outer join information_schema.parameters p
+			INFORMATION_SCHEMA.ROUTINES a left outer join INFORMATION_SCHEMA.PARAMETERS p
 		on a.ROUTINE_SCHEMA =p.SPECIFIC_SCHEMA
-		and a.specific_name = p.specific_name
+		and a.SPECIFIC_NAME = p.SPECIFIC_NAME
 		where 1=1
 		and upper(a.ROUTINE_SCHEMA) =#{schema}
 			<choose>
 				<when test='"procedure".equalsIgnoreCase(objectType)'>
-					and a.routine_type = 'PROCEDURE'
+					and a.ROUTINE_TYPE = 'PROCEDURE'
 				</when>
 				<when test='"function".equalsIgnoreCase(objectType)'>
-					and a.routine_type = 'FUNCTION'
+					and a.ROUTINE_TYPE = 'FUNCTION'
 				</when>
 				<otherwise>
-					and a.routine_type =#{objectType}
+					and a.ROUTINE_TYPE =#{objectType}
 				</otherwise>
 			</choose>
 			<if test="custom != null and custom.objectNameList != null">
 				and
 				<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
-					a.routine_name in (${item})
+					a.ROUTINE_NAME in (${item})
 				</foreach>
 			</if>
-		order by a.routine_name , p.ORDINAL_POSITION
+		order by a.ROUTINE_NAME , p.ORDINAL_POSITION
 	</select>
 
 	<!-- function list -->
@@ -204,7 +204,7 @@
 		select
 			 ind.INDEX_NAME as "name"
 			,'' as "status"
-		from information_schema.INDEXES  ind
+		from INFORMATION_SCHEMA.INDEXES  ind
 		WHERE ind.TABLE_SCHEMA = #{schema}
 		and ind.INDEX_TYPE_NAME !='PRIMARY KEY'
 		order by ind.TABLE_NAME, ind.index_NAME
@@ -219,9 +219,9 @@
 			indc.ORDINAL_POSITION as "ORDINAL_POSITION",
 			INDEX_TYPE_NAME||'' as  "TYPE",
 			ORDERING_SPECIFICATION as  "ASC_OR_DESC"
-		from information_schema.INDEXES  ind , information_schema.INDEX_COLUMNS indc
+		from INFORMATION_SCHEMA.INDEXES  ind , INFORMATION_SCHEMA.INDEX_COLUMNS indc
 		where ind.INDEX_SCHEMA  = indc.INDEX_SCHEMA
-		and ind.index_NAME  = indc.index_NAME
+		and ind.INDEX_NAME  = indc.index_NAME
 		and ind.INDEX_SCHEMA = #{schema}
 		and ind.INDEX_TYPE_NAME !='PRIMARY KEY'
 		<if test="custom != null and custom.objectNameList != null">
@@ -229,7 +229,7 @@
 				ind.INDEX_NAME in (${item})
 			</foreach>
 		</if>
-		order by ind.TABLE_NAME, ind.index_NAME, indc.ORDINAL_POSITION;
+		order by ind.TABLE_NAME, ind.INDEX_NAME, indc.ORDINAL_POSITION;
 	</select>
 
 
@@ -239,7 +239,7 @@
 			EVENT_OBJECT_TABLE as "TABLE_NAME",
 	        TRIGGER_NAME as "name" ,
 			'' as "created"
-		from information_schema.TRIGGERS
+		from INFORMATION_SCHEMA.TRIGGERS
 		WHERE TRIGGER_SCHEMA = #{schema}
 		order by EVENT_OBJECT_TABLE , TRIGGER_NAME
 	</select>
@@ -263,14 +263,14 @@
 			EVENT_MANIPULATION as "EVENTTYPE",
 			'' as "STATUS",
 			REMARKS as "REMARKS"
-		from information_schema.TRIGGERS
+		from INFORMATION_SCHEMA.TRIGGERS
 		WHERE TRIGGER_SCHEMA = #{schema}
 		<if test="custom != null and custom.objectNameList != null">
 			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
 				TRIGGER_NAME in (${item})
 			</foreach>
 		</if>
-		order by EVENT_OBJECT_TABLE , TRIGGER_NAME
+		order by EVENT_OBJECT_TABLE, TRIGGER_NAME
 	</select>
 
 	<!-- sequence info map -->
@@ -295,7 +295,7 @@
 			SEQUENCE_NAME as  "name",
 			INCREMENT as  "increment",
 			BASE_VALUE as "current_value"
-		from information_schema.SEQUENCES seq
+		from INFORMATION_SCHEMA.SEQUENCES seq
 		WHERE seq.SEQUENCE_SCHEMA = #{schema}
 	</select>
 
@@ -311,7 +311,7 @@
 			,CYCLE_OPTION as "CYCLE_FLAG"
 			,INCREMENT as "INCREMENT_BY"
 			,BASE_VALUE as "LAST_NUMBER"
-		from information_schema.SEQUENCES seq
+		from INFORMATION_SCHEMA.SEQUENCES seq
 		WHERE seq.SEQUENCE_SCHEMA = #{schema}
 		<if test="custom != null and custom.objectNameList != null">
 			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
@@ -332,7 +332,7 @@
 			,MAXIMUM_VALUE as "maxValue"
 			,INCREMENT as "increment"
 			,BASE_VALUE as "lastNumber"
-		from information_schema.SEQUENCES seq
+		from INFORMATION_SCHEMA.SEQUENCES seq
 		WHERE seq.SEQUENCE_SCHEMA = #{schema}
 		and seq.SEQUENCE_NAME = #{objectName}
 	</select>
@@ -342,7 +342,7 @@
 	 -->
 	<select id="viewScript" resultType="string" parameterType="databaseParamInfo">
 		select VIEW_DEFINITION
-		from information_schema.views
+		from INFORMATION_SCHEMA.VIEWS
 		WHERE TABLE_SCHEMA = #{schema}
 		and TABLE_NAME =#{objectName}
 	</select>
@@ -358,16 +358,16 @@
 			indc.COLUMN_NAME as "columnName",
 			indc.ORDINAL_POSITION as "ordinalPosition",
 			ORDERING_SPECIFICATION as  "ascOrDesc"
-		from information_schema.INDEX_COLUMNS indc
+		from INFORMATION_SCHEMA.INDEX_COLUMNS indc
 		where  indc.INDEX_SCHEMA = #{schema}
 		and INDEX_NAME =#{objectName}
-		order by TABLE_NAME , INDEX_NAME , ORDINAL_POSITION 
+		order by TABLE_NAME, INDEX_NAME, ORDINAL_POSITION 
 	</select>
 
 	<!-- create function script -->
 	<select id="functionScript" resultType="string" parameterType="databaseParamInfo">
 		select ROUTINE_DEFINITION  
-		from information_schema.ROUTINES
+		from INFORMATION_SCHEMA.ROUTINES
 		where SPECIFIC_SCHEMA=#{schema}
 		and ROUTINE_TYPE = 'FUNCTION'
 		and ROUTINE_NAME = #{objectName}

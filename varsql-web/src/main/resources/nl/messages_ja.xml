@@ -231,6 +231,12 @@
 <entry key="msg.execute.success">実行が完了しました。</entry>
 <entry key="msg.execute.db.error">使用できない接続情報です。</entry>
 
+<!-- task -->
+<entry key="msg.sql.create.warning.msg"><![CDATA[
+1. クエリを作成する際、ターゲットテーブルの列名と選択クエリの列名は同じでなければなりません。<br/>
+2. ソートクエリを含めて作成してください。
+]]></entry>
+
 
 
 </properties>

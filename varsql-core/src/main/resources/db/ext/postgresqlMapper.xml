@@ -40,7 +40,7 @@
 			,(case when (character_maximum_length is null and cols.numeric_precision is not null) then cols.numeric_precision::text else '' end) as "DATA_PRECISION"
 			,(case when character_maximum_length is null then cols.numeric_scale::text else '' end) as "DECIMAL_DIGITS"
 			,cols.column_default as "COLUMN_DEF"
-			,pg_catalog.col_description(cols.table_name::regclass::oid, cols.ordinal_position) "COMMENT"
+			,pg_catalog.col_description(concat('"',cols.table_name,'"')::regclass::oid, cols.ordinal_position) "COMMENT"
 			,const.CONSTRAINTS as "CONSTRAINTS"
 		FROM information_schema.tables as tbls inner join information_schema.columns as cols  on tbls.table_schema = cols.table_schema and cols.table_name = tbls.table_name
 		left join (
@@ -101,7 +101,7 @@
 			,(case when (character_maximum_length is null and cols.numeric_precision is not null) then cols.numeric_precision::text else '' end) as "DATA_PRECISION"
 			,(case when character_maximum_length is null then cols.numeric_scale::text else '' end) as "DECIMAL_DIGITS"
 			,cols.column_default as "COLUMN_DEF"
-			,pg_catalog.col_description(cols.table_name::regclass::oid, cols.ordinal_position) "COMMENT"
+			,pg_catalog.col_description(concat('"',cols.table_name,'"')::regclass::oid, cols.ordinal_position) "COMMENT"
 		FROM information_schema.tables as tbls inner join information_schema.columns as cols  on tbls.table_schema = cols.table_schema and cols.table_name = tbls.table_name
 		WHERE cols.table_schema = #{schema}
 		AND tbls.table_type = 'VIEW'
