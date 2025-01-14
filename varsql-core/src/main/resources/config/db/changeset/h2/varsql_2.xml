@@ -63,6 +63,9 @@ insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRI
 values('003', 'mysql','com.mysql.jdbc.Driver', 'select 1','mysql','jdbc:mysql://{serverIp}{if(port)}:{port}{endif}/{databaseName}',-1,'db');
 
 insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC  ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)
+values('015', 'mysql','com.mysql.cj.jdbc.Driver', 'select 1','mysql','jdbc:mysql://{serverIp}{if(port)}:{port}{endif}/{databaseName}',-1,'db');
+
+insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC  ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)
 values('004', 'h2','org.h2.Driver', 'select 1','h2','jdbc:h2:{serverIp}',-1,'PUBLIC');
 
 insert into VTDBTYPE_DRIVER_TYPE (DRIVER_ID,DBTYPE,DBDRIVER,VALIDATION_QUERY,DRIVER_DESC  ,URL_FORMAT, DEFAULT_PORT, SCHEMA_TYPE)

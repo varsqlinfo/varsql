@@ -58,6 +58,8 @@ public class Configuration extends AbstractConfiguration{
 	private final String BACKUP_PATH = "backup.path";
 	private final String BACKUP_EXPIRE_PATH = "backup.expire.day";
 	private final String BACKUP_EXPIRE_CRON = "backup.expire.cron";
+	
+	private final String DEFAULT_CONTEXT_PATH = "/varsql";
 
 	private PasswordType passwordType;
 
@@ -69,7 +71,7 @@ public class Configuration extends AbstractConfiguration{
 	
 	private String hostname;
 	
-	private String contextPath;
+	private String contextPath = DEFAULT_CONTEXT_PATH;
 	
 	private String connectiondaoPackage;
 	
@@ -202,7 +204,7 @@ public class Configuration extends AbstractConfiguration{
 		protocol = props.getProperty("varsql.protocol", "http");
 		hostname = props.getProperty("varsql.hostname", "localhost");
 		port = Integer.parseInt(props.getProperty("varsql.port", "12345"));
-		contextPath = props.getProperty("varsql.contextpath", "/varsql");
+		contextPath = props.getProperty("varsql.contextpath", DEFAULT_CONTEXT_PATH);
 		connectiondaoPackage = props.getProperty("varsql.connectiondao.package", "com.varsql");
 		
 		siteAddr = protocol;
