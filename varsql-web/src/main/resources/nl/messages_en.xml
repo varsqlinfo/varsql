@@ -169,6 +169,7 @@
 <entry key="msg.valid.regexp.email">The email is invalid.</entry>
 <entry key="msg.valid.regexp.url">The URL is invalid.</entry>
 
+
 <!-- db -->
 <entry key="msg.db.load">Loading database information.</entry>
 <entry key="msg.db.connect.select"><![CDATA[Select the database to connect <img src="{0}/webstatic/imgs/Database.gif">.]]></entry>
@@ -206,6 +207,7 @@
 <entry key="error.400">Bad request.</entry>
 <entry key="error.403">Access forbidden.</entry>
 <entry key="error.404">Page not found.</entry>
+<entry key="error.500"><![CDATA[System error.<br/>Please try again later.]]></entry>
 <entry key="error.0001">You have been logged out. Would you like to go to the login page?</entry>
 <entry key="error.0002">Invalid request. Would you like to refresh?</entry>
 <entry key="error.0003">Invalid database. Would you like to go to the main page?</entry>
@@ -214,6 +216,16 @@
 <entry key="error.80001">Connection [80001] is closed. Please contact the administrator.</entry>
 <entry key="error.80002">Error code: {errorCode}\nThe connection is not valid. Please contact the administrator.</entry>
 <entry key="error.default">Error code: {errorCode}\nAn error has occurred. Please contact the administrator.</entry>
+<entry key="error.blocking.database">Blocked database.</entry>
+<entry key="error.blocking.user">Access forbidden user.</entry>
+<entry key="error.boardError">Board error.</entry>
+<entry key="error.connection.create.error">DB connection creation error.</entry>
+<entry key="error.connection.error">Connection error.</entry>
+<entry key="error.data.download.error">Download error.</entry>
+<entry key="error.default.admin">Please contact the administrator.</entry>
+<entry key="error.default.error.page"><![CDATA[System error.<br/>Please try again later.]]></entry>
+<entry key="error.invalid.database">Invalid database.</entry>
+<entry key="error.invalid.token">Invalid request.</entry>
 
 <entry key="msg.sqlfile.limit.view">Up to 5000 lines are visible, please download for further content.</entry>
 <entry key="msg.file.add">Please add file.</entry>

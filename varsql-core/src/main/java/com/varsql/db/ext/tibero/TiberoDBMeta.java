@@ -153,7 +153,7 @@ public class TiberoDBMeta extends AbstractDBMeta{
 		
 		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 			if("viewMetadata".equals(queryId)){
-				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl());
+				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("viewList" ,dataParamInfo));
 			}else{
 				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList" ,dataParamInfo));
 				if(tableInfoHandler.getTableNameList() !=null  && tableInfoHandler.getTableNameList().size() > 0){

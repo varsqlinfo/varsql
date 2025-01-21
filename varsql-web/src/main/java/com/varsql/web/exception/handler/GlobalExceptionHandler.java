@@ -175,7 +175,7 @@ public class GlobalExceptionHandler{
 	public void databaseInvalidExceptionHandler(DatabaseInvalidException ex, HttpServletRequest request, HttpServletResponse response){
 
 		ResponseResult result = new ResponseResult();
-		exceptionRequestHandle(ex, request, response ,result,"invalidDatabase");
+		exceptionRequestHandle(ex, request, response ,result, "invalidDatabase");
 	}
 
 	/**

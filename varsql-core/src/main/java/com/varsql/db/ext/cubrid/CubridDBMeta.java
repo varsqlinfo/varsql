@@ -1,5 +1,6 @@
 package com.varsql.db.ext.cubrid;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
@@ -8,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.meta.AbstractDBMeta;
+import com.varsql.core.db.meta.DBVersionInfo;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.mybatis.handler.resultset.IndexInfoHandler;
 import com.varsql.core.db.mybatis.handler.resultset.TableInfoHandler;
@@ -44,6 +46,10 @@ public class CubridDBMeta extends AbstractDBMeta{
 				, new ServiceObject(ObjectType.SEQUENCE, false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
 				, new ServiceObject(ObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
 			}
+			,new DBVersionInfo[] {
+				DBVersionInfo.builder(11,1,0).build()
+				, DBVersionInfo.builder(11,2,0).defultFlag(true).build()
+			}
 		);
 	}
 
@@ -51,6 +57,12 @@ public class CubridDBMeta extends AbstractDBMeta{
 	public List getVersion(DatabaseParamInfo dataParamInfo)  {
 		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
 			return sqlSession.selectList("dbSystemView", dataParamInfo);
+		}
+	}
+	
+	public List<String> getSchemas(DatabaseParamInfo dataParamInfo) throws SQLException{
+		try (SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());) {
+			return sqlSession.selectList("schemaList", dataParamInfo);
 		}
 	}
 
@@ -138,7 +150,7 @@ public class CubridDBMeta extends AbstractDBMeta{
 			logger.debug("tableAndColumnsInfo {} ",VartechUtils.reflectionToString(dataParamInfo));
 	
 			if("viewMetadata".equals(queryId)){
-				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl());
+				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("viewList" ,dataParamInfo));
 			}else{
 				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList" ,dataParamInfo));
 	

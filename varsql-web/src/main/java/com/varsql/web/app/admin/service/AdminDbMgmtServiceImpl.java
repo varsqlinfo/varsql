@@ -23,6 +23,7 @@ import com.varsql.core.common.constants.PathType;
 import com.varsql.core.common.util.VarsqlJdbcUtil;
 import com.varsql.core.configuration.prop.ValidationProperty;
 import com.varsql.core.connection.ConnectionFactory;
+import com.varsql.core.connection.ConnectionInfoManager;
 import com.varsql.core.connection.beans.JdbcURLFormatParam;
 import com.varsql.core.crypto.PasswordCryptionFactory;
 import com.varsql.core.db.DBVenderType;
@@ -304,16 +305,16 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 		this.dbConnectionEntityRepository.save(saveEntity);
 		
 		if (updateFlag) {
-			if (!reqEntity.getVdbschema().equalsIgnoreCase(currentEntity.getVdbschema())) {
-				CacheUtils.removeObjectCache(this.cacheManager, currentEntity);
-			} else if (!reqEntity.getVdatabasename().equalsIgnoreCase(currentEntity.getVdatabasename())) {
-				CacheUtils.removeObjectCache(this.cacheManager, currentEntity);
-			} else if ("Y".equals(reqEntity.getUrlDirectYn()) && !reqEntity.getVurl().equals(currentEntity.getVurl())) {
-				CacheUtils.removeObjectCache(this.cacheManager, currentEntity);
-			} else if (!reqEntity.getVserverip().equals(currentEntity.getVserverip())
-					|| reqEntity.getVport() != currentEntity.getVport()) {
+			if (!reqEntity.getVdbschema().equalsIgnoreCase(currentEntity.getVdbschema()) 
+					|| !reqEntity.getVdatabasename().equalsIgnoreCase(currentEntity.getVdatabasename())
+					||"Y".equals(reqEntity.getUrlDirectYn()) && !reqEntity.getVurl().equals(currentEntity.getVurl())
+					||(!reqEntity.getVserverip().equals(currentEntity.getVserverip())
+							|| reqEntity.getVport() != currentEntity.getVport())
+					) {
 				CacheUtils.removeObjectCache(this.cacheManager, currentEntity);
 			}
+			// 접속 정보 reload
+			ConnectionInfoManager.getInstance().getConnectionInfo(saveEntity.getVconnid(), true);
 		}
 		
 		resultObject.setItemOne(Integer.valueOf(1));

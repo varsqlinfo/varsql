@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ include file="/WEB-INF/include/tagLib.jspf"%>
 <!doctype html>
 <html>
 <head>
@@ -14,8 +14,8 @@ html, body{width:100%;height:100%;overflow:hidden;}
 			<tr>
 				<td style="text-align: center; font-size: 3em;">
 					<div class="var-load-frame">
-						<div>유효하지 않은 요청입니다.</div>
-						<div>페이지를 <a href="javascript:;" onclick="fnFresh();">새로고침</a> 하세요.</div>
+						<div><spring:message code="error.invalid.token" text="유효하지 않은 요청입니다."/></div>
+						<div>Page <a href="javascript:;" onclick="fnFresh();">Refresh</a></div>
 						<div>&nbsp;</div>
 						<div>&nbsp;</div>
 					</div>

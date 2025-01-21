@@ -60,7 +60,10 @@ public final class ConnectionInfoManager{
 	 * @throws Exception
 	 */
 	public synchronized ConnectionInfo getConnectionInfo(String connid) throws ConnectionFactoryException{
-		if(connectionConfig.containsKey(connid)){
+		return getConnectionInfo(connid, false);
+	}
+	public synchronized ConnectionInfo getConnectionInfo(String connid, boolean reloadFlag) throws ConnectionFactoryException{
+		if(reloadFlag==false && connectionConfig.containsKey(connid)){
 			return connectionConfig.get(connid);
 		}else{
 			ConnectionInfo connInfo;

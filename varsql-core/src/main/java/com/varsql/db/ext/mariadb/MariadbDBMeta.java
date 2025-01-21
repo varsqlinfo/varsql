@@ -12,6 +12,7 @@ import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.meta.AbstractDBMeta;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.mybatis.handler.resultset.IndexInfoHandler;
+import com.varsql.core.db.mybatis.handler.resultset.TableInfoHandler;
 import com.varsql.core.db.mybatis.handler.resultset.TableInfoMysqlHandler;
 import com.varsql.core.db.servicemenu.ObjectType;
 import com.varsql.core.db.servicemenu.ObjectTypeTabInfo;
@@ -172,7 +173,7 @@ public class MariadbDBMeta extends AbstractDBMeta{
 		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 
 			if("viewMetadata".equals(queryId)){
-				tableInfoMysqlHandler = new TableInfoMysqlHandler(dbInstanceFactory.getDataTypeImpl());
+				tableInfoMysqlHandler = new TableInfoMysqlHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("viewList" ,dataParamInfo));
 			}else{
 				tableInfoMysqlHandler = new TableInfoMysqlHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList" ,dataParamInfo));
 	

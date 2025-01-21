@@ -9,6 +9,7 @@
 		SELECT 'VERSION : CUBRID ' || VERSION() ||  ' , charset = ' || CHARSET('abc')
 	</select>	
 	
+	<!-- 스키마 list -->	
 	<select id="schemaList" parameterType="databaseParamInfo" resultType="string">
 		select name from db_user
 	</select>
@@ -21,7 +22,6 @@
 		FROM DB_CLASS tbl
 		WHERE  tbl.is_system_class = 'NO' 
 		AND tbl.class_type = 'CLASS'
-		and tbl.owner_name = upper(#{schema})
 		<if test="custom != null and custom.objectNameList != null">
 			and 
 			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
@@ -45,7 +45,7 @@
 			,col.comment AS "COMMENT"
 			, col.attr_type as "extra"
 			, k.col_const as "CONSTRAINTS"
-		from db_attribute col LEFT JOIN db_class tbl ON col.class_name = tbl.class_name and col.owner_name = tbl.owner_name
+		from db_attribute col LEFT JOIN db_class tbl ON col.class_name = tbl.class_name
 		    left join  (
 				select key_attr_name, x.class_name,  CASE WHEN max(x.is_primary_key) =  'YES' THEN 'PK'
 						 WHEN max(x.is_foreign_key) = 'YES' THEN 'FK'
@@ -53,20 +53,16 @@
 						ELSE ' ' END as "COL_CONST" 
 					, max (k.key_order) as key_order , max(k.asc_desc) as asc_desc
 				from db_index x , db_index_key k
-				where x.index_name = k.index_name and x.class_name = k.class_name and x.owner_name = k.owner_name
-				 and x.owner_name = upper(#{schema})
-                and k.owner_name = upper(#{schema})
+				where x.index_name = k.index_name and x.class_name = k.class_name
 				 AND k.class_name  IN (
 					SELECT class_name "NAME" FROM DB_CLASS tbl WHERE  tbl.is_system_class = 'NO' 
 					AND tbl.class_type = 'CLASS'
-					and tbl.owner_name = upper(#{schema})
 				)
 				group by key_attr_name , x.class_name
 			) k on tbl.class_name = k.class_name and col.attr_name = k.key_attr_name
 		where  1=1
 		AND tbl.is_system_class = 'NO'
 		AND tbl.class_type = 'CLASS'
-		and tbl.owner_name = upper(#{schema})
 		<if test="custom != null and custom.objectNameList != null">
 			and 
 			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
@@ -87,7 +83,6 @@
 		FROM DB_CLASS tbl
 		WHERE  tbl.is_system_class = 'NO' 
 		AND tbl.class_type = 'VCLASS'
-		and tbl.owner_name = upper(#{schema})
 		<if test="custom != null and custom.objectNameList != null">
 			and 
 			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
@@ -111,7 +106,7 @@
 			,col.comment AS "COMMENT"
 			, col.attr_type as "extra"
 			, k.col_const as "CONSTRAINTS"
-		from db_attribute col LEFT JOIN db_class tbl ON col.class_name = tbl.class_name and col.owner_name = tbl.owner_name
+		from db_attribute col LEFT JOIN db_class tbl ON col.class_name = tbl.class_name
 		    left join  (
 				select key_attr_name, x.class_name,  CASE WHEN max(x.is_primary_key) =  'YES' THEN 'PK'
 						 WHEN max(x.is_foreign_key) = 'YES' THEN 'FK'
@@ -120,19 +115,15 @@
 					, max (k.key_order) as key_order , max(k.asc_desc) as asc_desc
 				from db_index x , db_index_key k
 				where x.index_name = k.index_name and x.class_name = k.class_name
-				and x.owner_name = upper(#{schema})
-                and k.owner_name = upper(#{schema})
-				AND k.class_name  IN (
+				 AND k.class_name  IN (
 					SELECT class_name "NAME" FROM DB_CLASS tbl WHERE  tbl.is_system_class = 'NO' 
 					AND tbl.class_type = 'VCLASS'
-					and tbl.owner_name = upper(#{schema})
 				)
 				group by key_attr_name , x.class_name
 			) k on tbl.class_name = k.class_name and col.attr_name = k.key_attr_name
 		where  1=1
 		AND tbl.is_system_class = 'NO'
 		AND tbl.class_type = 'VCLASS'
-		and tbl.owner_name = upper(#{schema})
 		<if test="custom != null and custom.objectNameList != null">
 			and 
 			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
@@ -164,14 +155,13 @@
 	
 	<!-- function list -->
 	<select id="functionList" parameterType="databaseParamInfo" resultMap="objectInfoMap">
-		select dsp.sp_name AS "OBJECT_NAME" 
-			,dsp.sp_type as "TYPE"
-			, dsp.comment AS "REMARKS"
+		select func.sp_name AS "OBJECT_NAME" 
+			,func.sp_type as "TYPE"
+			, func.comment AS "REMARKS"
 			, '' as "CREATED"
 			, '' as "STATUS"
-		FROM db_stored_procedure   dsp
+		FROM db_stored_procedure   func
 		WHERE sp_type = 'FUNCTION'
-		and dsp.owner = upper(#{schema})
 	</select>
 	
 	<select id="functionMeta" parameterType="databaseParamInfo" resultMap="objectInfoMap">
@@ -188,7 +178,6 @@
 		FROM db_stored_procedure dsp LEFT JOIN db_stored_procedure_args dspa
 		ON dsp.sp_name = dspa.sp_name
 		WHERE 1=1
-		and dsp.owner = upper(#{schema})
 		AND dsp.sp_type = 'FUNCTION'
 		<if test="custom != null and custom.objectNameList != null">
 			and 
@@ -202,14 +191,13 @@
 	
 	<!-- procedure list -->
 	<select id="procedureList" parameterType="databaseParamInfo" resultMap="objectInfoMap">
-		select dsp.sp_name AS "OBJECT_NAME" 
-			,dsp.sp_type as "OBJECT_TYPE"
-			, dsp.comment AS "REMARKS"
+		select func.sp_name AS "OBJECT_NAME" 
+			,func.sp_type as "OBJECT_TYPE"
+			, func.comment AS "REMARKS"
 			, '' as "CREATED"
 			, '' as "STATUS"
-		FROM db_stored_procedure   dsp
+		FROM db_stored_procedure   func
 		WHERE sp_type = 'PROCEDURE'
-		and dsp.owner = upper(#{schema})
 	</select>
 	
 	<select id="procedureMeta" parameterType="databaseParamInfo" resultMap="objectInfoMap">
@@ -226,7 +214,6 @@
 		FROM db_stored_procedure dsp LEFT JOIN db_stored_procedure_args dspa
 		ON dsp.sp_name = dspa.sp_name
 		WHERE 1=1
-		and dsp.owner = upper(#{schema})
 		AND dsp.sp_type = 'PROCEDURE'
 		<if test="custom != null and custom.objectNameList != null">
 			and 
@@ -247,9 +234,7 @@
 			WHERE ind.class_name IN (
 				SELECT class_name "NAME" FROM DB_CLASS tbl WHERE  tbl.is_system_class = 'NO' 
 				AND tbl.class_type = 'CLASS'
-				and tbl.owner_name = upper(#{schema})
 			)
-			and ind.owner_name = upper(#{schema})
 		ORDER BY ind.class_name,  ind.index_name
 	</select>
 	
@@ -276,12 +261,9 @@
 					a.index_name in (${item})
 				</foreach>
 			</if>
-			and a.owner_name = upper(#{schema})
-			and b.owner_name = upper(#{schema})
 		    AND a.class_name  IN (
 				SELECT class_name "NAME" FROM DB_CLASS tbl WHERE  tbl.is_system_class = 'NO' 
 				AND tbl.class_type = 'CLASS'
-				and tbl.owner_name = upper(#{schema})
 			)
 		ORDER BY a.class_name,  a.index_name , b.key_order
 	</select>
@@ -296,8 +278,7 @@
 			, event 
 		 	, condition AS statement
 		 	,a.*
-		FROM db_trigger a
-		where a.owner.name = upper(#{schema})
+		FROM db_trigger a	
 		ORDER BY target_class , name
 	</select>
 	
@@ -321,7 +302,6 @@
 		 	, condition AS statement
 		 	, '' as "STATUS"
 		FROM db_trigger a	
-		where a.owner.name = upper(#{schema})
 		<if test="custom != null and custom.objectNameList != null">
 			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
 				a.name in (${item})
@@ -362,7 +342,6 @@
 			cached_num,
 			COMMENT
 		FROM db_serial
-		where owner.name = upper(#{schema})
 	</select> 
 	
 	<!-- 
@@ -379,7 +358,6 @@
 			comment AS "COMMENT",
 			cached_num as "CACHED"
 		FROM db_serial seq
-		where owner.name = upper(#{schema})
 		<if test="custom != null and custom.objectNameList != null">
 			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
 				seq.NAME in (${item})
@@ -402,22 +380,21 @@
 			COMMENT AS "comment",
 			cached_num as "cached"
 		FROM db_serial seq
-		where owner.name = upper(#{schema})
-		and seq.NAME = #{objectName}
+		where seq.NAME = #{objectName}
 	</select>    
 	
 	<!-- 
 	 view script 생성  create 문	
 	 -->
 	<select id="tableScript" parameterType="databaseParamInfo" resultType="dataMap">
-		SHOW CREATE TABLE ${schema}.${objectName}
+		SHOW CREATE TABLE ${objectName}
 	</select>
 	
 	<!-- 
 	 view script 생성  create 문	
 	 -->
 	<select id="viewScript" parameterType="databaseParamInfo" resultType="dataMap">
-		SHOW CREATE VIEW ${schema}.${objectName}
+		SHOW CREATE VIEW ${objectName}
 	</select>
 
 	<!-- 
@@ -438,8 +415,6 @@
 		FROM 
 			db_index a left join db_index_key b on  a.index_name = b.index_name
 		WHERE 1=1
-			and a.owner_name = #{schema}
-			and b.owner_name = #{schema}
 		    AND a.index_name = #{objectName}
 		ORDER BY a.class_name,  a.index_name , b.key_order
 	</select>
@@ -452,14 +427,12 @@
 			dsp.arg_count,
 			dsp.lang as "lang",
 			dsp.target as "source",
-			dspa.arg_name AS "name",
 			dspa.data_type AS "typeName",
 			dspa.mode as "inOuut",
 			dsp.COMMENT as "comment"
 		FROM db_stored_procedure dsp LEFT JOIN db_stored_procedure_args dspa
 		ON dsp.sp_name = dspa.sp_name
 		WHERE 1=1
-		and dsp.owner =  #{schema}
 		AND dsp.sp_type = 'FUNCTION'
 		AND dsp.sp_name= #{objectName}
 	</select>
@@ -472,14 +445,12 @@
 			dsp.arg_count,
 			dsp.lang as "lang",
 			dsp.target as "source",
-			dspa.arg_name AS "name",
 			dspa.data_type AS "typeName",
 			dspa.mode as "inOuut",
 			dsp.COMMENT as "comment"
 		FROM db_stored_procedure dsp LEFT JOIN db_stored_procedure_args dspa
 		ON dsp.sp_name = dspa.sp_name
 		WHERE 1=1
-		and dsp.owner =  #{schema}
 		AND dsp.sp_type = 'PROCEDURE'
 		AND dsp.sp_name= #{objectName}
 	</select>

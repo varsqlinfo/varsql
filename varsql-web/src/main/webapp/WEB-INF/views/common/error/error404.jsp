@@ -3,12 +3,12 @@
 <!doctype html>
 <html>
 <head>
-<title>Error</title>
+<title>System error 404</title>
 <style>
 html, body{width:100%;height:100%;overflow:hidden;}
 </style>
 <script>
-function fnRefresh(){
+function fnBack(){
 	if(document.referrer ==''){
 		location.href= '${pageContext.request.contextPath}';
 	}else{
@@ -29,7 +29,7 @@ function fnRefresh(){
 						<div>&nbsp;</div>
 					</div>
 					
-					<div><a href="javascript:fnRefresh()"><spring:message code="back.page" /></a></div>
+					<div><a href="javascript:fnBack()"><spring:message code="back.page" /></a></div>
 					<div><a href="${pageContext.request.contextPath}"><spring:message code="main.page" /></a></div>
 				</td>
 			</tr>

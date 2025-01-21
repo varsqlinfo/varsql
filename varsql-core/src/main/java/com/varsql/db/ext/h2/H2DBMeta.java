@@ -142,7 +142,7 @@ public class H2DBMeta extends AbstractDBMeta{
 			logger.debug("H2DBMeta tableAndColumnsInfo {} ",VartechUtils.reflectionToString(dataParamInfo));
 	
 			if("viewMetadata".equals(queryId)){
-				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl());
+				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("viewList" ,dataParamInfo));
 			}else{
 				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList" ,dataParamInfo));
 	

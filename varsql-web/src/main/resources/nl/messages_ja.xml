@@ -208,6 +208,7 @@
 <entry key="error.400">無効なリクエストです.</entry>
 <entry key="error.403">アクセスが拒否されました.</entry>
 <entry key="error.404">登録されていないページです.</entry>
+<entry key="error.500"><![CDATA[システムエラーです。<br/>後ほど再度アクセスしてください。]]></entry>
 <entry key="error.0001">ログアウトしました.\nログイン画面に移動しますか?</entry>
 <entry key="error.0002">無効なリクエストです.リフレッシュしますか?</entry>
 <entry key="error.0003">無効なデータベースです.\nメインページに移動しますか?</entry>
@@ -216,6 +217,16 @@
 <entry key="error.80001">接続[80001]が閉じられています.\n管理者に問い合わせてください.</entry>
 <entry key="error.80002">エラーコード：{errorCode}\n接続が無効です.\n管理者に問い合わせてください.</entry>
 <entry key="error.default">エラーコード：{errorCode}\nエラーが発生しました.\n管理者に問い合わせてください.</entry>
+<entry key="error.blocking.database">ブロックされたデータベースです。</entry>
+<entry key="error.blocking.user">アクセス禁止ユーザーです。</entry>
+<entry key="error.boardError">掲示板エラーです。</entry>
+<entry key="error.connection.create.error">DB接続作成エラーです。</entry>
+<entry key="error.connection.error">接続エラーです。</entry>
+<entry key="error.data.download.error">ダウンロードエラーです。</entry>
+<entry key="error.default.admin">管理者にお問い合わせください。</entry>
+<entry key="error.default.error.page"><![CDATA[システムエラーです。<br/>後ほど再度アクセスしてください。]]></entry>
+<entry key="error.invalid.database">無効なデータベースです。</entry>
+<entry key="error.invalid.token">無効なリクエストです。</entry>
 
 <entry key="msg.sqlfile.limit.view">最大5000行まで表示され、詳細はダウンロードして確認してください.</entry>
 <entry key="msg.file.add">ファイルを追加してください.</entry>

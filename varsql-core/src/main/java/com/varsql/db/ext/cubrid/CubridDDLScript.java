@@ -53,15 +53,20 @@ public class CubridDDLScript extends AbstractDDLScript {
 				
 				DataMap source = sqlSession.selectOne("tableScript", dataParamInfo);
 				
-				DDLTemplateParam param = DDLTemplateParam.builder()
-					.dbType(dataParamInfo.getDbType())
-					.schema(dataParamInfo.getSchema())
-					.objectName(objNm)
-					.ddlOpt(ddlOption)
-					.sourceText(source.getString("CREATE TABLE"))
-				.build();
+				if(source != null) {
+					DDLTemplateParam param = DDLTemplateParam.builder()
+						.dbType(dataParamInfo.getDbType())
+						.schema(dataParamInfo.getSchema())
+						.objectName(objNm)
+						.ddlOpt(ddlOption)
+						.sourceText(source.getString("CREATE TABLE"))
+					.build();
+					
+					ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.TABLE.create, param));
+				}else {
+					ddlInfo.setCreateScript("");
+				}
 				
-				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.TABLE.create, param));
 				reval.add(ddlInfo);
 			}
 		}
@@ -84,16 +89,19 @@ public class CubridDDLScript extends AbstractDDLScript {
 	
 				DataMap source = sqlSession.selectOne("viewScript", dataParamInfo);
 				
-				DDLTemplateParam param = DDLTemplateParam.builder()
-					.dbType(dataParamInfo.getDbType())
-					.schema(dataParamInfo.getSchema())
-					.objectName(objNm)
-					.ddlOpt(ddlOption)
-					.sourceText(source.getString("Create View"))
-				.build();
-				
-				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.VIEW.create, param));
-				
+				if(source != null) {
+					DDLTemplateParam param = DDLTemplateParam.builder()
+						.dbType(dataParamInfo.getDbType())
+						.schema(dataParamInfo.getSchema())
+						.objectName(objNm)
+						.ddlOpt(ddlOption)
+						.sourceText(source.getString("Create View"))
+					.build();
+					
+					ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(this.dbType, DDLTemplateCode.VIEW.create, param));
+				}else {
+					ddlInfo.setCreateScript("");
+				}
 				reval.add(ddlInfo);
 			}
 		}
@@ -114,7 +122,7 @@ public class CubridDDLScript extends AbstractDDLScript {
 				ddlInfo = new DDLInfo();
 				ddlInfo.setName(objNm);
 				dataParamInfo.setObjectName(objNm);
-	
+				
 				DDLTemplateParam param = DDLTemplateParam.builder()
 					.dbType(dataParamInfo.getDbType())
 					.schema(dataParamInfo.getSchema())
@@ -146,16 +154,23 @@ public class CubridDDLScript extends AbstractDDLScript {
 				ddlInfo.setName(objNm);
 	
 				dataParamInfo.setObjectName(objNm);
-	
-				DDLTemplateParam param = DDLTemplateParam.builder()
-					.dbType(dataParamInfo.getDbType())
-					.schema(dataParamInfo.getSchema())
-					.objectName(objNm)
-					.ddlOpt(ddlOption)
-					.item(sqlSession.selectOne("functionScript", dataParamInfo))
-				.build();
-	
-				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(dbType, DDLTemplateCode.FUNCTION.create, param));
+				
+				List objInfos = sqlSession.selectList("functionScript", dataParamInfo);
+				
+				if(objInfos != null && objInfos.size() > 0) {
+					DDLTemplateParam param = DDLTemplateParam.builder()
+						.dbType(dataParamInfo.getDbType())
+						.schema(dataParamInfo.getSchema())
+						.objectName(objNm)
+						.ddlOpt(ddlOption)
+						.item(objInfos.get(0))
+						.items(objInfos)
+					.build();
+		
+					ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(dbType, DDLTemplateCode.FUNCTION.create, param));
+				}else {
+					ddlInfo.setCreateScript("");
+				}
 				reval.add(ddlInfo);
 			}
 		}
@@ -179,16 +194,23 @@ public class CubridDDLScript extends AbstractDDLScript {
 				ddlInfo.setName(objNm);
 	
 				dataParamInfo.setObjectName(objNm);
-	
-				DDLTemplateParam param = DDLTemplateParam.builder()
-					.dbType(dataParamInfo.getDbType())
-					.schema(dataParamInfo.getSchema())
-					.objectName(objNm)
-					.ddlOpt(ddlOption)
-					.item(sqlSession.selectOne("procedureScript", dataParamInfo))
-				.build();
-	
-				ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(dbType, DDLTemplateCode.PROCEDURE.create, param));
+				
+				List objInfos = sqlSession.selectList("procedureScript", dataParamInfo);
+				
+				if(objInfos != null && objInfos.size() > 0) {
+					DDLTemplateParam param = DDLTemplateParam.builder()
+						.dbType(dataParamInfo.getDbType())
+						.schema(dataParamInfo.getSchema())
+						.objectName(objNm)
+						.ddlOpt(ddlOption)
+						.item(objInfos.get(0))
+						.items(objInfos)
+					.build();
+		
+					ddlInfo.setCreateScript(DDLTemplateFactory.getInstance().render(dbType, DDLTemplateCode.FUNCTION.create, param));
+				}else {
+					ddlInfo.setCreateScript("");
+				}
 	
 				reval.add(ddlInfo);
 			}

@@ -145,29 +145,7 @@ public class ErrorController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/invalidDatabase", method ={RequestMethod.GET,RequestMethod.POST})
-	public @ResponseBody ResponseResult invalidDatabase(HttpServletRequest req, HttpServletResponse res, ModelAndView mav) throws Exception {
-		ResponseResult result = new ResponseResult();
-		result.setStatus(RequestResultCode.ERROR.getCode());
-		result.setResultCode(VarsqlAppCode.INVALID_DATABASE);
-		result.setMessage("invalidDatabase");
-
-		return result;
-	}
-
-	/**
-	 *
-	 * @Method Name  : invalidDatabasePage
-	 * @Method 설명 : 유효하지않은 database
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 11. 1.
-	 * @변경이력  :
-	 * @param request
-	 * @param response
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value = "/invalidDatabasePage", method ={RequestMethod.GET,RequestMethod.POST})
-	public ModelAndView invalidDatabasePage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView invalidDatabase(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return getModelAndView("/error/invalidDatabase", VIEW_PAGE.COMMON);
 	}
 

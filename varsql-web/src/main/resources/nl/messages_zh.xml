@@ -202,6 +202,7 @@
 <entry key="error.400">请求有误.</entry>
 <entry key="error.403">权限不足.</entry>
 <entry key="error.404">页面未注册.</entry>
+<entry key="error.500"><![CDATA[系统错误。<br/>请稍后再试。]]></entry>
 <entry key="error.0001">已注销.\n是否跳转至登录窗口 ?</entry>
 <entry key="error.0002">请求无效.是否刷新 ?</entry>
 <entry key="error.0003">数据库无效.\n是否跳转至主页 ?</entry>
@@ -210,6 +211,16 @@
 <entry key="error.80001">连接[80001]已关闭.\n请联系管理员.</entry>
 <entry key="error.80002">错误码：{errorCode}\n连接无效.\n请联系管理员.</entry>
 <entry key="error.default">错误码：{errorCode}\n出现错误.\n请联系管理员.</entry>
+<entry key="error.blocking.database">被阻止的数据库。</entry>
+<entry key="error.blocking.user">禁止访问用户。</entry>
+<entry key="error.boardError">板块错误。</entry>
+<entry key="error.connection.create.error">数据库连接创建错误。</entry>
+<entry key="error.connection.error">连接错误。</entry>
+<entry key="error.data.download.error">下载错误。</entry>
+<entry key="error.default.admin">请联系管理员。</entry>
+<entry key="error.default.error.page"><![CDATA[系统错误。<br/>请稍后再试。]]></entry>
+<entry key="error.invalid.database">无效的数据库。</entry>
+<entry key="error.invalid.token">无效的请求。</entry>
 
 <entry key="msg.sqlfile.limit.view">最多显示5000行，更多内容请下载后查看.</entry>
 <entry key="msg.file.add">请添加文件.</entry>

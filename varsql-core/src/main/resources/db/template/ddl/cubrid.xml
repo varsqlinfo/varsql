@@ -63,9 +63,13 @@ CREATE OR REPLACE VIEW {{objectName}} as
 		<create>
 {{~#if ddlOpt.addDropClause}}/* DROP FUNCTION {{objectName}}; */{{/if}}
 
-CREATE FUNCTION {{objectName}} ({{item.arguments}}) RETURN {{item.returnType}}
+CREATE FUNCTION {{objectName}} (
+{{#items}}
+	{{#xif name '!=' ''}}{{addChar @index "" ","}} {{name}} {{typeName}}{{/xif}}
+{{/items}}
+) {{#xif returnType '!=' ''}}RETURN {{returnType}}{{/xif}}
 AS LANGUAGE {{item.lang}}
-NAME {{item.source}};
+NAME '{{item.source}}'
 		</create>
 	</function>
 
@@ -74,9 +78,13 @@ NAME {{item.source}};
 		<create>
 {{~#if ddlOpt.addDropClause}}/* DROP PROCEDURE {{objectName}}; */{{/if}}
 
-CREATE PROCEDURE {{objectName}} ({{item.arguments}}) RETURN {{item.returnType}}
+CREATE PROCEDURE {{objectName}} (
+{{#items}}
+    {{#xif name '!=' ''}}{{addChar @index "" ","}} {{name}} {{typeName}}{{/xif}}
+{{/items}}
+) {{#xif returnType '!=' ''}}RETURN {{returnType}}{{/xif}}
 AS LANGUAGE {{item.lang}}
-NAME {{item.source}};
+NAME '{{item.source}}'
 		</create>
 	</procedure>
 

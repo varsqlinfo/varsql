@@ -74,11 +74,16 @@ public class DDLTemplateFactory {
 		for (Resource resource: resources){
 			
 			String fileName = resource.getFileName();
-			
-			logger.debug("ddl template fileName : {} ", fileName);
 
 			String dbVender = fileName.replace(".xml", "");
-
+			
+			if(ddlTemplateInfo.containsKey(dbVender)) {
+				logger.warn("The {} already exists. file name : {}, path : {}", dbVender, fileName, resource.getPath());
+				continue; 
+			}else {
+				logger.debug("ddl template fileName : {}, path : {}", fileName, resource.getPath());
+			}
+			
 			String xml = ResourceUtils.getResourceString(resource);
 			JsonNode rootNode = VartechUtils.xmlToJsonNode(xml, VarsqlConstants.CHAR_SET);
 
