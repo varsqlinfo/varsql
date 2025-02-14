@@ -150,6 +150,9 @@
         "oracle": {
             "type": "NUMBER"
         }
+        ,"default": {
+		    "type": "NUMERIC"
+		}
     },
     "REAL": {
         "oracle": {

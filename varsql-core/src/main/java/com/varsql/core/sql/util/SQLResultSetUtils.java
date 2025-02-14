@@ -156,6 +156,7 @@ public final class SQLResultSetUtils {
 			ResultSetGridInfo resultSetGridInfo;
 			
 			while (rs.next()) {
+				
 				row = new LinkedHashMap(count);
 				
 				for (int colIdx = 0; colIdx < columnSize; colIdx++) {

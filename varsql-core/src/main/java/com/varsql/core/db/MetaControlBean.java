@@ -232,9 +232,13 @@ public class MetaControlBean {
 				return (T)this.dbMeta.getExtensionMetadata(paramInfo, metaType, paramInfo.getCustom());
 			}
 		}catch(Exception e){
-			logger.error("message {}, getDBMeta class : {} , callMethodName: {}, objArr : {} ", e.getMessage(), this.dbMeta.getClass(), callMethodName, StringUtils.join(objNm), e);
+			Throwable th = e.getCause();
+			th = th != null ? th: e; 
+			
+			String errorMessage = th.getMessage();
+			//logger.error("message {}, getDBMeta class : {} , callMethodName: {}, objArr : {} ", errorMessage, this.dbMeta.getClass(), callMethodName, StringUtils.join(objNm), e);
 			if(hasMethod) {
-				throw new DBMetadataException(VarsqlAppCode.DB_META_ERROR , e);
+				throw new DBMetadataException(errorMessage, th);
 			}
 		}
 		return null;

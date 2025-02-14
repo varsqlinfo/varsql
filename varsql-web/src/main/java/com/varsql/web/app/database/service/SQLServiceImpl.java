@@ -600,4 +600,25 @@ public class SQLServiceImpl{
 		}
 
 	}
+	
+	/**
+	 * sql 요청 취소
+	 * 
+	 * @param requestUid
+	 * @return
+	 */
+	public String requestCancel(String requestUid) {
+		// 전체 취소
+		if("all".equals(requestUid)) {
+			SqlExecuteManager.getInstance().allCancel();
+			return "";
+		}
+		
+		String [] reqUid = requestUid.split(",");
+		
+		for (int i = 0; i < reqUid.length; i++) {
+			SqlExecuteManager.getInstance().cancelStatementInfo(reqUid[i]);
+		}
+		return "";
+	}
 }

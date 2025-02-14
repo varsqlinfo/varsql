@@ -19,15 +19,15 @@ public class DBMetadataException extends VarsqlRuntimeException {
 		super(VarsqlAppCode.DB_META_ERROR, errorMessage);
 	}
 
-	public DBMetadataException(Exception e) {
+	public DBMetadataException(Throwable e) {
 		super(VarsqlAppCode.DB_META_ERROR, e.getMessage(), e);
 	}
 
-	public DBMetadataException(String errorMessage, Exception e) {
-		super(VarsqlAppCode.DB_META_ERROR, e.getMessage(), e);
+	public DBMetadataException(String errorMessage, Throwable e) {
+		super(VarsqlAppCode.DB_META_ERROR, errorMessage, e);
 	}
 
-	public DBMetadataException(VarsqlAppCode errorCode, Exception e) {
+	public DBMetadataException(VarsqlAppCode errorCode, Throwable e) {
 		super(errorCode, e);
 	}
 }

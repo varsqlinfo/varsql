@@ -187,6 +187,16 @@ public class SqlExecuteManager {
 
 					if (thread.getId() == threadId) {
 						thread.interrupt();
+						
+						if(thread.isAlive()) {
+							for(ExecuteStatementInfo executeStatementInfo : seb.getExecuteStatements()) {
+								try {
+									executeStatementInfo.abortConnection();
+								} catch (SQLException e) {
+									logger.error("connection abort error : {}", e.getMessage());
+								}
+							} 
+						}
 						// thread.stop();
 						break;
 					}

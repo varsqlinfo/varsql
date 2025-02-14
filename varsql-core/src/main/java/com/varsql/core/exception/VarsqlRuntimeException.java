@@ -31,7 +31,7 @@ public class VarsqlRuntimeException extends RuntimeException {
 	}
 
 	public VarsqlRuntimeException(CodeEnumValue errorCode, String errorMessage, Throwable exeception) {
-		super(String.format("error code : %s %s", errorCode+"",  (errorMessage==null?"": "message :" +  errorMessage)), exeception);
+		super(String.format("error code : %s %s", errorCode+"",  (errorMessage==null ? "": "message :" +  errorMessage)), exeception);
 		setErrorCode(errorCode);
 		this.errorMessage = errorMessage;
 	}

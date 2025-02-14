@@ -27,7 +27,7 @@ buildscript {
 			,junit : '5.8.2'
 			,junitPlatform : '1.5.0'
 			,mockito: '3.3.3'
-			,lombok : '1.18.10'
+			,lombok : '1.18.30'
 			,jstl : '1.2.5'
 		]
     }
@@ -63,7 +63,7 @@ def def_build= [
 ]
 
 ext {
-	varsqlVersion = '1.3.24'
+	varsqlVersion = '1.3.25'
 }
 
 //소스 분석.
@@ -97,8 +97,8 @@ subprojects {
     	flatDir{dirs rootProject.file( 'libs' )}
     }
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 
     task initSourceFolders {
 	    sourceSets*.java.srcDirs*.each {

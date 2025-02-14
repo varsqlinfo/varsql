@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.core.sql.SqlExecuteManager;
+import com.varsql.web.app.database.service.SQLServiceImpl;
 import com.varsql.web.app.manager.service.ManagerCommonServiceImpl;
 import com.varsql.web.app.manager.service.SqlStatsServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
@@ -55,6 +56,9 @@ public class SqlStatsController extends AbstractController {
 	
 	@Autowired
 	private ManagerCommonServiceImpl dbnUserServiceImpl;
+	
+	@Autowired
+	private SQLServiceImpl sqlServiceImpl;
 	
 	/**
 	 *
@@ -203,6 +207,19 @@ public class SqlStatsController extends AbstractController {
 		model.addAttribute("selectMenu", "sqlLog");
 		
 		return getModelAndView("/sqlExecuteStat", VIEW_PAGE.MANAGER_lOG,model);
+	}
+	
+	/**
+	 * 실행중인 request sql 취소
+	 * 
+	 * @param requestUid
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value =  "/requestCancel", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseResult requestCancel(@RequestParam(value = HttpParamConstants.REQ_UID, required = true) String requestUid) throws Exception {
+		return VarsqlUtils.getResponseResultItemOne(sqlServiceImpl.requestCancel(requestUid));
 	}
 	
 	/**

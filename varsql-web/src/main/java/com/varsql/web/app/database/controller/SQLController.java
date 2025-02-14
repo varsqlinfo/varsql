@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.varsql.core.sql.SqlExecuteManager;
 import com.varsql.web.app.database.service.SQLServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.HttpParamConstants;
@@ -113,18 +112,6 @@ public class SQLController extends AbstractController  {
 	@RequestMapping(value =  "/requestCancel", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseResult requestCancel(@RequestParam(value = HttpParamConstants.REQ_UID, required = true) String requestUid) throws Exception {
-		// 전체 취소
-		if("all".equals(requestUid)) {
-			SqlExecuteManager.getInstance().allCancel();
-			return VarsqlUtils.getResponseResultItemOne("");
-		}
-		
-		String [] reqUid = requestUid.split(",");
-		
-		for (int i = 0; i < reqUid.length; i++) {
-			SqlExecuteManager.getInstance().cancelStatementInfo(reqUid[i]);
-		}
-		
-		return VarsqlUtils.getResponseResultItemOne("");
+		return VarsqlUtils.getResponseResultItemOne(sqlServiceImpl.requestCancel(requestUid));
 	}
 }

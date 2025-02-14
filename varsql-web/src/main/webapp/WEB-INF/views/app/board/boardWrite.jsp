@@ -71,7 +71,6 @@ VarsqlAPP.vueServiceBean({
 		            //previewStyle: 'vertical'                // 마크다운 프리뷰 스타일 (tab || vertical)
 		            plugins: [
 	                    [toastui.Editor.plugin.chart],
-	                    [toastui.Editor.plugin.codeSyntaxHighlight, { highlighter: Prism }],
 	                    toastui.Editor.plugin.tableMergedCell,
 	                    toastui.Editor.plugin.colorSyntax,
 	                    [
@@ -94,7 +93,7 @@ VarsqlAPP.vueServiceBean({
 		                        const fileInfo = responseJson.item;
 		                        const fileContId = fileInfo.fileContId;
 		                        
-		                        // 4. addImageBlobHook의 callback 함수를 통해, 디스크에 저장된 이미지를 에디터에 렌더링
+		                        // 4. addImageBlobHook의 callback 함수를 통해, 디스크에 저장된 이미지를 에디터에 추가
 		                        const imageUrl = VARSQL.url( '/imageView/'+fileContId);
 		                        callback(imageUrl, fileInfo.fileName || 'image');
 
@@ -105,7 +104,7 @@ VarsqlAPP.vueServiceBean({
 		            }
 		        });
 				
-				this.editor.setHTML(this.articleInfo.contents)
+				this.editor.setMarkdown(this.articleInfo.contents)
 			},100); 
 
 			this.fileUploadObj = VARSQLUI.file.create('#articleWrapper',{
@@ -146,7 +145,7 @@ VarsqlAPP.vueServiceBean({
 			    return ; 
 			}
 						
-			saveInfo.contents = this.editor.getHTML();
+			saveInfo.contents = contents;
 
 			var fileUploadObj = this.fileUploadObj;
 

@@ -14,7 +14,6 @@ import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.ResultSetConvertException;
-import com.varsql.core.sql.SqlExecuteManager;
 import com.varsql.core.sql.builder.SqlSource;
 import com.varsql.core.sql.builder.SqlSourceBuilder;
 import com.varsql.core.sql.builder.SqlSourceResultVO;
@@ -136,11 +135,6 @@ public class SQLTask implements Task{
 			if (conn != null && !conn.isClosed()) {
 				conn.setAutoCommit(true);
 				JdbcUtils.close(conn);
-			}
-			
-			// request 실행 취소 정보 제거
-			if(!StringUtils.isBlank(ssi.getRequid$$())) {
-				SqlExecuteManager.getInstance().removeStatementInfo(ssi.getRequid$$());
 			}
 		}
 	}

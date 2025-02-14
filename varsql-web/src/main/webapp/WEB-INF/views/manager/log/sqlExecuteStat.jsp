@@ -60,7 +60,7 @@
 									</td>
 									<td>
 										<template v-for="(stmtInfo,index) in item.executeStatements">
-											<div><pre>{{stmtInfo.sql}}</pre></div>
+											<div v-if="stmtInfo.sql != null && stmtInfo.sql != ''"><pre style="height:100px; overflow:scroll;">{{stmtInfo.sql}}</pre></div>
 										</template>
 									</td>
 									<td>
@@ -166,13 +166,27 @@ VarsqlAPP.vueServiceBean( {
 			if(!VARSQL.confirmMessage('msg.cancel.confirm')){
 				return ;
 			}
-			VARSQL.databaseRequestCancel(item.reqUid)
+			
+			this.databaseRequestCancel(item.reqUid);
 		}
 		,allCancel(item){
 			if(!VARSQL.confirmMessage('['+VARSQL.message('all')+'] '+VARSQL.message('msg.cancel.confirm'))){
 				return ;
 			}
-			VARSQL.databaseRequestCancel('all');
+			this.databaseRequestCancel('all');
+		}
+		,databaseRequestCancel(reqUid){
+				
+			this.$ajax({
+				url : { type: VARSQL.uri.manager, url: '/stats/requestCancel' }
+				,ignoreUid: true
+				,data : {
+					requid$$ : reqUid
+				}
+				,success: function(resData) {
+					
+				}
+			})
 		}
 	}
 });

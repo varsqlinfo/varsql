@@ -1339,6 +1339,14 @@ _ui.dbSchemaObject ={
 			,success:function (resData){
 				_g_cache.setSOMetaInitFlag($contentId, true);
 				_g_cache.setCacheSchemaObject($contentId, resData); // object cache
+				
+				if(!VARSQL.isBlank(resData.message)){
+					VARSQL.toastMessage(resData.message);
+					resData.list = resData.list || [];
+					callMethod.call(_self, resData, param);
+					return ; 
+				}
+			
 				callMethod.call(_self, resData, param);
 				
 				if(VARSQL.isBlank(selItem.objectName)){

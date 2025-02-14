@@ -986,8 +986,8 @@ VarsqlAPP.vueServiceBean( {
 				var sourceColList = sourceItem.colList||[];
 				var targetColList = targetItem.colList||[];
 
-				compareSourceColList =sourceColList;
-				compareTargetColList =targetColList;
+				compareSourceColList = sourceColList;
+				compareTargetColList = targetColList;
 
 				var compareColKey = VARSQLCont.compareColKey;
 				var compareColKeyLength =compareColKey.length;
@@ -1015,8 +1015,12 @@ VarsqlAPP.vueServiceBean( {
 							targetColMap[targetColItem[nameKey]] = targetColItem;
 						}
 					}
+					
+					var allSourceMapKey = [];
 
 					for(var key in sourceColMap){
+						allSourceMapKey.push(key);
+						
 						var sourceCol = sourceColMap[key];
 						var targetCol = targetColMap[key];
 
@@ -1061,6 +1065,7 @@ VarsqlAPP.vueServiceBean( {
 					}
 
 					for(var key in targetColMap){
+						targetColMap[key]['__emptyrow'] =true; 
 						compareTargetColList.push(targetColMap[key]);
 					}
 
@@ -1172,6 +1177,11 @@ VarsqlAPP.vueServiceBean( {
 							update :  function (item){
 								$.pubGrid('#sourceColumn').setColumnWidth(item.index , item.width);
 							}
+						}
+					}
+					,rowOptions:{
+						addStyle:function (item){
+							return item['__emptyrow']?'background: #ffcece;':'';
 						}
 					}
 					,scroll :{

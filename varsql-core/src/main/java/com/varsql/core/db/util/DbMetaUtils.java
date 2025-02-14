@@ -7,6 +7,7 @@ import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.datatype.DataType;
+import com.varsql.core.db.datatype.DefaultDataType;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.vartech.common.utils.StringUtils;
 
@@ -38,11 +39,14 @@ public final class DbMetaUtils {
 		if(columnDef.toUpperCase().startsWith("DEFAULT")){
 			return columnDef;
 		}else{
-			if(!onlyChar){
-				if (dataTypeInfo.getJDBCDataTypeMetaInfo().isString() && !columnDef.startsWith("'")){
+			if(DefaultDataType.OTHER.equals(dataTypeInfo)) {
+				if(!StringUtils.isNumber(columnDef)) {
 					columnDef = "'"+columnDef+"'";
 				}
+			}else if (dataTypeInfo.getJDBCDataTypeMetaInfo().isString() && !columnDef.startsWith("'")){
+				columnDef = "'"+columnDef+"'";
 			}
+			
 			return " DEFAULT " +columnDef;
 		}
 	}

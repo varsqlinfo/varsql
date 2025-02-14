@@ -1,6 +1,9 @@
 package com.varsql.core.sql.beans;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.Executors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -26,6 +29,9 @@ import lombok.Setter;
 public class ExecuteStatementInfo {
 	
 	@JsonIgnore
+	private Connection conn;
+	
+	@JsonIgnore
 	private Statement statement;
 	
 	private String sql;
@@ -37,6 +43,13 @@ public class ExecuteStatementInfo {
 				.append(" statement : ").append(statement)
 				.append(", sql : ").append(sql)
 				.toString();
+	}
+
+	public void abortConnection() throws SQLException {
+		if(this.conn != null) {
+			this.conn.abort(Executors.newSingleThreadExecutor());
+		}
+		
 	}
 }
 

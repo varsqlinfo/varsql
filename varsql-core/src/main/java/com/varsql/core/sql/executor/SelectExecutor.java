@@ -72,6 +72,7 @@ public class SelectExecutor implements Executor{
 			String executeQuery = tmpSqlSource.getQuery();
 			conn = ConnectionFactory.getInstance().getConnection(statementInfo.getDatabaseInfo().getVconnid());
 
+			SqlExecuteManager.getInstance().addStatementInfo(SqlExecuteBean.builder().reqUid(requid).ip("select-executor").build(), ExecuteStatementInfo.builder().conn(conn).build());
 			logger.debug("execute query: {}", executeQuery);
 			
 			conn.setAutoCommit(false);

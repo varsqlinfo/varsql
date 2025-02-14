@@ -145,7 +145,7 @@ public class PostgresqlDBMeta extends AbstractDBMeta{
 				}
 			}
 			
-			sqlSession.select(queryId ,dataParamInfo,tableInfoHandler);
+			sqlSession.select(queryId ,dataParamInfo, tableInfoHandler);
 		}
 
 		return tableInfoHandler.getTableInfoList();

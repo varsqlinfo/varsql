@@ -165,9 +165,9 @@ VarsqlAPP.vueServiceBean({
 	            //previewStyle: 'vertical'                // 마크다운 프리뷰 스타일 (tab || vertical)
 	            plugins: [
                     [toastui.Editor.plugin.chart],
-                    [toastui.Editor.plugin.codeSyntaxHighlight, { highlighter: Prism }],
-                    toastui.Editor.plugin.tableMergedCell,
                     toastui.Editor.plugin.colorSyntax,
+                   // [toastui.Editor.plugin.codeSyntaxHighlight, { highlighter: Prism }],
+                    toastui.Editor.plugin.tableMergedCell,
                     [
                         toastui.Editor.plugin.uml,
                         { rendererURL: "http://www.plantuml.com/plantuml/svg/" }

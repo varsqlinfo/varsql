@@ -218,8 +218,9 @@ public final class SQLUtils {
 		StatementSetter statementSetter = MetaControlFactory.getDbInstanceFactory(DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType())).getStatementSetter();
 		
 	    try{
+	    	SqlExecuteManager.getInstance().addStatementInfo(seb, ExecuteStatementInfo.builder().conn(conn).build());
 	    	boolean hasResults;
-			if(VarsqlStatementType.STATEMENT.equals(tmpSqlSource.getStatementType())){
+			if(VarsqlStatementType.STATEMENT.equals(tmpSqlSource.getStatementType()) || (tmpSqlSource.getParamList() == null|| tmpSqlSource.getParamList().size() < 1 )){
 				stmt  = conn.createStatement();
 				
 				JdbcUtils.setStatementFetchSize(stmt, fetchSize);
@@ -358,32 +359,8 @@ public final class SQLUtils {
 	 * @throws SQLException
 	 */
 	public static List<Map> executeQuery(SqlStatementInfo sqlExecuteInfo) throws SQLException {
-		ResultSet rs  = null;
-		
-		String requid = StringUtils.isBlank(sqlExecuteInfo.getRequid$$()) ? VartechUtils.generateUUID() : sqlExecuteInfo.getRequid$$();
-		
-		String executeQuery = sqlExecuteInfo.getSql();
-		
-		DBVenderType dbType = DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType());
-		
-		SqlSource sqlSource = SqlSourceBuilder.getSqlSource(executeQuery, sqlExecuteInfo.getSqlParam(), dbType);
-		
-		try(Connection conn = ConnectionFactory.getInstance().getConnection(sqlExecuteInfo.getDatabaseInfo().getVconnid());
-				PreparedStatement stmt  = conn.prepareStatement(executeQuery)){
-			
-			// request 실행 취소 정보 추가
-			SqlExecuteManager.getInstance().addStatementInfo(SqlExecuteBean.builder().reqUid(requid).ip(sqlExecuteInfo.getIp()).build(), ExecuteStatementInfo.builder().statement(stmt).sql(executeQuery).build());
-			
-			SQLParamUtils.setSqlParameter(stmt, sqlSource);
-			rs = stmt.executeQuery();
-			
-			return SQLResultSetUtils.resultList(rs, dbType, false);
-			
-		}catch(SQLException e){
-			throw e;
-		} finally {
-			SqlExecuteManager.getInstance().removeStatementInfo(requid);
-			JdbcUtils.close(rs);
+		try(Connection conn = ConnectionFactory.getInstance().getConnection(sqlExecuteInfo.getDatabaseInfo().getVconnid());){
+			return executeQuery(sqlExecuteInfo, conn);
 		}
 	}
 	
@@ -397,6 +374,10 @@ public final class SQLUtils {
 		DBVenderType dbType = DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType());
 		
 		SqlSource sqlSource = SqlSourceBuilder.getSqlSource(executeQuery, sqlExecuteInfo.getSqlParam(), dbType);
+		
+		SqlExecuteBean seb = SqlExecuteBean.builder().reqUid(requid).ip(sqlExecuteInfo.getIp()).build();
+		
+		SqlExecuteManager.getInstance().addStatementInfo(seb, ExecuteStatementInfo.builder().conn(conn).build());
 		
 		try(PreparedStatement stmt  = conn.prepareStatement(executeQuery)){
 			
@@ -424,32 +405,8 @@ public final class SQLUtils {
 	 * @throws SQLException
 	 */
 	public static Map executeQueryOneItem(SqlStatementInfo sqlExecuteInfo) throws SQLException {
-		ResultSet rs  = null;
-		
-		String requid = StringUtils.isBlank(sqlExecuteInfo.getRequid$$()) ? VartechUtils.generateUUID() : sqlExecuteInfo.getRequid$$();
-		
-		String executeQuery = sqlExecuteInfo.getSql();
-		
-		DBVenderType dbType = DBVenderType.getDBType(sqlExecuteInfo.getDatabaseInfo().getType());
-		
-		SqlSource sqlSource = SqlSourceBuilder.getSqlSource(executeQuery, sqlExecuteInfo.getSqlParam(), dbType);
-		
-		try(Connection conn = ConnectionFactory.getInstance().getConnection(sqlExecuteInfo.getDatabaseInfo().getVconnid());
-				PreparedStatement stmt  = conn.prepareStatement(executeQuery)){
-			
-			// request 실행 취소 정보 추가
-			SqlExecuteManager.getInstance().addStatementInfo(SqlExecuteBean.builder().reqUid(requid).ip(sqlExecuteInfo.getIp()).build(), ExecuteStatementInfo.builder().statement(stmt).sql(executeQuery).build());
-			
-			SQLParamUtils.setSqlParameter(stmt, sqlSource);
-			rs = stmt.executeQuery();
-			
-			return SQLResultSetUtils.resultOne(rs, dbType, false);
-			
-		}catch(SQLException e){
-			throw e;
-		} finally {
-			SqlExecuteManager.getInstance().removeStatementInfo(requid);
-			JdbcUtils.close(rs);
+		try(Connection conn = ConnectionFactory.getInstance().getConnection(sqlExecuteInfo.getDatabaseInfo().getVconnid());){
+			return executeQueryOneItem(sqlExecuteInfo, conn);
 		}
 	}
 	
@@ -464,10 +421,14 @@ public final class SQLUtils {
 		
 		SqlSource sqlSource = SqlSourceBuilder.getSqlSource(executeQuery, sqlExecuteInfo.getSqlParam(), dbType);
 		
+		SqlExecuteBean seb = SqlExecuteBean.builder().reqUid(requid).ip(sqlExecuteInfo.getIp()).build();
+		
+		SqlExecuteManager.getInstance().addStatementInfo(seb, ExecuteStatementInfo.builder().conn(conn).build());
+		
 		try(PreparedStatement stmt  = conn.prepareStatement(executeQuery)){
 			
 			// request 실행 취소 정보 추가
-			SqlExecuteManager.getInstance().addStatementInfo(SqlExecuteBean.builder().reqUid(requid).ip(sqlExecuteInfo.getIp()).build(), ExecuteStatementInfo.builder().statement(stmt).sql(executeQuery).build());
+			SqlExecuteManager.getInstance().addStatementInfo(seb, ExecuteStatementInfo.builder().statement(stmt).sql(executeQuery).build());
 			
 			SQLParamUtils.setSqlParameter(stmt, sqlSource);
 			rs = stmt.executeQuery();

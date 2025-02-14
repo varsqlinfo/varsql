@@ -123,7 +123,6 @@ if (typeof window != "undefined") {
 			]
 			, 'css': [
 				'/webstatic/js/plugins/board/editor/toast/toastui-editor.min.css'
-				,"/webstatic/js/plugins/board/editor/toast/prism-okaidia.min.css"
 				,"/webstatic/js/plugins/board/editor/toast/toastui-chart.css"
 				,"/webstatic/js/plugins/board/editor/toast/toastui-editor-dark.css"
 				,"/webstatic/js/plugins/board/editor/toast/toastui-editor-plugin-code-syntax-highlight.min.css"
@@ -1202,8 +1201,10 @@ if (typeof window != "undefined") {
 				this.removeAttr('var-css-key');
 			}
 			
-			clearInterval(centerLoadingIntervalObj[this]);
-			delete centerLoadingIntervalObj[this];
+			var $uuid = this.data("$uuid"); 
+			
+			clearInterval(centerLoadingIntervalObj[$uuid]);
+			delete centerLoadingIntervalObj[$uuid];
 			
 			return; 
 		}
@@ -1262,7 +1263,12 @@ if (typeof window != "undefined") {
 		if(config.enableTime === true){
 			var loadingTimeEle = this.find('.center-loading-time');
 			var sec = 0;
-			centerLoadingIntervalObj[this] = setInterval(() =>{ 
+			
+			var uuid = _$base.generateUUID();
+			
+			this.data("$uuid",uuid); 
+			
+			centerLoadingIntervalObj[uuid] = setInterval(() =>{ 
 				loadingTimeEle.empty().html(++sec)
 			}, 1000);
 			

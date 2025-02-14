@@ -71,6 +71,10 @@ public class BackupFileRemoveJob extends JobBean {
 			for(File file :chkFile.listFiles()) {
 				removeExpireFile(file, currentLdt);
 			}
+			
+			if(chkFile.listFiles().length < 1) {
+				chkFile.delete();
+			}
 		}
 	}
 }
