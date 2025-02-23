@@ -54,13 +54,7 @@
 					, max (k.key_order) as key_order , max(k.asc_desc) as asc_desc
 				from db_index x , db_index_key k
 				where x.index_name = k.index_name and x.class_name = k.class_name and x.owner_name = k.owner_name
-				 and x.owner_name = upper(#{schema})
-                and k.owner_name = upper(#{schema})
-				 AND k.class_name  IN (
-					SELECT class_name "NAME" FROM DB_CLASS tbl WHERE  tbl.is_system_class = 'NO' 
-					AND tbl.class_type = 'CLASS'
-					and tbl.owner_name = upper(#{schema})
-				)
+				 and k.owner_name = upper(#{schema})
 				group by key_attr_name , x.class_name
 			) k on tbl.class_name = k.class_name and col.attr_name = k.key_attr_name
 		where  1=1
@@ -119,9 +113,8 @@
 						ELSE ' ' END as "COL_CONST" 
 					, max (k.key_order) as key_order , max(k.asc_desc) as asc_desc
 				from db_index x , db_index_key k
-				where x.index_name = k.index_name and x.class_name = k.class_name
-				and x.owner_name = upper(#{schema})
-                and k.owner_name = upper(#{schema})
+				where x.index_name = k.index_name and x.class_name = k.class_name and x.owner_name = k.owner_name
+				and k.owner_name = upper(#{schema})
 				AND k.class_name  IN (
 					SELECT class_name "NAME" FROM DB_CLASS tbl WHERE  tbl.is_system_class = 'NO' 
 					AND tbl.class_type = 'VCLASS'
@@ -238,7 +231,7 @@
 	</select>
 	
 	<!-- index list -->
-	 <select id="indexList" parameterType="databaseParamInfo" resultType="objectInfo">
+	<select id="indexList" parameterType="databaseParamInfo" resultType="objectInfo">
 		SELECT 
 			ind.index_name as "NAME"
 			,'' as "STATUS"
@@ -249,6 +242,7 @@
 				AND tbl.class_type = 'CLASS'
 				and tbl.owner_name = upper(#{schema})
 			)
+			and ind.is_primary_key !=  'YES'
 			and ind.owner_name = upper(#{schema})
 		ORDER BY ind.class_name,  ind.index_name
 	</select>
@@ -267,16 +261,14 @@
 	        ELSE ' ' END as "TYPE",
 			b.asc_desc  as "ASC_OR_DESC",
 			'' as "STATUS"
-		FROM 
-			db_index a 
-			left join db_index_key b on  a.index_name = b.index_name
-		WHERE 1=1
+		from db_index a , db_index_key b
+		where a.index_name = b.index_name and a.class_name = b.class_name and a.owner_name = b.owner_name
 		    <if test="custom != null and custom.objectNameList != null">
 				<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
 					a.index_name in (${item})
 				</foreach>
 			</if>
-			and a.owner_name = upper(#{schema})
+			and a.is_primary_key !=  'YES'
 			and b.owner_name = upper(#{schema})
 		    AND a.class_name  IN (
 				SELECT class_name "NAME" FROM DB_CLASS tbl WHERE  tbl.is_system_class = 'NO' 
@@ -285,20 +277,21 @@
 			)
 		ORDER BY a.class_name,  a.index_name , b.key_order
 	</select>
+
 	
 	
 	<!-- trigger list -->
 	<select id="triggerList" parameterType="databaseParamInfo" resultType="objectInfo">
 		SELECT 
-			NAME AS "NAME"
-			, target_class AS "TABLE_NAME"
+			trigger_name AS "NAME"
+			, target_class_name AS "TABLE_NAME"
 			, comment AS "REMARKS"
-			, event 
-		 	, condition AS statement
+			, action_type 
+		 	, action_time AS statement
 		 	,a.*
-		FROM db_trigger a
-		where a.owner.name = upper(#{schema})
-		ORDER BY target_class , name
+		FROM db_trig a
+		where a.owner_name = upper(#{schema})
+		ORDER BY target_class_name , trigger_name
 	</select>
 	
 	<!-- trigger info map -->
@@ -313,22 +306,22 @@
 	
 	<!-- trigger metadata -->
 	<select id="triggerMetadata" parameterType="databaseParamInfo" resultMap="triggerInfoMap">
-		SELECT 
-			NAME AS "NAME"
-			, target_class AS "TABLE_NAME"
+	 	SELECT 
+			trigger_name AS "OBJECT_NAME"
+			, target_class_name AS "TABLE_NAME"
 			, comment AS "REMARKS"
-			, event  as "EVENTTYPE"
-		 	, condition AS statement
+			, action_type  as "EVENTTYPE"
 		 	, '' as "STATUS"
-		FROM db_trigger a	
-		where a.owner.name = upper(#{schema})
+		FROM db_trig a	
+		where a.owner_name = upper(#{schema})
 		<if test="custom != null and custom.objectNameList != null">
 			<foreach item="item" index="index" collection="custom.objectNameList" open="and (" close=")" separator="or">
-				a.name in (${item})
+				a.trigger_name in (${item})
 			</foreach>
 		</if>
-		ORDER BY target_class , name
+		ORDER BY target_class_name , trigger_name
 	</select>
+
 	
 	<!-- sequence info map -->
 	<resultMap id="sequenceInfoMap" type="sequenceInfo">

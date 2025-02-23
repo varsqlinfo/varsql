@@ -46,7 +46,7 @@ public class TableInfoHandler implements ResultHandler<DataMap> {
 
 		List<String> tableNameList = new ArrayList<String>();
 		boolean addFlag = false;
-		for(TableInfo tblInfo :   tableInfoList){
+		for(TableInfo tblInfo : tableInfoList){
 			tableIndexInfo.put(tblInfo.getName(), ++idx);
 
 			sb.append(addFlag ? ",":"" ).append("'").append(tblInfo.getName()).append("'");
@@ -90,12 +90,17 @@ public class TableInfoHandler implements ResultHandler<DataMap> {
 				currentTableInfo = this.tableInfoList.get(this.tableIndexInfo.get(tblName));
 				
 				currentTableInfo.setRemarks(StringUtils.nullToString(currentTableInfo.getRemarks(), ""));
+				
+				if(currentTableInfo.getColList() == null) {
+					currentTableInfo.setColList(new ArrayList<ColumnInfo>());
+				}
 			}else{
 				currentTableInfo = new TableInfo();
 
 				currentTableInfo.setName(tblName);
 				currentTableInfo.setSchema(rowData.getString(MetaColumnConstants.SCHEMA));
 				currentTableInfo.setRemarks(rowData.getString(MetaColumnConstants.REMARKS,""));
+				currentTableInfo.setColList(new ArrayList<ColumnInfo>());
 
 				tableInfoList.add(currentTableInfo);
 			}

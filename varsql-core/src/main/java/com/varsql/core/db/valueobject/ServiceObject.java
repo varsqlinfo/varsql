@@ -23,7 +23,7 @@ public class ServiceObject {
 		this(objectType, true);
 	}
 	
-	public ServiceObject(ObjectType objectType,boolean baseMenuFlag, ObjectTypeTabInfo.MetadataTab... metabTab){
+	public ServiceObject(ObjectType objectType, boolean baseMenuFlag, ObjectTypeTabInfo.MetadataTab... metabTab){
 		this.name = objectType.getObjectTypeName();
 		this.contentid = objectType.getObjectTypeId();
 		

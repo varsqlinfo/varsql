@@ -205,14 +205,12 @@
 					return ;
 				}
 				
-				
 	    		var params ={
-    				exportType :'text'
-    				,fileName :'contextmenu-template.json'
+    				exportType :'json'
+    				,fileName :'contextmenu-template'
     				,content : JSON.stringify(contextItems, null, 2)
     			};
 	    		
-
     			VARSQL.req.download({
     				type: 'post'
     				,url: '/download'

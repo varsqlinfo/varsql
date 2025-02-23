@@ -91,6 +91,7 @@ VarsqlAPP.vueServiceBean({
 			
 			VARSQL.req.ajax({
 				url:{type:VARSQL.uri.database, url:'/dbObjectList'}
+				,loadSelector : 'body'
 				,data : {
 					conuid: this.conuid
 					,objectType: 'table'

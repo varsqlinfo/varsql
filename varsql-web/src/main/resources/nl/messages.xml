@@ -91,7 +91,7 @@
 <entry key="msg.export.spec.step2">Table Selection</entry>
 <entry key="msg.export.spec.step3">Complete</entry>
 <entry key="msg.export.spec.table.definition">Table Definition</entry>
-<entry key="msg.export.spec.column.multi.sheet">Multi-Sheet Columns</entry>
+<entry key="msg.export.spec.table.multi.sheet">Multi-Sheet Tables</entry>
 <entry key="msg.export.spec.column.detail">Column Details</entry>
 <entry key="msg.export.spec.column.title">Export Column Information</entry>
 <entry key="msg.export.spec.schema.select">Please select a schema.</entry>

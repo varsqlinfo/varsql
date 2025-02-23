@@ -12,7 +12,7 @@ import com.varsql.core.db.meta.AbstractDBMeta;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.mybatis.handler.resultset.IndexInfoHandler;
 import com.varsql.core.db.mybatis.handler.resultset.TableInfoHandler;
-import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.servicemenu.DBObjectType;
 import com.varsql.core.db.servicemenu.ObjectTypeTabInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.IndexInfo;
@@ -36,13 +36,13 @@ public class TiberoDBMeta extends AbstractDBMeta{
 	public TiberoDBMeta(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory
 			,new ServiceObject[] {
-				new ServiceObject(ObjectType.TABLE)
-				, new ServiceObject(ObjectType.VIEW)
-				, new ServiceObject(ObjectType.FUNCTION)
-				, new ServiceObject(ObjectType.INDEX)
-				, new ServiceObject(ObjectType.PROCEDURE)
-				, new ServiceObject(ObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
-				, new ServiceObject(ObjectType.SEQUENCE, false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+				new ServiceObject(DBObjectType.TABLE)
+				, new ServiceObject(DBObjectType.VIEW)
+				, new ServiceObject(DBObjectType.FUNCTION)
+				, new ServiceObject(DBObjectType.INDEX)
+				, new ServiceObject(DBObjectType.PROCEDURE)
+				, new ServiceObject(DBObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+				, new ServiceObject(DBObjectType.SEQUENCE, false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
 			}
 		);
 	}
@@ -156,7 +156,7 @@ public class TiberoDBMeta extends AbstractDBMeta{
 				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("viewList" ,dataParamInfo));
 			}else{
 				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList" ,dataParamInfo));
-				if(tableInfoHandler.getTableNameList() !=null  && tableInfoHandler.getTableNameList().size() > 0){
+				if(dataParamInfo.getCustom() != null && dataParamInfo.getCustom().containsKey(OBJECT_NAME_LIST_KEY) && tableInfoHandler.getTableNameList() !=null  && tableInfoHandler.getTableNameList().size() > 0){
 					dataParamInfo.addCustom(OBJECT_NAME_LIST_KEY, tableInfoHandler.getTableNameList());
 				}
 			}

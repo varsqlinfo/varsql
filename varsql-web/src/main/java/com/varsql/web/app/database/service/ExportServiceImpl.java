@@ -41,7 +41,7 @@ import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.report.VarsqlReportConfig;
-import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.servicemenu.DBObjectType;
 import com.varsql.core.db.valueobject.BaseObjectInfo;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
@@ -164,9 +164,9 @@ public class ExportServiceImpl{
 
 		ResponseResult result =new ResponseResult();
 		
-		dbMetadataRequestDTO.setObjectType(ObjectType.TABLE.getObjectTypeId());
+		dbMetadataRequestDTO.setObjectType(DBObjectType.TABLE.getObjectTypeId());
 
-		result.setList(dbMetaEnum.getDBObjectList(ObjectType.TABLE.getObjectTypeId(), dbMetadataRequestDTO));
+		result.setList(dbMetaEnum.getDBObjectList(DBObjectType.TABLE.getObjectTypeId(), dbMetadataRequestDTO));
 
 		return result ;
 
@@ -198,7 +198,7 @@ public class ExportServiceImpl{
 
 		for (int i = 0; i < objArr.length; i++) {
 			String mode = objArr[i];
-			result.addCustomMapAttribute(mode, dbMetaEnum.getDBObjectList(ObjectType.getDBObjectType(mode).getObjectTypeId(), dbMetadataRequestDTO));
+			result.addCustomMapAttribute(mode, dbMetaEnum.getDBObjectList(DBObjectType.getDBObjectType(mode).getObjectTypeId(), dbMetadataRequestDTO));
 		}
 
 		return result;
@@ -291,7 +291,7 @@ public class ExportServiceImpl{
 			List<Map> objList =  exportInfo.get(objectName);
 			String[] objNmArr =  Arrays.stream(objList.toArray(new HashMap[objList.size()])).map(tmp -> tmp.get("name")).toArray(String[]::new);
 
-			ObjectType objectType = ObjectType.getDBObjectType( objectName);
+			DBObjectType objectType = DBObjectType.getDBObjectType( objectName);
 			
 			dpi.setObjectType(objectType.name());
 
@@ -593,7 +593,7 @@ public class ExportServiceImpl{
 		try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile), Charset.forName(charset));) {
 			
 			for(DDLExportItemVO exportItemVO : ddlExportVO.getExportItems()) {
-				ObjectType objectType = ObjectType.getDBObjectType(exportItemVO.getContentid());
+				DBObjectType objectType = DBObjectType.getDBObjectType(exportItemVO.getContentid());
 				
 				dpi.setObjectType(objectType.name());
 				

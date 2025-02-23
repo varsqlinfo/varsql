@@ -92,7 +92,7 @@
 <entry key="msg.export.spec.step2">테이블 선택</entry>
 <entry key="msg.export.spec.step3">완료</entry>
 <entry key="msg.export.spec.table.definition">테이블정의서</entry>
-<entry key="msg.export.spec.column.multi.sheet">컬럼다중시트여부</entry>
+<entry key="msg.export.spec.table.multi.sheet">테이블 다중시트여부</entry>
 <entry key="msg.export.spec.column.detail">컬럼 상세정보</entry>
 <entry key="msg.export.spec.column.title">Export 컬럼 정보</entry>
 <entry key="msg.export.spec.schema.select">스키마를 선택해주세요.</entry>

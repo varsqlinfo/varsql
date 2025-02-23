@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
-import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.servicemenu.DBObjectType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.exception.VarsqlRuntimeException;
@@ -79,10 +79,10 @@ public class SchedulerMgmtServiceImpl extends AbstractService{
 			return resultObject; 
 		}else{
 			DatabaseParamInfo dpi = new DatabaseParamInfo(databaseInfo);
-			dpi.setObjectType(ObjectType.TABLE.getObjectTypeId());
+			dpi.setObjectType(DBObjectType.TABLE.getObjectTypeId());
 
 			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
-			resultObject.setList(dbMetaEnum.getDBObjectList(ObjectType.TABLE.getObjectTypeId(), dpi));
+			resultObject.setList(dbMetaEnum.getDBObjectList(DBObjectType.TABLE.getObjectTypeId(), dpi));
 		}
 
 		return resultObject;

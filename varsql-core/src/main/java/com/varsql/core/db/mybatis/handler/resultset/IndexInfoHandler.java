@@ -16,7 +16,7 @@ public class IndexInfoHandler implements ResultHandler<DataMap> {
 	private List<IndexInfo> indexInfoList = new ArrayList<IndexInfo>();
 	
 	private IndexInfo currentIndexInfo; 
-	private String beforeTableName = ""; 
+	private String beforeIndexName = ""; 
 	
 	private DataTypeFactory dataTypeFactory; 
 	
@@ -31,16 +31,19 @@ public class IndexInfoHandler implements ResultHandler<DataMap> {
 	public void handleResult(ResultContext<? extends DataMap> paramResultContext) {
 		DataMap rowData = paramResultContext.getResultObject();
 		
+		String tableName = rowData.getString(MetaColumnConstants.TABLE_NAME);
 		String indexName = rowData.getString(MetaColumnConstants.INDEX_NAME);
 		
-		if(!indexName.equals(beforeTableName)){
+		String tableIndexKey = tableName+'_'+ indexName; 
+		
+		if(!indexName.equals(this.beforeIndexName)){
 			currentIndexInfo = new IndexInfo();
 			
 			currentIndexInfo.setName(indexName);
 			currentIndexInfo.setBufferPool(rowData.getString(MetaColumnConstants.BUFFER_POOL));
 			currentIndexInfo.setStatus(rowData.getString(MetaColumnConstants.STATUS));
 			currentIndexInfo.setTableSpace(rowData.getString(MetaColumnConstants.TABLE_SPACE));
-			currentIndexInfo.setTblName(rowData.getString(MetaColumnConstants.TABLE_NAME));
+			currentIndexInfo.setTblName(tableName);
 			currentIndexInfo.setType(rowData.getString(MetaColumnConstants.INDEX_TYPE));
 			currentIndexInfo.setColList(new ArrayList<ObjectColumnInfo>());
 			
@@ -55,7 +58,7 @@ public class IndexInfoHandler implements ResultHandler<DataMap> {
 		
 		currentIndexInfo.addColInfo(column);
 		
-		beforeTableName = indexName;
+		this.beforeIndexName = tableIndexKey;
 		
 	}
 

@@ -14,7 +14,7 @@ import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.ddl.script.AbstractDDLScript;
 import com.varsql.core.db.mybatis.SQLManager;
-import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.servicemenu.DBObjectType;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.core.db.valueobject.ddl.DDLInfo;
@@ -192,7 +192,7 @@ public class OracleDDLScript extends AbstractDDLScript {
 
 			DDLInfo ddlInfo;
 	
-			dataParamInfo.setObjectType(ObjectType.FUNCTION.name());
+			dataParamInfo.setObjectType(DBObjectType.FUNCTION.name());
 	
 			for (String objNm : objNmArr) {
 	

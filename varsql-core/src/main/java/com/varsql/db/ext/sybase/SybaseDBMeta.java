@@ -11,7 +11,7 @@ import com.varsql.core.db.meta.AbstractDBMeta;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.mybatis.handler.resultset.IndexInfoHandler;
 import com.varsql.core.db.mybatis.handler.resultset.TableInfoHandler;
-import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.servicemenu.DBObjectType;
 import com.varsql.core.db.servicemenu.ObjectTypeTabInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.IndexInfo;
@@ -35,12 +35,12 @@ public class SybaseDBMeta extends AbstractDBMeta{
 	public SybaseDBMeta(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory
 			,new ServiceObject[] { 	
-				 new ServiceObject(ObjectType.TABLE)
-				, new ServiceObject(ObjectType.VIEW)
-				, new ServiceObject(ObjectType.FUNCTION, false, ObjectTypeTabInfo.MetadataTab.COLUMN ,ObjectTypeTabInfo.MetadataTab.DDL)
-				, new ServiceObject(ObjectType.PROCEDURE, false, ObjectTypeTabInfo.MetadataTab.COLUMN ,ObjectTypeTabInfo.MetadataTab.DDL)
-				, new ServiceObject(ObjectType.INDEX, false, ObjectTypeTabInfo.MetadataTab.COLUMN ,ObjectTypeTabInfo.MetadataTab.DDL)
-				, new ServiceObject(ObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+				 new ServiceObject(DBObjectType.TABLE)
+				, new ServiceObject(DBObjectType.VIEW)
+				, new ServiceObject(DBObjectType.FUNCTION, false, ObjectTypeTabInfo.MetadataTab.COLUMN ,ObjectTypeTabInfo.MetadataTab.DDL)
+				, new ServiceObject(DBObjectType.PROCEDURE, false, ObjectTypeTabInfo.MetadataTab.COLUMN ,ObjectTypeTabInfo.MetadataTab.DDL)
+				, new ServiceObject(DBObjectType.INDEX, false, ObjectTypeTabInfo.MetadataTab.COLUMN ,ObjectTypeTabInfo.MetadataTab.DDL)
+				, new ServiceObject(DBObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
 			}
 		);
 	}
@@ -85,7 +85,7 @@ public class SybaseDBMeta extends AbstractDBMeta{
 				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("viewList" ,dataParamInfo));
 			}else{
 				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList" ,dataParamInfo));
-				if(tableInfoHandler.getTableNameList() !=null  && tableInfoHandler.getTableNameList().size() > 0){
+				if(dataParamInfo.getCustom() != null && dataParamInfo.getCustom().containsKey(OBJECT_NAME_LIST_KEY) && tableInfoHandler.getTableNameList() !=null  && tableInfoHandler.getTableNameList().size() > 0){
 					dataParamInfo.addCustom(OBJECT_NAME_LIST_KEY, tableInfoHandler.getTableNameList());
 				}
 			}

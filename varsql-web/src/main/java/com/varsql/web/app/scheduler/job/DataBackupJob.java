@@ -17,7 +17,7 @@ import com.varsql.core.common.job.JobExecuteResult;
 import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.core.configuration.Configuration;
 import com.varsql.core.db.MetaControlFactory;
-import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.servicemenu.DBObjectType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.TableInfo;
@@ -74,9 +74,9 @@ public class DataBackupJob extends JobBean {
 		if(dataExportVO.getExportItems().size() ==0) {
 			DatabaseParamInfo dpi = new DatabaseParamInfo(databaseInfo);
 			dpi.setSchema(dataExportVO.getSchema());
-			dpi.setObjectType(ObjectType.TABLE.getObjectTypeId());
+			dpi.setObjectType(DBObjectType.TABLE.getObjectTypeId());
 
-			List<TableInfo> tableList = MetaControlFactory.getDbInstanceFactory(databaseInfo.getType()).getDBObjectList(ObjectType.TABLE.getObjectTypeId(), dpi);
+			List<TableInfo> tableList = MetaControlFactory.getDbInstanceFactory(databaseInfo.getType()).getDBObjectList(DBObjectType.TABLE.getObjectTypeId(), dpi);
 			
 			List<DataExportItemVO> exportItems = new ArrayList<>();
 			tableList.forEach(item->{

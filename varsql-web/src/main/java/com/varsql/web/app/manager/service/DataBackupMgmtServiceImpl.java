@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.db.MetaControlFactory;
-import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.servicemenu.DBObjectType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.exception.VarsqlRuntimeException;
@@ -91,9 +91,9 @@ public class DataBackupMgmtServiceImpl extends AbstractService{
 		}else{
 			DatabaseParamInfo dpi = new DatabaseParamInfo(databaseInfo);
 			dpi.setSchema(schema);
-			dpi.setObjectType(ObjectType.TABLE.getObjectTypeId());
+			dpi.setObjectType(DBObjectType.TABLE.getObjectTypeId());
 
-			resultObject.setList(MetaControlFactory.getDbInstanceFactory(databaseInfo.getType()).getDBObjectList(ObjectType.TABLE.getObjectTypeId(), dpi));
+			resultObject.setList(MetaControlFactory.getDbInstanceFactory(databaseInfo.getType()).getDBObjectList(DBObjectType.TABLE.getObjectTypeId(), dpi));
 		}
 
 		return resultObject;

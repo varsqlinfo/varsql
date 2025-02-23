@@ -14,7 +14,7 @@ import com.varsql.core.db.meta.AbstractDBMeta;
 import com.varsql.core.db.mybatis.SQLManager;
 import com.varsql.core.db.mybatis.handler.resultset.IndexInfoHandler;
 import com.varsql.core.db.mybatis.handler.resultset.TableInfoMysqlHandler;
-import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.servicemenu.DBObjectType;
 import com.varsql.core.db.servicemenu.ObjectTypeTabInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.IndexInfo;
@@ -39,12 +39,12 @@ public class MysqlDBMeta extends AbstractDBMeta{
 	public MysqlDBMeta(MetaControlBean dbInstanceFactory){
 		super(dbInstanceFactory
 			,new ServiceObject[] { 
-				 new ServiceObject(ObjectType.TABLE)
-				, new ServiceObject(ObjectType.VIEW)	
-				, new ServiceObject(ObjectType.FUNCTION)
-				, new ServiceObject(ObjectType.INDEX)
-				, new ServiceObject(ObjectType.PROCEDURE)
-				, new ServiceObject(ObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
+				 new ServiceObject(DBObjectType.TABLE)
+				, new ServiceObject(DBObjectType.VIEW)	
+				, new ServiceObject(DBObjectType.FUNCTION)
+				, new ServiceObject(DBObjectType.INDEX)
+				, new ServiceObject(DBObjectType.PROCEDURE)
+				, new ServiceObject(DBObjectType.TRIGGER,false,ObjectTypeTabInfo.MetadataTab.INFO ,ObjectTypeTabInfo.MetadataTab.DDL)
 			}
 		);
 	}

@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.meta.column.MetaColumnConstants;
 import com.varsql.core.db.mybatis.SQLManager;
-import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.servicemenu.DBObjectType;
 import com.varsql.core.db.util.DbMetaUtils;
 import com.varsql.core.db.valueobject.ConstraintInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
@@ -84,8 +84,8 @@ public abstract class AbstractDBMeta implements DBMeta{
 
 	private void addBaseMenu() {
 		addServiceMenu(
-			new ServiceObject(ObjectType.TABLE),
-			new ServiceObject(ObjectType.VIEW)
+			new ServiceObject(DBObjectType.TABLE),
+			new ServiceObject(DBObjectType.VIEW)
 		);
 	}
 
@@ -608,7 +608,7 @@ public abstract class AbstractDBMeta implements DBMeta{
 				nameList.add(sb.toString());
 			}
 
-			dataParamInfo.addCustom("objectNameList", nameList);
+			dataParamInfo.addCustom(OBJECT_NAME_LIST_KEY, nameList);
 		}
 		return dataParamInfo;
 	}

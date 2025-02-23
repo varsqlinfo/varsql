@@ -86,7 +86,7 @@
 <entry key="msg.export.spec.step2">选择表</entry>
 <entry key="msg.export.spec.step3">完成</entry>
 <entry key="msg.export.spec.table.definition">表定义</entry>
-<entry key="msg.export.spec.column.multi.sheet">是否多表分页</entry>
+<entry key="msg.export.spec.table.multi.sheet">Multi-Sheet Tables</entry>
 <entry key="msg.export.spec.column.detail">列详细信息</entry>
 <entry key="msg.export.spec.column.title">导出列信息</entry>
 <entry key="msg.export.spec.schema.select">请选择模式.</entry>

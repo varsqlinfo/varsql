@@ -16,7 +16,7 @@ import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.datatype.DataTypeFactory;
-import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.servicemenu.DBObjectType;
 import com.varsql.core.db.util.DataTypeUtils;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
@@ -77,10 +77,10 @@ public class DBWriter extends AbstractTargetWriter {
 		
 		
 		DatabaseParamInfo dpi = new DatabaseParamInfo(databaseInfo);
-		dpi.setObjectType(ObjectType.TABLE.getObjectTypeId());
+		dpi.setObjectType(DBObjectType.TABLE.getObjectTypeId());
 		dpi.setSchema(sql);
 
-		List<TableInfo> tableInfo = metaControlBean.getDBObjectMeta(ObjectType.TABLE.getObjectTypeId(), dpi, targetVO.getTarget());
+		List<TableInfo> tableInfo = metaControlBean.getDBObjectMeta(DBObjectType.TABLE.getObjectTypeId(), dpi, targetVO.getTarget());
 		
 		if(tableInfo.size() < 1) {
 			throw new NotFoundException("table not found : " +  targetVO.getTarget());

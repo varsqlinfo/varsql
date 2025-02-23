@@ -64,7 +64,7 @@ public class DownloadController extends AbstractController {
 
 		String downloadName = downloadInfo.getFileName() !=null && !"".equals(downloadInfo.getFileName().trim()) ? downloadInfo.getFileName() : "varsql-download" ;
 
-		downloadName = ValidateUtils.getValidFileName(exportType.concatExtension(downloadName));
+		downloadName = exportType.concatExtension(ValidateUtils.getValidFileName(downloadName));
 
 		try(OutputStream os = res.getOutputStream()) {
 			VarsqlUtils.setResponseDownAttr(res, req, java.net.URLEncoder.encode(downloadName,VarsqlConstants.CHAR_SET));

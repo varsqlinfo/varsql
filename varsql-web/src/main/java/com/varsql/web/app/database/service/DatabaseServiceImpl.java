@@ -16,7 +16,7 @@ import com.varsql.core.connection.ConnectionInfoManager;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
-import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.servicemenu.DBObjectType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.exception.DBMetadataException;
@@ -144,14 +144,14 @@ public class DatabaseServiceImpl{
 		try{
 			String [] objectNames = dbMetadataRequestDTO.getObjectNames();
 
-			if(ObjectType.TABLE.getObjectTypeId().equals(objectType) && dbMetadataRequestDTO.isLazyLoad()){
+			if(DBObjectType.TABLE.getObjectTypeId().equals(objectType) && dbMetadataRequestDTO.isLazyLoad()){
 				if(dbMetadataRequestDTO.getCustom()!=null && "Y".equals(dbMetadataRequestDTO.getCustom().get("allMetadata"))){
-					result.setList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(), dbMetadataRequestDTO, objectNames));
+					result.setList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(objectType).getObjectTypeId(), dbMetadataRequestDTO, objectNames));
 				} else {
-					result.setList(dbMetaEnum.getDBObjectList(ObjectType.getDBObjectType(objectType).getObjectTypeId(),dbMetadataRequestDTO));
+					result.setList(dbMetaEnum.getDBObjectList(DBObjectType.getDBObjectType(objectType).getObjectTypeId(),dbMetadataRequestDTO));
 				}
 			}else{
-				result.setList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(), dbMetadataRequestDTO, objectNames));
+				result.setList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(objectType).getObjectTypeId(), dbMetadataRequestDTO, objectNames));
 			}
 		}catch(Exception e){
 			commonLogService.insertExceptionLog("dbObjectListException",e);
@@ -163,7 +163,7 @@ public class DatabaseServiceImpl{
 				result.setMessage(e.getMessage());
 			}else {
 				try{
-					result.setList(MetaControlFactory.getDbInstanceFactory(DBVenderType.OTHER).getDBObjectMeta(ObjectType.getDBObjectType(objectType).getObjectTypeId(),dbMetadataRequestDTO));
+					result.setList(MetaControlFactory.getDbInstanceFactory(DBVenderType.OTHER).getDBObjectMeta(DBObjectType.getDBObjectType(objectType).getObjectTypeId(),dbMetadataRequestDTO));
 				}catch(Exception subE){
 					logger.error("dbObjectList serverName : [{}]",objectType);
 					logger.error("dbObjectList ", subE);
@@ -191,7 +191,7 @@ public class DatabaseServiceImpl{
 		ResponseResult result = new ResponseResult();
 
 		try{
-			result.setList(dbMetaEnum.getDBObjectMeta(ObjectType.getDBObjectType(dbMetadataRequestDTO.getObjectType()).getObjectTypeId(),dbMetadataRequestDTO, dbMetadataRequestDTO.getObjectName()));
+			result.setList(dbMetaEnum.getDBObjectMeta(DBObjectType.getDBObjectType(dbMetadataRequestDTO.getObjectType()).getObjectTypeId(),dbMetadataRequestDTO, dbMetadataRequestDTO.getObjectName()));
 		}catch(Exception e){
 			commonLogService.insertExceptionLog("dbObjectMetadataException",e);
 			logger.error("dbObjectMetadataList : {} ", e.getMessage() , e);
@@ -215,7 +215,7 @@ public class DatabaseServiceImpl{
 		ResponseResult result = new ResponseResult();
 
 		try{
-			result.setItemOne(dbMetaEnum.getDDLScript(ObjectType.getDBObjectType( dbMetadataRequestDTO.getObjectType()).getObjectTypeId(),dbMetadataRequestDTO, dbMetadataRequestDTO.getObjectName()));
+			result.setItemOne(dbMetaEnum.getDDLScript(DBObjectType.getDBObjectType( dbMetadataRequestDTO.getObjectType()).getObjectTypeId(),dbMetadataRequestDTO, dbMetadataRequestDTO.getObjectName()));
 		}catch(Exception e){
 			commonLogService.insertExceptionLog("createDDLException",e);
 			logger.error("createDDL : {}", e.getMessage(), e);

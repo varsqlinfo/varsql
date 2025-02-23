@@ -18,7 +18,7 @@ import com.varsql.core.db.datatype.DataTypeFactory;
 import com.varsql.core.db.ddl.conversion.ConversionType;
 import com.varsql.core.db.ddl.conversion.DDLConversionFactory;
 import com.varsql.core.db.mybatis.SQLManager;
-import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.servicemenu.DBObjectType;
 import com.varsql.core.db.util.DataTypeUtils;
 import com.varsql.core.db.util.DbMetaUtils;
 import com.varsql.core.db.valueobject.ColumnInfo;
@@ -132,7 +132,7 @@ public abstract class AbstractDDLScript implements DDLScript{
 	 */
 	public List<DDLInfo> getTables(DatabaseParamInfo dataParamInfo, DDLCreateOption ddlOption, String ...objNames) throws Exception {
 
-		List<TableInfo> tableInfoList = dbInstanceFactory.getDBObjectMeta(ObjectType.TABLE.getObjectTypeId(), dataParamInfo,objNames);
+		List<TableInfo> tableInfoList = dbInstanceFactory.getDBObjectMeta(DBObjectType.TABLE.getObjectTypeId(), dataParamInfo,objNames);
 
 		StringBuilder ddlStrBuf;
 
@@ -480,7 +480,7 @@ public abstract class AbstractDDLScript implements DDLScript{
 
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();
 		
-		List<TableInfo> tableInfoList = dbInstanceFactory.getDBObjectMeta(ObjectType.TABLE.getObjectTypeId(), dataParamInfo,objNames);
+		List<TableInfo> tableInfoList = dbInstanceFactory.getDBObjectMeta(DBObjectType.TABLE.getObjectTypeId(), dataParamInfo,objNames);
 
 		DDLInfo ddlInfo;
 		

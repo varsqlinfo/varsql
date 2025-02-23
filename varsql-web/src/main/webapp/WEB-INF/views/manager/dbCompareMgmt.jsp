@@ -1127,7 +1127,7 @@ VarsqlAPP.vueServiceBean( {
 						isStopPropagation :true
 						,vertical : {
 							onUpdate : function (item){
-								$.pubGrid('#targetColumn').moveVScrollPosition(item.scrollTop,'',false);
+								$.pubGrid('#targetColumn').moveVScrollPosition(Math.ceil(item.scrollTop/$.pubGrid('#sourceColumn').config.scroll.oneRowMove)* $.pubGrid('#targetColumn').config.scroll.oneRowMove,'',false);
 							}
 							,speed : 5
 						}
@@ -1188,7 +1188,7 @@ VarsqlAPP.vueServiceBean( {
 						isStopPropagation :true
 						,vertical : {
 							onUpdate : function (item){
-								$.pubGrid('#sourceColumn').moveVScrollPosition(item.scrollTop,'',false);
+								$.pubGrid('#sourceColumn').moveVScrollPosition(Math.ceil(item.scrollTop/$.pubGrid('#targetColumn').config.scroll.oneRowMove)* $.pubGrid('#sourceColumn').config.scroll.oneRowMove,'',false);
 							}
 							,speed : 5
 						}

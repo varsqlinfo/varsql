@@ -37,7 +37,7 @@
 						</div>
 					</div>
 					<div class="field-group">
-						<label class="col-xs-3 control-label"><spring:message code="msg.export.spec.column.multi.sheet" /></label>
+						<label class="col-xs-3 control-label"><spring:message code="msg.export.spec.table.multi.sheet" /></label>
 						<div class="col-xs-9">
 							<label class="radio-inline">
 								<input type="radio" name="sheetFlag" v-model="userSetting.sheetFlag" value="false" checked><spring:message code="single" />

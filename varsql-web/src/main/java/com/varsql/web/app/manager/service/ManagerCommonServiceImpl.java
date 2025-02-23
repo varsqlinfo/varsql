@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
-import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.servicemenu.DBObjectType;
 import com.varsql.core.db.valueobject.BaseObjectInfo;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
@@ -117,8 +117,8 @@ public class ManagerCommonServiceImpl extends AbstractService{
 			dpi.setObjectType(objectType);
 
 			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
-			String objectId = ObjectType.getDBObjectType(objectType).getObjectTypeId();
-			if(ObjectType.TABLE.getObjectTypeId().equals(objectId)){ //object type "table" 인 경우는 column 정보도 같이 전송
+			String objectId = DBObjectType.getDBObjectType(objectType).getObjectTypeId();
+			if(DBObjectType.TABLE.getObjectTypeId().equals(objectId)){ //object type "table" 인 경우는 column 정보도 같이 전송
 				resultObject.setList(dbMetaEnum.getDBObjectMeta(objectId, dpi));
 			}else{ // 테이블이 아닌 경우는 ddl를 비교.
 				List<BaseObjectInfo> objectList = dbMetaEnum.getDBObjectList(objectId, dpi);
@@ -151,8 +151,8 @@ public class ManagerCommonServiceImpl extends AbstractService{
 			dpi.setObjectType(objectType);
 			
 			MetaControlBean dbMetaEnum= MetaControlFactory.getDbInstanceFactory(dpi.getDbType());
-			String objectId = ObjectType.getDBObjectType(objectType).getObjectTypeId();
-			if(ObjectType.TABLE.getObjectTypeId().equals(objectId)){ //object type "table" 인 경우는 column 정보도 같이 전송
+			String objectId = DBObjectType.getDBObjectType(objectType).getObjectTypeId();
+			if(DBObjectType.TABLE.getObjectTypeId().equals(objectId)){ //object type "table" 인 경우는 column 정보도 같이 전송
 				resultObject.setList(dbMetaEnum.getDBObjectList(objectId, dpi));
 			}else{
 				resultObject.setList(dbMetaEnum.getDBObjectList(objectId, dpi));

@@ -10,7 +10,7 @@ import java.util.Map;
 
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.report.VarsqlReportConfig;
-import com.varsql.core.db.servicemenu.ObjectType;
+import com.varsql.core.db.servicemenu.DBObjectType;
 import com.varsql.core.db.valueobject.ColumnInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.TableInfo;
@@ -37,7 +37,7 @@ public abstract class AbstractTableReport implements TableReport{
 	public ExcelReport columnsInfo(DatabaseParamInfo dataParamInfo, List<Map> columnInfoList, boolean addTableDefinitionFlag, boolean multiSheetFlag, String... tableNmArr) throws Exception {
 		ExcelReport report;
 		
-		List<TableInfo> tableList= MetaControlFactory.getDbInstanceFactory(dataParamInfo.getDbType()).getDBObjectMeta(ObjectType.TABLE.getObjectTypeId(),dataParamInfo, tableNmArr);
+		List<TableInfo> tableList= MetaControlFactory.getDbInstanceFactory(dataParamInfo.getDbType()).getDBObjectMeta(DBObjectType.TABLE.getObjectTypeId(),dataParamInfo, tableNmArr);
 		
 		List<String> tableNames= Arrays.asList(tableNmArr);
 		

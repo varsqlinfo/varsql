@@ -92,7 +92,7 @@
 <entry key="msg.export.spec.step2">テーブル選択</entry>
 <entry key="msg.export.spec.step3">完了</entry>
 <entry key="msg.export.spec.table.definition">テーブル定義書</entry>
-<entry key="msg.export.spec.column.multi.sheet">複数シートの列</entry>
+<entry key="msg.export.spec.table.multi.sheet">Multi-Sheet Tables</entry>
 <entry key="msg.export.spec.column.detail">列の詳細情報</entry>
 <entry key="msg.export.spec.column.title">エクスポート列情報</entry>
 <entry key="msg.export.spec.schema.select">スキーマを選択してください.</entry>

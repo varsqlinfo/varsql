@@ -57,6 +57,7 @@ public class TableInfoMysqlHandler implements ResultHandler<DataMap> {
 				sb =new StringBuilder();
 				addFlag = false;
 			}
+			tblInfo.setColList(new ArrayList<ColumnInfo>());
 		}
 
 		if(sb.length() > 0){
@@ -88,6 +89,11 @@ public class TableInfoMysqlHandler implements ResultHandler<DataMap> {
 				currentTableInfo = this.tableInfoList.get(this.tableIndexInfo.get(tblName));
 				currentTableInfo.setColList(new ArrayList<ColumnInfo>());
 				currentTableInfo.setRemarks(StringUtils.nullToString(currentTableInfo.getRemarks(), ""));
+				
+				if(currentTableInfo.getColList() == null) {
+					currentTableInfo.setColList(new ArrayList<ColumnInfo>());
+				}
+				
 			}else{
 				currentTableInfo = new TableInfo();
 
@@ -95,6 +101,7 @@ public class TableInfoMysqlHandler implements ResultHandler<DataMap> {
 				currentTableInfo.setSchema(rowData.getString(MetaColumnConstants.SCHEMA));
 				currentTableInfo.setColList(new ArrayList<ColumnInfo>());
 				currentTableInfo.setRemarks(rowData.getString(MetaColumnConstants.REMARKS,""));
+				currentTableInfo.setColList(new ArrayList<ColumnInfo>());
 
 				tableInfoList.add(currentTableInfo);
 			}
