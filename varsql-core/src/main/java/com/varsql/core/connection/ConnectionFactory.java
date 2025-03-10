@@ -40,7 +40,7 @@ public final class ConnectionFactory implements ConnectionContext{
 
 		if(connInfo != null){
 			if(isShutdown(connid)) {
-				return null; 
+				throw new ConnectionFactoryException(VarsqlAppCode.EC_DB_POOL_CLOSE, "db connection refused");
 			}
 			
 			return connectionPoolType.getPoolBean().getConnection(connInfo);
@@ -165,7 +165,7 @@ public final class ConnectionFactory implements ConnectionContext{
 	@Override
 	public boolean isShutdown(String connid) throws ConnectionFactoryException {
 		if(connectionShutdownInfo.containsKey(connid)) {
-			throw new ConnectionFactoryException(VarsqlAppCode.EC_DB_POOL_CLOSE, "db connection refused");
+			return true; 
 		}
 		return false;
 	}

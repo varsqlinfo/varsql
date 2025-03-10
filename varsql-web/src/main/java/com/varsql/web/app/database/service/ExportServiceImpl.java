@@ -368,14 +368,13 @@ public class ExportServiceImpl{
 			fileInfoEntityRepository.save(fie);
 	
 			session.setAttribute(sessAttrKey, "complete");
-	
-			responseResult.setItemOne(VarsqlURLInfo.FILE_DOWNLOAD.getUrl(new HashMap<String,String>() {
-				private static final long serialVersionUID = 1L;
+			
+			HashMap param = new HashMap();
 
-			{
-				put("fileId", fie.getFileId());
-				put("contId", "");
-			}}));
+			param.put("fileId", fie.getFileId());
+			param.put("contId", "");
+	
+			responseResult.setItemOne(VarsqlURLInfo.FILE_DOWNLOAD.getUrl(param));
 		}catch(Exception e) {
 			session.setAttribute(sessAttrKey, "fail");
 			throw new DataDownloadException(VarsqlAppCode.COMM_FILE_DOWNLOAD_ERROR, e.getMessage(), e);

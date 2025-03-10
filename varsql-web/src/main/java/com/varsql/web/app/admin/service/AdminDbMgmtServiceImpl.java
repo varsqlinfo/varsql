@@ -16,6 +16,8 @@ import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.common.code.VarsqlAppCode;
@@ -180,8 +182,6 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 
 		ResponseResult resultObject = new ResponseResult();
 
-		this.dbConnectionEntityRepository.findByConnInfo(vtConnection.getVconnid());
-
 		logger.debug("connection check object param :  {}", VartechUtils.reflectionToString(vtConnection));
 
 		String username = vtConnection.getVid();
@@ -216,10 +216,11 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 		VarsqlAppCode resultCode = VarsqlAppCode.SUCCESS;
 		try {
 			String pwd = vtConnection.getVpw();
-			if (pwd == null || "".equals(pwd))
-				pwd = dbInfo.getVpw();
-			pwd = (pwd == null) ? "" : pwd;
-			pwd = PasswordCryptionFactory.getInstance().decrypt(pwd);
+			
+			if (StringUtils.isBlank(pwd)) {
+				pwd = StringUtils.isBlank(dbInfo.getVpw()) ? "" : PasswordCryptionFactory.getInstance().decrypt(dbInfo.getVpw());
+			}
+			
 			Properties p = new Properties();
 			p.setProperty("user", username);
 			p.setProperty("password", pwd);
@@ -266,9 +267,10 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 	 * @throws IllegalAccessException
 	 * @throws BeansException
 	 */
+	
 	public ResponseResult saveVtconnectionInfo(DBConnectionRequestDTO vtConnection) throws BeansException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-
 		ResponseResult resultObject = new ResponseResult();
+		
 		vtConnection.setUserId(SecurityUtil.userViewId());
 
 		DBConnectionEntity reqEntity = vtConnection.toEntity();
@@ -290,7 +292,7 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 		}
 		
 		if (vtConnection.isPasswordChange()) {
-			saveEntity.setVpw(vtConnection.getVpw());
+			saveEntity.setVpw(PasswordCryptionFactory.getInstance().encrypt(vtConnection.getVpw()));
 		}
 		
 		// 2024.08.20 schema 사용 안함. 
@@ -300,9 +302,8 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 		if(StringUtils.isBlank(saveEntity.getVdatabasename())) {
 			saveEntity.setVdatabasename("");
 		}
-			
-		logger.debug("saveVtconnectionInfo object param :  {}", VartechUtils.reflectionToString(saveEntity));
-		this.dbConnectionEntityRepository.save(saveEntity);
+		
+		this.dbConnectionEntityRepository.saveAndFlush(saveEntity);
 		
 		if (updateFlag) {
 			if (!reqEntity.getVdbschema().equalsIgnoreCase(currentEntity.getVdbschema()) 
@@ -313,14 +314,14 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 					) {
 				CacheUtils.removeObjectCache(this.cacheManager, currentEntity);
 			}
+			currentEntity = null; 
 			// 접속 정보 reload
 			ConnectionInfoManager.getInstance().getConnectionInfo(saveEntity.getVconnid(), true);
 		}
 		
-		resultObject.setItemOne(Integer.valueOf(1));
 		return resultObject;
 	}
-
+	
 	/**
 	 * @method  : deleteVtconnectionInfo
 	 * @desc : db 정보 삭제 처리.

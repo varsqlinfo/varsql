@@ -4,6 +4,12 @@ import org.springframework.stereotype.Component;
 
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 
+/**
+ * db object type cache config 설정 정보 
+ * 
+ * @author ytkim
+ *
+ */
 @Component(CacheInfo.CACHE_KEY_OBJECTYPE_METADATA)
 public class ObjectTypeCacheConfig {
 

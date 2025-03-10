@@ -73,7 +73,6 @@ public class DBConnectionEntity extends AbstractAuditorModel{
 
 	@Column(name ="VPW")
 	@JsonIgnore
-	@Convert(converter = DbPasswordEncodeConverter.class)
 	private String vpw;
 
 	@Column(name ="MAX_ACTIVE")

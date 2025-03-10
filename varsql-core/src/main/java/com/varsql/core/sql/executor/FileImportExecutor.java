@@ -68,7 +68,7 @@ public class FileImportExecutor extends UpdateExecutor{
 		try {
 			importFile = ResourceUtils.getResource(String.valueOf(statementInfo.getCustom().get(IMPORT_FILE_PARAM_NAME))).getFile();
 
-			if(!importFile.exists() || importFile.length() == 0 ) {
+			if(importFile == null || !importFile.exists() || importFile.length() == 0 ) {
 				result.setResultCode(VarsqlAppCode.EC_SQL_EXECUTOR);
 				result.setMessage(" import file not valid ");
 				return result;

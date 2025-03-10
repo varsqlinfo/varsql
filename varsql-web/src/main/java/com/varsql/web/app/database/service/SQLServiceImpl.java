@@ -465,11 +465,13 @@ public class SQLServiceImpl{
 				.filePath(downloadFile.getAbsolutePath())
 				.customInfo(tableExportCount)
 				.build());
+			
+			HashMap param = new HashMap();
 
-			responseResult.setItemOne(VarsqlURLInfo.FILE_DOWNLOAD.getUrl(new HashMap() {{
-				put("fileId", fileId);
-				put("contId", "");
-			}}));
+			param.put("fileId", fileId);
+			param.put("contId", "");
+			
+			responseResult.setItemOne(VarsqlURLInfo.FILE_DOWNLOAD.getUrl(param));
 		}catch(Exception e) {
 			session.setAttribute(sessAttrKey, "fail");
 			throw e;

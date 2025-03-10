@@ -1,5 +1,7 @@
 package com.varsql.web.dto.db;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,6 +30,7 @@ public class DBConnectionDetailDTO{
 
 	private String vid;
 
+	@JsonIgnore
 	private String vpw;
 
 	private String confirmPw;

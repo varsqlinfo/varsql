@@ -145,7 +145,7 @@ public class ImportXmlData extends AbstractImportData{
 						String localName = xmlreader.getLocalName();
 
 						if("item".equals(localName)) {
-							if(StringUtils.isBlank(eci.getAlias())) {
+							if(eci != null && StringUtils.isBlank(eci.getAlias())) {
 				            	eci.setAlias(eci.getName());
 				            }
 							columns.add(eci);
