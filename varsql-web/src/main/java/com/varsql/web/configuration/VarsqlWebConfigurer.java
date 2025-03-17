@@ -9,10 +9,13 @@ import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.configuration.Configuration;
+import com.varsql.core.configuration.VarsqlWebConfig;
+import com.varsql.core.configuration.beans.web.CorsBean;
 
 
 /**
@@ -29,6 +32,7 @@ import com.varsql.core.configuration.Configuration;
  */
 
 public class VarsqlWebConfigurer implements WebMvcConfigurer {
+	
 	@Bean
 	public WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> webServerFactoryCustomizer() {
 		return factory -> {

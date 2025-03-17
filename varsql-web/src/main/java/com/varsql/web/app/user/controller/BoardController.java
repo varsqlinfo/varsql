@@ -9,7 +9,6 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -27,8 +26,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.varsql.core.exception.PermissionDeniedException;
 import com.varsql.web.app.user.service.BoardService;
 import com.varsql.web.common.controller.AbstractController;
-import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.constants.HttpParamConstants;
+import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.dto.board.BoardCommentRequestDTO;
 import com.varsql.web.dto.board.BoardRequestDTO;
 import com.varsql.web.dto.board.BoardResponseDTO;
@@ -48,8 +47,11 @@ public class BoardController extends AbstractController {
 	/** The Constant logger. */
 	private final static Logger logger = LoggerFactory.getLogger(BoardController.class);
 
-	@Autowired
-	private BoardService boardService;
+	private final BoardService boardService;
+	
+	public BoardController(BoardService boardService) {
+		this.boardService = boardService; 
+	}
 
 	@RequestMapping(value = "/{"+HttpParamConstants.BOARD_CODE+"}", method = RequestMethod.GET)
 	public ModelAndView mainpage(@PathVariable(required = true, name=HttpParamConstants.BOARD_CODE) String boardCode

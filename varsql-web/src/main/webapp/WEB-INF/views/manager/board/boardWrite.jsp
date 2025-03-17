@@ -6,7 +6,7 @@
 	</h1>
 	<div class="pull-right">
 		<a @click="save()" class="btn btn-success"><spring:message code="save"/></a>
-		<a @click="cancel()" class="btn btn-default"><spring:message code="cancel"/></a>
+		<a v-if="!VARSQL.isBlank(articleInfo.articleId)" @click="cancel()" class="btn btn-default"><spring:message code="cancel"/></a>
 	</div>
 	<div style="clear:both;padding-top: 15px;">
 
@@ -36,7 +36,8 @@ VARSQL.loadResource(['fileupload',"toast.editor"]);
 VarsqlAPP.vueServiceBean({
 	el: '#vueArea'
 	,data: {
-		articleInfo : VARSQL.util.objectMerge({
+		boardCode : '<c:out value="${boardCode}"/>'
+		,articleInfo : VARSQL.util.objectMerge({
 				title : ''
 				,contents : ''
 				,noticeYn : 'N'
@@ -102,7 +103,7 @@ VarsqlAPP.vueServiceBean({
 		                        callback(imageUrl, fileInfo.fileName || 'image');
 
 		                    } catch (error) {
-		                        console.error('업로드 실패 : ', error);
+		                        console.error('upload fail : ', error);
 		                    }
 		                }
 		            }
@@ -118,17 +119,24 @@ VarsqlAPP.vueServiceBean({
 				files: files
 				,btn :'top'
 				,options : {
-					url : '<varsql-app:boardUrl addUrl="save"/>'
+					url : VARSQL.url(VARSQL.uri.manager,'/boardMgmt/save')
 					,params : {
 						div : 'board'
 						, fileExtensions : ''
-						, contGroupId : '<varsql-app:boardCode/>'
+						, contGroupId : _this.boardCode
+						, boardCode : _this.boardCode
 					}
 					,previewsContainer :'#fileUploadPreview'
 				}
 				,callback : {
 					complete : function (file, resp){
-						_this.listPage();
+						VARSQL.toastMessage('msg.save.success');
+						
+						setTimeout(()=>{
+							if(parent && parent.boardMainSearch){
+								parent.boardMainSearch();
+							}
+						},1200); 
 					}
 					,removeFile : function (file){
 						_this.articleInfo.removeFiles.push(file.fileId);
@@ -168,14 +176,7 @@ VarsqlAPP.vueServiceBean({
 			fileUploadObj.save(saveInfo);
 		}
 		,cancel :function (){
-			if(VARSQL.isBlank(this.articleInfo.articleId)){
-				location.href='<varsql-app:boardUrl />';
-			}else{
-				location.href='<varsql-app:boardUrl addUrl="view"/>?articleId='+this.articleInfo.articleId;
-			}
-		}
-		,listPage : function(){
-			location.href='<varsql-app:boardUrl />';
+			location.href = VARSQL.url(VARSQL.uri.manager,'/boardMgmt/view?boardCode=#boardCode#&articleId=#articleId#',this.articleInfo);
 		}
 	}
 });

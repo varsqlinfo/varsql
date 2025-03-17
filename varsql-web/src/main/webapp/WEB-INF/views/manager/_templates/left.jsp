@@ -22,14 +22,20 @@
 		</ul>
 	</li>
 	
-    <li class="<c:if test="${selectMenu eq 'qnaMgmt'}"> active</c:if>">
-        <a href="<varsql:url type="manager" suffix="qnaMgmt" />"><i class="fa fa-eye"></i><spring:message code="manager.menu.qnamgmt" /></a>
+	<li class="<c:if test="${selectMenu eq 'dbCompareMgmt'}"> active</c:if>">
+        <a href="<varsql:url type="manager" suffix="diff" />"><i class="fa fa-exchange"></i><spring:message code="manager.menu.dbcomparemgmt" /></a>
     </li>
+    
+    <li class="<c:if test="${selectMenu eq 'boardMgmt'}"> active</c:if>">
+        <a href="<varsql:url type="manager" suffix="boardMgmt" />"><i class="fa fa-newspaper-o"></i><spring:message code="manager.menu.boardmgmt" /></a>
+    </li>
+    
     <li class="<c:if test="${selectMenu eq 'glossaryMgmt'}"> active</c:if>">
         <a href="<varsql:url type="manager" suffix="glossary" />"><i class="fa fa-th-list"></i><spring:message code="manager.menu.glossary" /></a>
     </li>
-    <li class="<c:if test="${selectMenu eq 'dbCompareMgmt'}"> active</c:if>">
-        <a href="<varsql:url type="manager" suffix="diff" />"><i class="fa fa-exchange"></i><spring:message code="manager.menu.dbcomparemgmt" /></a>
+    
+    <li class="<c:if test="${selectMenu eq 'qnaMgmt'}"> active</c:if>">
+        <a href="<varsql:url type="manager" suffix="qnaMgmt" />"><i class="fa fa-eye"></i><spring:message code="manager.menu.qnamgmt" /></a>
     </li>
     
     <li class="dropdown<c:if test="${selectMenu eq 'sqlLog'}"> active</c:if>">
@@ -50,6 +56,7 @@
             </li>
 		</ul>
 	</li>
+	
 	<li class="dropdown<c:if test="${selectMenu eq 'taskMgmt'}"> active</c:if>">
 		<a href="#" data-toggle="collapse" data-target="#task-sub-menu">
 			<i class="fa fa-tasks"></i>
@@ -83,5 +90,6 @@
             </li>
 		</ul>
 	</li>
+    
     
 </ul>

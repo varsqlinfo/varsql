@@ -268,8 +268,8 @@ window.userMain = {
 	<tbody>
 		<tr>
 			<td style="text-align: center; font-size: 3em;">
-				<div>DB가 차단되었습니다.</div>
-				<div>관리자에게 문의하세요.</div>
+				<div><spring:message code="msg.block.success" text="db block" /></div>
+				<div><spring:message code="error.default.admin" /></div>
 			</td>
 		</tr>
 	</tbody>

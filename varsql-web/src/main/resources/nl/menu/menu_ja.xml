@@ -88,6 +88,7 @@
 <entry key="manager.menu.task">Task</entry>
 <entry key="manager.menu.sqltaskmgmt">SQL Task</entry>
 <entry key="manager.menu.datamigtaskmgmt">データ移行タスク</entry>
+<entry key="manager.menu.boardmgmt">掲示板管理</entry>
 
 <!-- ユーザーメニュー -->
 <entry key="user.prefernces.menu.general">プロフィール修正</entry>

@@ -220,7 +220,7 @@
 <entry key="error.blocking.database">ブロックされたデータベースです。</entry>
 <entry key="error.blocking.user">アクセス禁止ユーザーです。</entry>
 <entry key="error.boardError">掲示板エラーです。</entry>
-<entry key="error.connection.create.error">DB接続作成エラーです。</entry>
+<entry key="error.connection.create.error">DB接続に問題が発生しました。</entry>
 <entry key="error.connection.error">接続エラーです。</entry>
 <entry key="error.data.download.error">ダウンロードエラーです。</entry>
 <entry key="error.default.admin">管理者にお問い合わせください。</entry>

@@ -46,7 +46,7 @@ public class ConnectionInfo implements Serializable {
 	
 	private boolean enableConnectionPool;
 	
-	private boolean isCreateConnectionPool;
+	private boolean createConnectionPool;
 	
 	private boolean useColumnLabel;
 
@@ -56,7 +56,7 @@ public class ConnectionInfo implements Serializable {
 	public ConnectionInfo(String connid, DBVersionInfo version, String aliasName, String type, String url, String username, String password
 			, int connectionTimeOut, int exportCount, int initialSize, int maxActive, int minIdle, int maxIdle, long maxWait
 			, long timebetweenevictionrunsmillis, boolean testWhileIdle, String validationQuery, String useColumnLabel
-			, String connectionOptions, boolean enableConnectionPool, JDBCDriverInfo jdbcDriverInfo, String schema, String databaseName, boolean isCreateConnectionPool) {
+			, String connectionOptions, boolean enableConnectionPool, JDBCDriverInfo jdbcDriverInfo, String schema, String databaseName, boolean createConnectionPool) {
 		
 		this.connid = connid;
 		this.aliasName = aliasName;
@@ -81,7 +81,7 @@ public class ConnectionInfo implements Serializable {
 		this.jdbcDriverInfo = jdbcDriverInfo;
 		this.schema = schema;
 		this.databaseName = databaseName;
-		this.isCreateConnectionPool = isCreateConnectionPool;
+		this.createConnectionPool = createConnectionPool;
 	}
 	
 	public void setEnableConnectionPool(boolean enableConnectionPool){
@@ -96,8 +96,8 @@ public class ConnectionInfo implements Serializable {
 		this.databaseName = databaseName;
 	}
 	
-	public void setCreateConnectionPool(boolean isCreateConnectionPool) {
-		this.isCreateConnectionPool = isCreateConnectionPool;
+	public void setCreateConnectionPool(boolean createConnectionPool) {
+		this.createConnectionPool = createConnectionPool;
 	}
 	
 	@Override
@@ -125,7 +125,8 @@ public class ConnectionInfo implements Serializable {
 	    result.append(" useColumnLabel: " ).append( useColumnLabel ).append( BlankConstants.NEW_LINE);
 	    result.append(" test_while_idle: " ).append( testWhileIdle ).append( BlankConstants.NEW_LINE);
 	    result.append(" validation_query: " ).append( validationQuery ).append( BlankConstants.NEW_LINE);
-	    result.append(" isDisablePool: " ).append( enableConnectionPool ).append( BlankConstants.NEW_LINE);
+	    result.append(" enableConnectionPool: " ).append( enableConnectionPool ).append( BlankConstants.NEW_LINE);
+	    result.append(" createConnectionPool: " ).append( createConnectionPool ).append( BlankConstants.NEW_LINE);
 	    result.append("}");
 
 	    return result.toString();

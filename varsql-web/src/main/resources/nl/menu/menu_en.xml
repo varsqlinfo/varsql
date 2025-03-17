@@ -88,6 +88,7 @@
 <entry key="manager.menu.task">Task</entry>
 <entry key="manager.menu.sqltaskmgmt">SQL Task</entry>
 <entry key="manager.menu.datamigtaskmgmt">Data Migration Task</entry>
+<entry key="manager.menu.boardmgmt">Board Management</entry>
 
 <!-- user menu -->
 <entry key="user.prefernces.menu.general">Edit Profile</entry>

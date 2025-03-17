@@ -72,7 +72,7 @@ public class TaskDataMigMgmtController extends AbstractController {
 		model.addAttribute("sourceReadTypes", EnumCommon.toList(DB_READ_TYPE.values()));
 		model.addAttribute("targetTypes", EnumCommon.toList(DATA_WRITE_TYPE.values()));
 		
-		return getModelAndView("/dataMigTaskMgmt", VIEW_PAGE.MANAGER_TASK,model);
+		return getModelAndView("/dataMigTaskMgmt", VIEW_PAGE.MANAGER_TASK, model);
 	}
 	
 	/**

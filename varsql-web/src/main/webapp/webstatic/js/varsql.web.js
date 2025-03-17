@@ -136,12 +136,19 @@ if (typeof window != "undefined") {
 		return url ? _$base.contextPath + url : _$base.contextPath;
 	}
 
-	_$base.url = function(type, url) {
-		if (url !== undefined) {
-			return _$base.getContextPathUrl(type + url);
+	_$base.url = function(type, url, param) {
+		let returnUrl = '';
+		if (!isUndefined(url)) {
+			returnUrl = _$base.getContextPathUrl(type + url);
 		} else {
-			return _$base.getContextPathUrl(type);
+			returnUrl = _$base.getContextPathUrl(type);
 		}
+		
+		if(!isUndefined(param)){
+			returnUrl = _$base.util.replaceParamUrl(returnUrl, param);
+		}
+		
+		return returnUrl;
 	};
 
 	/**

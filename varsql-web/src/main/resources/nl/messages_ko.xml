@@ -220,7 +220,7 @@
 <entry key="error.blocking.database">차단된 데이터 베이스 입니다.</entry>
 <entry key="error.blocking.user">접근 금지 사용자 입니다</entry>
 <entry key="error.boardError">게시판 에러 입니다</entry>
-<entry key="error.connection.create.error">DB connection 생성 에러  입니다 </entry>
+<entry key="error.connection.create.error">DB connection 문제가 발생했습니다.</entry>
 <entry key="error.connection.error">Connection Error 입니다</entry>
 <entry key="error.data.download.error">다운로드 에러</entry>
 <entry key="error.default.admin">관리자에게 문의하세요</entry>

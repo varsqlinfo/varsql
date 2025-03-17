@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,7 +35,7 @@ public class HelpController extends AbstractController{
 
 	private final Logger logger = LoggerFactory.getLogger(HelpController.class);
 
-	@RequestMapping(value={"","/","/preferences"}, method = RequestMethod.GET)
+	@GetMapping(value={"","/","/preferences"})
 	public ModelAndView mainpage(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
 		ModelMap model = mav.getModelMap();
 		return getModelAndView("/preferences", VIEW_PAGE.HELP, model);

@@ -36,7 +36,15 @@
 		<put-attribute name="left" value="/WEB-INF/views/manager/_templates/left.jsp" />
 		<put-attribute name="body" value="/WEB-INF/views/manager/_templates/blank.jsp" />
 	</definition>
-
+	
+    <definition name="/manager/board/**" template="/WEB-INF/views/manager/board/_templates/mainTemplate.jsp">
+        <put-attribute name="body" value="/WEB-INF/views/manager/board/{1}.jsp" />
+    </definition>
+	
+    <definition name="/manager/boardMgmt" extends="manager-tiles">
+        <put-attribute name="body" value="/WEB-INF/views/manager/board/boardMgmt.jsp" />
+    </definition>
+    
     <definition name="/manager/**" extends="manager-tiles">
         <put-attribute name="body" value="/WEB-INF/views/manager/{1}.jsp" />
     </definition>

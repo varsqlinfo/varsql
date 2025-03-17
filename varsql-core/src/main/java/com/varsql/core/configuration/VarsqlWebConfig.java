@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.util.ResourceUtils;
+import com.varsql.core.configuration.beans.web.CorsBean;
 import com.varsql.core.configuration.beans.web.PageBean;
 import com.varsql.core.configuration.beans.web.SsoBean;
 import com.varsql.core.configuration.beans.web.VarsqlWebConfigBean;
@@ -88,6 +89,10 @@ public class VarsqlWebConfig{
 		return webConfigBean.getSso();
 	}
 
+	public CorsBean getCorsConfig() {
+		return webConfigBean.getCors();
+	}
+	
 	public PageBean getPageConfig() {
 		return webConfigBean.getPage();
 	}

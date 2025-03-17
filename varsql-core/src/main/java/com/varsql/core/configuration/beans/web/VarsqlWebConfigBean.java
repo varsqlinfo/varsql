@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
+import lombok.Data;
+
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JacksonXmlRootElement(localName = "web-config")
 public class VarsqlWebConfigBean {
@@ -13,21 +16,10 @@ public class VarsqlWebConfigBean {
 	
 	@JacksonXmlProperty(localName = "page")
 	private PageBean page;
+	
+	@JacksonXmlProperty(localName = "cors")
+	private CorsBean cors;
 
-	public SsoBean getSso() {
-		return sso;
-	}
-
-	public void setSso(SsoBean sso) {
-		this.sso = sso;
-	}
-
-	public PageBean getPage() {
-		return page;
-	}
-
-	public void setPage(PageBean page) {
-		this.page = page;
-	} 
+	 
 }
 

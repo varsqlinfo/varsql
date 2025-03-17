@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -47,8 +46,11 @@ public class JoinController extends AbstractController {
 
 	private final Logger logger = LoggerFactory.getLogger(JoinController.class);
 
-	@Autowired
-	private JoinServiceImpl joinServiceImpl;
+	private final JoinServiceImpl joinServiceImpl;
+	
+	public JoinController(JoinServiceImpl joinServiceImpl) {
+		this.joinServiceImpl = joinServiceImpl;
+	}
 
 	@RequestMapping(value="/",method=RequestMethod.GET)
 	public ModelAndView joinForm(HttpServletRequest request, HttpServletResponse response) {

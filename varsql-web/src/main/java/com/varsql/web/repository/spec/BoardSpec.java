@@ -19,7 +19,9 @@ public class BoardSpec extends DefaultSpec {
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			
-			predicates.add(cb.equal(root.get(BoardEntity.BOARD_CODE), boardCode));
+			if(!"all".equals(boardCode)) {
+				predicates.add(cb.equal(root.get(BoardEntity.BOARD_CODE), boardCode));
+			}
 			
 			titleOrContents(predicates, root, cb, param);
 						

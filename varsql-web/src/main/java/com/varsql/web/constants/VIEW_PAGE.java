@@ -17,6 +17,7 @@ public enum VIEW_PAGE{
 	, MANAGER("/manager")
 	, MANAGER_SCHEDULER("/manager/scheduler")
 	, MANAGER_GROUP("/manager/group")
+	, MANAGER_BOARD("/manager/board")
 	, MANAGER_lOG("/manager/log")
 	, MANAGER_TASK("/manager/task")
 	, ADMIN("/admin")

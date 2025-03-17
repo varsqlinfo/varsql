@@ -29,8 +29,6 @@ import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.common.service.UserCommonService;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.dto.user.NoteRequestDTO;
-import com.varsql.web.util.DatabaseUtils;
-import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;

@@ -42,11 +42,14 @@ public class DataBackupMgmtController extends AbstractController {
 
 	private final Logger logger = LoggerFactory.getLogger(DataBackupMgmtController.class);
 
-	@Autowired
-	private DataBackupMgmtServiceImpl dataBackupMgmtServiceImpl;
+	private final DataBackupMgmtServiceImpl dataBackupMgmtServiceImpl;
 	
-	@Autowired
-	private ManagerCommonServiceImpl dbnUserServiceImpl;
+	private final ManagerCommonServiceImpl dbnUserServiceImpl;
+	
+	public DataBackupMgmtController(DataBackupMgmtServiceImpl dataBackupMgmtServiceImpl, ManagerCommonServiceImpl dbnUserServiceImpl) {
+		this.dataBackupMgmtServiceImpl = dataBackupMgmtServiceImpl; 
+		this.dbnUserServiceImpl = dbnUserServiceImpl; 
+	}
 	
 	/**
 	 * 데이터 백업 관리.

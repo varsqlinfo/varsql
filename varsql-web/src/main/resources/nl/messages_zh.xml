@@ -214,7 +214,7 @@
 <entry key="error.blocking.database">被阻止的数据库。</entry>
 <entry key="error.blocking.user">禁止访问用户。</entry>
 <entry key="error.boardError">板块错误。</entry>
-<entry key="error.connection.create.error">数据库连接创建错误。</entry>
+<entry key="error.connection.create.error">数据库连接发生问题</entry>
 <entry key="error.connection.error">连接错误。</entry>
 <entry key="error.data.download.error">下载错误。</entry>
 <entry key="error.default.admin">请联系管理员。</entry>

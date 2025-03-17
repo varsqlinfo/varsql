@@ -173,7 +173,7 @@ public class BoardService{
 		if(boardEntity == null) {
 			throw new BoardNotFoundException("article id not found : "+ articleId);
 		}
-
+		
 		BoardResponseDTO  dto = BoardResponseDTO.toDto(boardEntity, true);
 		dto.setModifyAuth(isModify(boardEntity));
 
@@ -193,7 +193,13 @@ public class BoardService{
 	 */
 	@Transactional(transactionManager=ResourceConfigConstants.APP_TRANSMANAGER, rollbackFor=Throwable.class)
 	public ResponseResult commentSave(long articleId, BoardCommentRequestDTO boardCommentRequestDTO) {
-
+		
+		BoardEntity boardEntity = boardEntityRepository.findByArticleId(articleId);
+		
+		if(boardEntity == null) {
+			throw new BoardNotFoundException("article id not found : "+ articleId);
+		}
+		
 		BoardCommentEntity boardCommentEntity;
 		boolean isNew = NumberUtils.isNullOrZero(boardCommentRequestDTO.getCommentId());
 		boolean isReComment = false;
@@ -252,6 +258,15 @@ public class BoardService{
 		BoardCommentEntity saveEntity = boardCommentEntityRepository.save(boardCommentEntity);
 
 		if(isNew) {
+			
+			if(boardEntity.getCommentCnt() > 0) {
+				boardEntity.setCommentCnt(boardEntity.getCommentCnt() +1);
+			}else {
+				boardEntity.setCommentCnt(1);
+			}
+			
+			boardEntityRepository.save(boardEntity);
+			
 			if(!isReComment){
 				saveEntity.setGrpCommentId(saveEntity.getCommentId());
 				boardCommentEntityRepository.save(saveEntity);
@@ -259,7 +274,7 @@ public class BoardService{
 				boardCommentEntityRepository.updateGrpSeqQuery(saveEntity.getArticleId(), saveEntity.getGrpCommentId(), saveEntity.getCommentId(), saveEntity.getGrpSeq());
 			}
 		}
-
+		
 		ResponseResult result = VarsqlUtils.getResponseResultItemList(new ArrayList());
 		result.setItemOne(1);
 
@@ -298,6 +313,12 @@ public class BoardService{
 	 * @return
 	 */
 	public ResponseResult commentDelete(long articleId, long commentId) {
+		
+		BoardEntity boardEntity = boardEntityRepository.findByArticleId(articleId);
+		
+		if(boardEntity == null) {
+			throw new BoardNotFoundException("article id not found : "+ articleId);
+		}
 
 		BoardCommentEntity boardCommentEntity = boardCommentEntityRepository.findByArticleIdAndCommentId(articleId, commentId);
 
@@ -317,6 +338,14 @@ public class BoardService{
 				boardCommentEntityRepository.delete(parentCommentEntity);
 			}
 		}
+		
+		if(boardEntity.getCommentCnt() > 0) {
+			boardEntity.setCommentCnt(boardEntity.getCommentCnt() - 1);
+		}else {
+			boardEntity.setCommentCnt(0);
+		}
+		
+		boardEntityRepository.save(boardEntity);
 
 		return VarsqlUtils.getResponseResultItemOne(1);
 	}

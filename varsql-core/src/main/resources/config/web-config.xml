@@ -15,5 +15,13 @@
 		<page500>/error/error405</page500> <!--500 err 디폴트 호출 url-->
 		<pageCsrf>/error/error405</pageCsrf> <!--pageCsrf err 디폴트 호출 url-->
 	</page>
+	
+	<cors>
+		<allowedOriginPatterns>*</allowedOriginPatterns>
+        <allowedMethods>GET,POST,PUT,PATCH,HEAD,DELETE</allowedMethods>
+        <allowedHeaders>*</allowedHeaders>
+        <allowCredentials>true</allowCredentials>
+        <maxAge>3600</maxAge>
+	</cors>
 
 </web-config>

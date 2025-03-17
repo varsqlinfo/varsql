@@ -374,7 +374,7 @@ public class GlobalExceptionHandler{
 	private void exceptionRequestHandle(Exception ex, HttpServletRequest request, HttpServletResponse response, ResponseResult result, String pageName) {
 
 		logger.error("exceptionRequestHandle exception class : {}, url : {}, parameter : {} ", ex.getClass(), request.getRequestURL(), HttpUtils.getServletRequestParam(request));
-		logger.error("exceptionRequestHandle :{} ", ex.getMessage() , ex);
+		logger.error("exceptionRequestHandle {}, {} ",request.getMethod(), ex.getMessage() , ex);
 
 		CodeEnumValue errorCode = RequestResultCode.ERROR;
 

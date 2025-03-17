@@ -5,10 +5,7 @@
 	<h1 style="display: inline-block;">
 		<a href=""><spring:message code="detail.view" text="상세보기"/></a>
 	</h1>
-	<a href="#" class="fa fa-edit" target="_blank"><spring:message code="newwin.view" text="새창보기"/></a>
-	<div></div>
 	<div class="pull-right">
-		<a href="<varsql-app:boardUrl />" class="btn btn-default"><spring:message code="list" text="목록"/></a>
 		<template v-if="articleInfo.modifyAuth">
 			<a @click="modifyInfo()"  class="btn btn-primary"><spring:message code="modify" text="수정"/></a>
 			<a href="javascript:;" @click="deleteItem()" class="btn btn-warning"><spring:message code="delete" text="삭제"/></a>
@@ -17,7 +14,7 @@
 	<div style="clear:both;padding-top: 15px;"></div>
 	<div class="article-area">
 		<div class="title">
-			<h3 class="text-ellipsis" :title="articleInfo.title">{{articleInfo.title}}</h3>
+			<h3>{{articleInfo.title}}</h3>
 			<div>
 				{{articleInfo.authorName}} {{articleInfo.regDt}}
 			</div>
@@ -35,18 +32,17 @@
 
 		<div id="contentViewer" style="width: 100%;padding: 5px;"></div>
 	</div>
-	
+
 	<div style="margin-top: 15px;border-top: 1px solid rgb(221, 221, 221);padding: 15px 0px 0px 10px;">
 		<strong class="comment-label"><spring:message code="comment" text="댓글"/></strong>
 	</div>
 	<div>
 		<div id="mainCommentContainer">
 			<div class="form-group">
-				<div id="commentContents" style="width:100%;margin-top:10px;height:150px;"></div>
+				<div id="commentContents" style="width:100%;margin-top:10px;"></div>
 			</div>
 			<div id="commentFileUploadPreview" class="file-upload-area"></div>
 		</div>
-	
 		<div class="pull-right">
 			<a @click="commentSave()" class="btn btn-success"><spring:message code="save" text="저장"/></a>
 		</div>
@@ -92,7 +88,7 @@
 									<div class="input-group">
 										<input v-model="reCommentParent.reCommentText"  placeholder="<spring:message code="input.placeholder" text="입력..."/>" class="form-control">
 										<span class="input-group-btn">
-											<button type="button" class="btn btn-success" @click="commentSave('re')"><spring:message code="save" text="저장"/></button>
+											<button type="button" class="btn btn-default search-btn" @click="comment('re')"><spring:message code="save" text="저장"/></button>
 										</span>
 									</div>
 								</div>
@@ -119,13 +115,14 @@
 						</div>
 					</template>
 					<template v-else>
+						
 						<div id="modifyCommentContainer">
 							<div class="form-group">
 								<div id="modifyContents" style="width:100%;margin-top:10px;"></div>
 							</div>
 							<div id="modifyCommentFileUploadPreview" class="file-upload-area"></div>
 						</div>
-
+					
 						<div class="pull-right">
 							<a @click="commentModify('cancel')"  class="btn btn-default"><spring:message code="cancel" text="취소"/></a>
 							<a @click="commentSave('modify')"  class="btn btn-success"><spring:message code="save" text="저장"/></a>
@@ -153,6 +150,7 @@ VarsqlAPP.vueServiceBean({
 		,reModifyCommentInfo : {}
 		,commentEditor: {}
 		,modifyCommentEditor: {}
+
 	}
 	,methods:{
 		commentReset : function(){
@@ -162,14 +160,15 @@ VarsqlAPP.vueServiceBean({
 			var _this =this;
 			
 			const viewer  = new toastui.Editor.factory({
-	            el: document.querySelector('#contentViewer'),
-	            height: 'auto',  
+	            el: document.querySelector('#contentViewer'), 
+	            height: '500px',  
 	            linkAttributes:{target:"_blank"},
 	            viewer: true,
 	            initialValue : this.articleInfo.contents,
 	            plugins: [
                     [toastui.Editor.plugin.chart],
                     toastui.Editor.plugin.colorSyntax,
+                   // [toastui.Editor.plugin.codeSyntaxHighlight, { highlighter: Prism }],
                     toastui.Editor.plugin.tableMergedCell,
                     [
                         toastui.Editor.plugin.uml,
@@ -181,8 +180,7 @@ VarsqlAPP.vueServiceBean({
 			setTimeout(()=>{
 				this.commentEditor = new toastui.Editor({
 		            el: document.querySelector('#commentContents'),
-		            height: 'auto',
-		            minHeight : '150px',
+		            height: '200px',                        
 		            initialEditType: 'markdown',
 		            autofocus:false,
 		            initialValue: '',
@@ -229,15 +227,16 @@ VarsqlAPP.vueServiceBean({
 
 			this.commentFileUploadObj = VARSQLUI.file.create('#mainCommentContainer',{
 				options : {
-					url : '<varsql-app:boardUrl addUrl="commentSave"/>'
+					url : VARSQL.url(VARSQL.uri.manager,'/boardMgmt/commentSave')
 					,params : {
 						div : 'board'
-						, contGroupId : '<varsql-app:boardCode/>'
+						, contGroupId : _this.articleInfo.boardCode
 					}
 					,previewsContainer :'#commentFileUploadPreview'
 				}
 				,callback : {
 					complete : function (file, resp){
+						
 						_this.commentEditor.setHTML('');
 						_this.commentList();
 					}
@@ -245,28 +244,38 @@ VarsqlAPP.vueServiceBean({
 			});
 		}
 		,modifyInfo : function (){
-			location.href=VARSQL.util.replaceParamUrl('<varsql-app:boardUrl addUrl="modify?articleId=#articleId#"/>',this.articleInfo);
+			location.href= VARSQL.url(VARSQL.uri.manager,'/boardMgmt/modify?boardCode=#boardCode#&articleId=#articleId#',this.articleInfo);
 		}
 		,download : function (item){
-			//console.log(VARSQL.util.replaceParamUrl('<varsql-app:boardUrl addUrl="file?articleId=#article#&fileId=#fileId#"/>',item) , item)
 			VARSQL.req.download({
-				url : VARSQL.util.replaceParamUrl('<varsql-app:boardUrl addUrl="file?articleId=#fileContId#&fileId=#fileId#" contextPath="false"/>',item)
+				url : {
+					type: VARSQL.uri.manager
+					,url : VARSQL.util.replaceParam('/boardMgmt/file?boardCode=#boardCode#&articleId=#fileContId#&fileId=#fileId#',item)
+				}
 			});
 		}
 		,deleteItem : function(){
 
 			if(!VARSQL.confirmMessage('msg.brd.article.delete','게시글이 삭제되면 복구할 수 없습니다. 그래도 삭제하시겠습니까?')) return ;
 
-			var param = {
+			const param = {
 				'articleId' : this.articleInfo.articleId
+				,boardCode : this.articleInfo.boardCode
 			};
-
+			
 			this.$ajax({
-				url: '<varsql-app:boardUrl addUrl="delete" contextPath="false"/>'
+				url: {type:VARSQL.uri.manager, url:'/boardMgmt/delete'}
 				,method :'delete'
 				,data: param
-				,success: function(resData) {
-					location.href='<varsql-app:boardUrl />';
+				,success: (resData) => {
+					VARSQL.toastMessage('msg.delete.success');
+					
+					setTimeout(()=>{
+						if(parent && parent.boardMainSearch){
+							parent.boardMainSearch();
+						}
+					},1200); 
+					
 				}
 			})
 		}
@@ -323,18 +332,18 @@ VarsqlAPP.vueServiceBean({
 
 		}
 		,commentList : function (){
-			var _this = this;
 
 			this.commentReset();
 
-			var param = {
+			const param = {
 				articleId : this.articleInfo.articleId
+				,boardCode: this.articleInfo.boardCode
 			};
 
 			this.$ajax({
-				url: '<varsql-app:boardUrl addUrl="commentList" contextPath="false"/>'
+				url:  {type:VARSQL.uri.manager, url:'/boardMgmt/commentList'}
 				,data: param
-				,success: function(resData) {
+				,success: (resData)=> {
 					var list = resData.list;
 
 					var commentInfos = [];
@@ -356,7 +365,7 @@ VarsqlAPP.vueServiceBean({
 							}
 						}
 					}
-					_this.commentInfos = commentInfos;
+					this.commentInfos = commentInfos;
 				}
 			})
 		}
@@ -388,7 +397,7 @@ VarsqlAPP.vueServiceBean({
 			
 			if(_this.modifyCommentEditor && _this.modifyCommentEditor.destroy) _this.modifyCommentEditor.destroy();
 
-			this.$nextTick(function (){
+			this.$nextTick(()=>{
 
 				if(VARSQL.isUndefined(_this.modifyComment.commentId)) return ;
 				
@@ -439,14 +448,14 @@ VarsqlAPP.vueServiceBean({
 					
 					_this.modifyCommentEditor.setHTML(item.contents);
 				},100); 
-
+				
 				this.modifyCommentFileUploadObj = VARSQLUI.file.create('#modifyCommentContainer',{
 					files: _this.modifyComment.modifyFiles
 					,options : {
-						url : '<varsql-app:boardUrl addUrl="commentSave"/>'
+						url : VARSQL.url(VARSQL.uri.manager,'/boardMgmt/commentSave')
 						,params : {
 							div : 'board'
-							, contGroupId : '<varsql-app:boardCode/>'
+							, contGroupId : this.articleInfo.boardCode
 						}
 						,previewsContainer :'#modifyCommentFileUploadPreview'
 					}
@@ -480,10 +489,11 @@ VarsqlAPP.vueServiceBean({
 			var param = {
 				articleId : this.articleInfo.articleId
 				,commentId : item.commentId
+				,boardCode : this.articleInfo.boardCode
 			};
 
 			this.$ajax({
-				url: '<varsql-app:boardUrl addUrl="commentDelete" contextPath="false"/>'
+				url: {type:VARSQL.uri.manager, url:'/boardMgmt/commentDelete'}
 				,data: param
 				,method :'delete'
 				,success: function(resData) {

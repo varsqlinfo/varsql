@@ -219,7 +219,7 @@
 <entry key="error.blocking.database">Blocked database.</entry>
 <entry key="error.blocking.user">Access forbidden user.</entry>
 <entry key="error.boardError">Board error.</entry>
-<entry key="error.connection.create.error">DB connection creation error.</entry>
+<entry key="error.connection.create.error">DB connection issue occurred.</entry>
 <entry key="error.connection.error">Connection error.</entry>
 <entry key="error.data.download.error">Download error.</entry>
 <entry key="error.default.admin">Please contact the administrator.</entry>

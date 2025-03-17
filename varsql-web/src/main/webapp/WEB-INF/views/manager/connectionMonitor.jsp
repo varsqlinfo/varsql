@@ -130,7 +130,7 @@ var sqlLogStat ={
 	,dblist:function (no){
 		var _self = this;
 		var param = {
-			page:no?no:1
+			pageNo:no?no:1
 		};
 
 		VARSQL.req.ajax({

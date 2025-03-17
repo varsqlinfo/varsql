@@ -20,19 +20,19 @@
 		</div>
 		<div style="clear:both;"></div>
 	</div>
-	<ul class="list-group">
-		<li v-for="(item,index) in gridData" class="list-group-item">
+	<div class="list-group">
+		<a href="javascript:;" v-for="(item,index) in gridData" class="list-group-item" @click="viewItem(item)">
 			<div :title="item.title">
-				<a href="javascript:;" class="text-ellipsis" @click="viewItem(item)">
+				<span class="text-ellipsis">
 					<span v-if="item.noticeYn=='Y'" style="font-weight:bold;">[<spring:message code="notice" text="공지사항"/>] </span>{{item.title}}
-				</a>
+				</span>
 			</div>
-			<div class="text-ellipsis" :title="item.uri">{{item.authorName}} {{item.regDt}}</div>
-		</li>
-		<li class="list-group-item" v-if="gridData.length === 0">
+			<div class="text-ellipsis" >{{item.authorName}} {{item.regDt}} <template v-if="item.commentCnt>0"><i class="fa fa-comment"></i>({{item.commentCnt}})</template></div>
+		</a>
+		<a class="list-group-item" v-if="gridData.length === 0">
 			<div class="text-center"><spring:message code="msg.nodata" text=">데이터가 없습니다."/></div>
-		</li>
-	</ul>
+		</a>
+	</div>
 	<div>
 		<page-navigation :page-info="pageInfo" callback="search"></page-navigation>
 	</div>
@@ -45,13 +45,8 @@ VarsqlAPP.vueServiceBean({
 	,data: {
 		list_count :10
 		,searchVal : ''
-		,itemObj:{}
 		,pageInfo : {}
 		,gridData :  []
-		,detailItem :{}
-		,detailFlag : false
-		,logElement :{}
-		,xmlEditor :{}
 	}
 	,methods:{
 		init : function (){
@@ -65,7 +60,7 @@ VarsqlAPP.vueServiceBean({
 			var _this = this;
 
 			var param = {
-				page:no?no:1
+				pageNo:no?no:1
 				,rows: _this.list_count
 				,'searchVal':_this.searchVal
 			};
