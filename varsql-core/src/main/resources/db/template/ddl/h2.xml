@@ -32,69 +32,6 @@ ALTER TABLE {{TABLE_NAME}} RENAME {{NEW_TABLE_NAME}}
 ALTER TABLE {{TABLE_NAME}} COMMENT = '{{{comment}}}';
         </addComment>
         
-        <select>
-SELECT * FROM {{TABLE_NAME}};
-        </select>
-		
-		<insert>
-INSERT INTO  {{TABLE_NAME}}(
-{{#columnList}}
-    {{addChar @index "" ","}} {{COLUMN_NAME}}
-{{/columnList}}
-) 
-values (
-{{#columnList}}
-    {{addChar @index "" ","}} ''
-{{/columnList}}
-);
-		</insert>
-		
-		<update>
-UPDATE  {{TABLE_NAME}}
-SET 
-{{#columnList}}
-    {{addChar @index "" ","}} {{COLUMN_NAME}} =''
-{{/columnList}}
-		</update>
-        
-		<delete>
-DELETE FROM {{TABLE_NAME}};
-		</delete>
-		
-		<selectInsert>
-INSERT INTO {{TABLE_NAME}}
-SELECT * from {{TABLE_NAME}}
-		</selectInsert>
-		
-		<createSelect>
-CREATE TABLE {{NEW_TABLE_NAME}} AS 
-SELECT {{#columnList}}
-    {{addChar @index "" ","}} {{COLUMN_NAME}}
-{{/columnList}} FROM {{TABLE_NAME}};
-		</createSelect>
-		
-		<merge>
-MERGE INTO {{TABLE_NAME}} AS a
-USING (SELECT 1 AS dual) AS b
-   ON (a.deptno = 50)
- WHEN MATCHED THEN
-   UPDATE SET 
-   		{{#columnList}}
-		    {{addChar @index "" ","}} a.{{COLUMN_NAME}} =''
-		{{/columnList}}
- WHEN NOT MATCHED THEN
-   INSERT(
-	   	{{#columnList}}
-		    {{addChar @index "" ","}} {{COLUMN_NAME}}
-		{{/columnList}}
-	) VALUES(
-		{{#columnList}}
-		    {{addChar @index "" ","}} ''
-		{{/columnList}}
-	)
-		</merge>
-		
-		
 		<!-- 컬럼 추가-->
 		<columnAdd>
 alter table {{TABLE_NAME}} add column {{COLUMN_NAME}} {{TYPE_NAME}} {{DEFAULT_VALUE}}

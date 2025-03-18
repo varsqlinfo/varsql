@@ -9,7 +9,7 @@
     <!-- /.col-lg-12 -->
 </div>
 
-<div class="row display-off" id="varsqlVueArea">
+<div class="row display-off" id="varsqlVueArea" style="height:calc(100% - 76px);">
 	<div class="col-xs-4">
 		<div>
 			<div class="margin-bottom5">
@@ -42,7 +42,10 @@
 					</a>
 				</div>
 				<div class="text-ellipsis">
-					{{item.authorName}} {{item.regDt}} <template v-if="item.commentCnt>0"><i class="fa fa-comment"></i>({{item.commentCnt}})</template>
+					{{item.authorName}} {{item.regDt}}
+					<template v-if="item.commentCnt>0">
+						<a href="javascript:;" @click="commentViewItem(item)"><i class="fa fa-comment"></i>({{item.commentCnt}})</a>
+					</template>
 				</div>
 				<div class="pull-right">
 					<button type="button" @click="deleteItem(item)" class="btn btn-xs btn-warning"><spring:message code="delete" text="삭제"/></button>
@@ -56,8 +59,8 @@
 			<page-navigation :page-info="pageInfo" callback="search"></page-navigation>
 		</div>
 	</div>
-	<div class="col-xs-8">
-		<iframe id="contentViewArea" :src="contentViewUrl" style="min-height:700px;height:100%;width:100%;border:0px;" ></iframe>
+	<div class="col-xs-8 h100">
+		<iframe id="contentViewArea" :src="contentViewUrl" style="height: 99%;width:100%;min-height:760px;border:0px;" ></iframe>
 	</div>
 </div>
 <!-- /.row -->
@@ -108,6 +111,9 @@
 			}
 			,viewItem : function(item){
 				this.viewUrl(VARSQL.url(VARSQL.uri.manager,'/boardMgmt/view?boardCode=#boardCode#&articleId=#articleId#',{boardCode:item.boardCode,articleId:item.articleId}));
+			}
+			,commentViewItem : function(item){
+				this.viewUrl(VARSQL.url(VARSQL.uri.manager,'/boardMgmt/view?boardCode=#boardCode#&articleId=#articleId#',{boardCode:item.boardCode,articleId:item.articleId})+"#comments");
 			}
 			,deleteItem : function(item){
 

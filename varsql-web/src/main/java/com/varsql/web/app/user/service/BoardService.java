@@ -330,11 +330,11 @@ public class BoardService{
 			boardCommentEntity.setDelYn(true);
 			boardCommentEntityRepository.save(boardCommentEntity);
 		}else {
-			BoardCommentEntity parentCommentEntity = boardCommentEntity.getParent();
 			boardCommentEntityRepository.delete(boardCommentEntity);
 
+			BoardCommentEntity parentCommentEntity = boardCommentEntity.getParent();
 			// 상위 comment 삭제 처리
-			if(parentCommentEntity != null && parentCommentEntity.isDelYn() && parentCommentEntity.getChildren().size() < 1) {
+			if(parentCommentEntity != null && parentCommentEntity.isDelYn() && parentCommentEntity.getChildren().size() ==1 && parentCommentEntity.getChildren().get(0).getCommentId() ==boardCommentEntity.getCommentId() ) {
 				boardCommentEntityRepository.delete(parentCommentEntity);
 			}
 		}

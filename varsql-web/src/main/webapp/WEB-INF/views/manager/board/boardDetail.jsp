@@ -14,7 +14,7 @@
 	<div style="clear:both;padding-top: 15px;"></div>
 	<div class="article-area">
 		<div class="title">
-			<h3>{{articleInfo.title}}</h3>
+			<h3 class="text-ellipsis" :title="articleInfo.title">{{articleInfo.title}}</h3>
 			<div>
 				{{articleInfo.authorName}} {{articleInfo.regDt}}
 			</div>
@@ -48,7 +48,7 @@
 		</div>
 		<div style="clear:both;padding-top:5px;"></div>
 	</div>
-	<div class="comment-area">
+	<div class="comment-area" id="comments">
 		<ul class="list-group list-group-flush">
 			<li v-for="(commentItem, index) in commentInfos" class="list-group-item">
 				<div class="comment-item">
@@ -88,7 +88,7 @@
 									<div class="input-group">
 										<input v-model="reCommentParent.reCommentText"  placeholder="<spring:message code="input.placeholder" text="입력..."/>" class="form-control">
 										<span class="input-group-btn">
-											<button type="button" class="btn btn-default search-btn" @click="comment('re')"><spring:message code="save" text="저장"/></button>
+											<button type="button" class="btn btn-default search-btn" @click="commentSave('re')"><spring:message code="save" text="저장"/></button>
 										</span>
 									</div>
 								</div>

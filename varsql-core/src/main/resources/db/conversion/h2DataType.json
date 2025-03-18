@@ -63,18 +63,12 @@
             "type": "BINARY"
         },
         "oracle": {
-            "type": "RAW"
-        },
-        "oracle": {
             "type": "BINARY"
         }
     },
     "BINARY VARYING": {
         "sqlserver": {
             "type": "VARBINARY"
-        },
-        "oracle": {
-            "type": "RAW"
         },
         "mariadb": {
             "type": "VARBINARY"
@@ -85,9 +79,6 @@
     },
     "BINARY LARGE OBJECT": {
         "sqlserver": {
-            "type": "BLOB"
-        },
-        "oracle": {
             "type": "BLOB"
         },
         "mariadb": {

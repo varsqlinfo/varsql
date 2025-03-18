@@ -64,6 +64,8 @@ def def_build= [
 
 ext {
 	varsqlVersion = '1.3.27'
+	varsqlJavaVersion = '17'
+	varsqlServletVersion = '3.1'
 }
 
 //소스 분석.
@@ -119,35 +121,16 @@ subprojects {
 		testAnnotationProcessor([group: 'org.projectlombok' , name: 'lombok' , version: def_version.lombok])
 		implementation group: 'org.projectlombok' , name: 'lombok' , version: def_version.lombok
 
-		/*
-		implementation group: 'com.querydsl' , name: 'querydsl-apt'
-		annotationProcessor( [group: 'com.querydsl' , name: 'querydsl-apt'])
-
-		implementation group: 'com.querydsl' , name: 'querydsl-jpa'
-		annotationProcessor( [group: 'com.querydsl' , name: 'querydsl-jpa'])
-		
-
-	testImplementation(platform('org.junit:junit-bom:5.10.2'))
-	testImplementation('org.junit.jupiter:junit-jupiter')
-	testRuntimeOnly('org.junit.platform:junit-platform-launcher')
-	*/
-		
 		testImplementation(
-			 [ group: 'org.junit.jupiter' , name: 'junit-jupiter-api' , version: def_version.junit ]
-			,[ group: 'org.junit.jupiter' , name: 'junit-jupiter-engine' , version: def_version.junit ]
-			,[ group: 'org.junit.jupiter' , name: 'junit-jupiter-params' , version: def_version.junit ]
-			//,[ group: 'org.junit.jupiter' , name: 'junit-jupiter']
-			//,[ group: 'org.junit.vintage' , name: 'junit-vintage-engine' , version: def_version.junit ]
-
-			//,[ group: 'org.junit.platform' , name: 'junit-platform-launcher' , version: def_version.junitPlatform ]
-			//,[ group: 'org.junit.platform' , name: 'junit-platform-runner' , version: def_version.junitPlatform ]
-			//,[ group: 'org.junit.platform' , name: 'junit-platform-commons' , version: def_version.junitPlatform ]
+			
+			[ group: 'org.junit.jupiter' , name: 'junit-jupiter', version: def_version.junit ]
+			,[ group: 'org.junit.platform' , name: 'junit-platform-launcher', version: def_version.junitPlatform ]
+			
 			// mockito
 			//,[ group: 'org.mockito', name: 'mockito-core', version: def_version.mockito ]
 			,[ group: 'org.springframework.security', name: 'spring-security-test' ]
 
 		)
-		
 
 		testImplementation('org.springframework.boot:spring-boot-starter-test') {
 			exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

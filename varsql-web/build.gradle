@@ -40,6 +40,12 @@ task generateCustomConfig {
     }
 }
 
+ext{
+	varsqlServletVersion = project.property('varsqlServletVersion'); 
+	varsqlJavaVersion = project.property('varsqlJavaVersion'); 
+}
+
+
 eclipse {
 	// 이클립스 project facets설정.
 	project.natures "org.springsource.ide.eclipse.gradle.core.nature"
@@ -55,8 +61,8 @@ eclipse {
             contextPath = def_project.context // context path 지정
         }
         facet {
-            facet name: 'jst.web', version: '3.1'
-            facet name: 'jst.java', version: '1.8'
+            facet name: 'jst.web', version: varsqlServletVersion
+            facet name: 'jst.java', version: varsqlJavaVersion
         }
     }
 

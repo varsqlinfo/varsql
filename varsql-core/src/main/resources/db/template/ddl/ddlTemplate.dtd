@@ -3,9 +3,8 @@
 <!ELEMENT templateConfig (table | view | function | procedure? | package | trigger | index | sequence)*>
 
 <!-- ddl create template -->
-<!ELEMENT table (create|createConversion| rename| addComment| modifyComment| dropComment| 
- columnAdd |columnRename |columnModify |columnDrop |columnAddComment |columnModifyComment |columnDropComment |constraintKey
-)+>
+<!ELEMENT table (create |createConversion? |rename |addComment |modifyComment |dropComment |columnAdd |columnRename |columnModify |columnDrop 
+|columnAddComment |columnModifyComment |columnDropComment |constraintKey |select? |insert?  |merge? |update? |delete? |selectInsert? |createSelect?)+>
 
 <!ELEMENT view (create| rename| addComment| modifyComment| dropComment)+>
 
@@ -46,3 +45,13 @@
 <!-- constraint start -->
 <!ELEMENT constraintKey (#PCDATA)>
 <!-- //constraint end -->
+
+<!-- dml start -->
+<!ELEMENT select (#PCDATA)>
+<!ELEMENT insert (#PCDATA)>
+<!ELEMENT update (#PCDATA)>
+<!ELEMENT delete (#PCDATA)>
+<!ELEMENT selectInsert (#PCDATA)>
+<!ELEMENT createSelect (#PCDATA)>
+<!ELEMENT merge (#PCDATA)>
+<!-- //dml end -->
