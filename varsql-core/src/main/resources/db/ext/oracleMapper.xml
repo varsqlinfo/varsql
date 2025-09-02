@@ -94,7 +94,7 @@
 					d.TABLE_NAME in (${item})
 				</foreach>
 			</if> 
-				group by  D.TABLE_NAME , D.COLUMN_NAME
+			group by  D.TABLE_NAME , D.COLUMN_NAME
 		) f on f.TABLE_NAME = atc.TABLE_NAME 
 		and	f.COLUMN_NAME = atc.COLUMN_NAME  
 <choose>
@@ -105,12 +105,30 @@
 		where	atc.OWNER = #{schema}
 	</otherwise>
 </choose>
-		<if test="custom != null and custom.objectNameList != null">
-			and 
-			<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
-				atc.TABLE_NAME in (${item})
-			</foreach>
-		</if>
+		
+		<choose>
+			<when test="custom != null and custom.objectNameList != null">
+				and 
+				<foreach item="item" index="index" collection="custom.objectNameList" open="(" close=")" separator="or">
+					atc.TABLE_NAME in (${item})
+				</foreach>
+			</when>
+			<otherwise>
+				and atc.TABLE_NAME in (
+						<choose>
+							<when test="baseSchemaFlag">
+								select OBJECT_NAME FROM USER_OBJECTS 
+								where object_type = 'TABLE'
+							</when>
+							<otherwise>
+								select OBJECT_NAME FROM ALL_OBJECTS
+								where OWNER = #{schema}
+								and object_type = 'TABLE'
+							</otherwise>
+						</choose>
+					)
+			</otherwise>
+		</choose>
 		order by ATC.TABLE_NAME, ATC.COLUMN_ID
 	</select>
 	

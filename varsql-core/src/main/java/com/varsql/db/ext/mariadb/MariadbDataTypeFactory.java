@@ -1,16 +1,19 @@
 package com.varsql.db.ext.mariadb;
 
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.datatype.AbstractDataTypeFactory;
 import com.varsql.core.db.datatype.DBColumnMetaInfo;
 import com.varsql.core.db.datatype.DataTypeConfigInfo;
 import com.varsql.core.db.datatype.DefaultDataType;
 import com.varsql.core.db.datatype.VenderDataType;
+import com.varsql.core.db.meta.MetaBeanConfig;
 
 /**
  * Mariadb data type
  * @author User
  *
  */
+@MetaBeanConfig(dbVenderType = DBVenderType.MARIADB, metaBean = MariadbDBMeta.class, ddlBean = MariadbDDLScript.class, dataTypeBean = MariadbDataTypeFactory.class)
 public class MariadbDataTypeFactory extends AbstractDataTypeFactory{
 	
 	// 버전별 데이타를 체크 하기위해서 버전을 받음. 

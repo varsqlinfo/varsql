@@ -87,7 +87,12 @@ public class TableInfoHandler implements ResultHandler<DataMap> {
 		if(!tblName.equals(beforeTableName)){
 
 			if(useTableIndex){
+				if(!this.tableIndexInfo.containsKey(tblName)) {
+					return ; 
+				}
+				
 				currentTableInfo = this.tableInfoList.get(this.tableIndexInfo.get(tblName));
+				
 				
 				currentTableInfo.setRemarks(StringUtils.nullToString(currentTableInfo.getRemarks(), ""));
 				

@@ -1,10 +1,12 @@
 package com.varsql.db.ext.oracle;
 
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.datatype.AbstractDataTypeFactory;
 import com.varsql.core.db.datatype.DBColumnMetaInfo;
 import com.varsql.core.db.datatype.DataTypeConfigInfo;
 import com.varsql.core.db.datatype.DefaultDataType;
 import com.varsql.core.db.datatype.VenderDataType;
+import com.varsql.core.db.meta.MetaBeanConfig;
 
 /**
  * 
@@ -14,6 +16,7 @@ import com.varsql.core.db.datatype.VenderDataType;
  * @작성자      : ytkim
  * @변경이력 :
  */
+@MetaBeanConfig(dbVenderType = DBVenderType.ORACLE, metaBean = OracleDBMeta.class, ddlBean = OracleDDLScript.class, dataTypeBean = OracleDataTypeFactory.class)
 public class OracleDataTypeFactory extends AbstractDataTypeFactory{
 	
 	// 버전별 데이타를 체크 하기위해서 버전을 받음. 

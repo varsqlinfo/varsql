@@ -16,8 +16,6 @@ import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.common.code.VarsqlAppCode;
@@ -30,6 +28,7 @@ import com.varsql.core.connection.beans.JdbcURLFormatParam;
 import com.varsql.core.crypto.PasswordCryptionFactory;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlFactory;
+import com.varsql.core.exception.ConnectionFactoryException;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.core.sql.util.JdbcUtils;
 import com.varsql.web.common.cache.CacheUtils;
@@ -291,7 +290,7 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 			saveEntity = reqEntity;
 		}
 		
-		if (vtConnection.isPasswordChange()) {
+		if (vtConnection.isPasswordChange() || !updateFlag) {
 			saveEntity.setVpw(PasswordCryptionFactory.getInstance().encrypt(vtConnection.getVpw()));
 		}
 		
@@ -316,7 +315,13 @@ public class AdminDbMgmtServiceImpl extends AbstractService{
 			}
 			currentEntity = null; 
 			// 접속 정보 reload
-			ConnectionInfoManager.getInstance().getConnectionInfo(saveEntity.getVconnid(), true);
+			try {
+				// connection 정보가 에러가 발생해도 정보는 저장. 
+				ConnectionInfoManager.getInstance().getConnectionInfo(saveEntity.getVconnid(), true);
+			}catch(ConnectionFactoryException e) {
+				logger.error("saveVtconnectionInfo vconnid :  {}" , saveEntity.getVconnid(), e);
+				resultObject.setMessage(e.getMessage());
+			}
 		}
 		
 		return resultObject;

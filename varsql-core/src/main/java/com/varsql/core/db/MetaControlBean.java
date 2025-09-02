@@ -1,6 +1,7 @@
 package com.varsql.core.db;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
@@ -8,17 +9,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.db.datatype.DataType;
 import com.varsql.core.db.datatype.DataTypeFactory;
-import com.varsql.core.db.datatype.DataTypeFactoryOTHER;
 import com.varsql.core.db.ddl.script.DDLScript;
-import com.varsql.core.db.ddl.script.DDLScriptOTHER;
 import com.varsql.core.db.meta.DBMeta;
-import com.varsql.core.db.meta.DBMetaOTHER;
 import com.varsql.core.db.meta.DBVersionInfo;
+import com.varsql.core.db.meta.MetaBeanConfig;
 import com.varsql.core.db.report.table.TableReport;
-import com.varsql.core.db.report.table.TableReportOTHER;
 import com.varsql.core.db.valueobject.ConstraintInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.db.valueobject.ServiceObject;
@@ -27,9 +24,7 @@ import com.varsql.core.db.valueobject.ddl.DDLInfo;
 import com.varsql.core.exception.DBMetadataException;
 import com.varsql.core.exception.VarsqlMethodNotFoundException;
 import com.varsql.core.sql.StatementSetter;
-import com.varsql.core.sql.StatementSetterOther;
 import com.varsql.core.sql.type.CommandTypeFactory;
-import com.varsql.core.sql.type.CommandTypeFactoryOther;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechReflectionUtils;
 
@@ -44,6 +39,7 @@ import com.vartech.common.utils.VartechReflectionUtils;
 public class MetaControlBean {
 
 	private final static Logger logger = LoggerFactory.getLogger(MetaControlBean.class);
+	
 
 	private DBMeta dbMeta;
 	private DDLScript ddlScript;
@@ -54,78 +50,66 @@ public class MetaControlBean {
 
 	private String dbVenderName;
 
-	public MetaControlBean(String db){
-
-		this.dbVenderName =db;
-		// datatype load
-
+	public MetaControlBean(MetaBeanConfig annoInfo) {
+		this.dbVenderName = annoInfo.dbVenderType().getName();
+		
 		try {
-			this.dataTypeFactory = getBeanObject(DataTypeFactoryOTHER.class, DataTypeFactory.class);
+			this.dataTypeFactory = getBeanObject(annoInfo.dataTypeBean());
 		} catch (Exception e) {
 			logger.error("@@@ varsql bean error dataTypeFactory :{} ", e.getMessage(), e);
 		}
 
 		// meta load
 		try {
-			this.dbMeta = getBeanObject(DBMetaOTHER.class, DBMeta.class);
+			this.dbMeta = getBeanObject(annoInfo.metaBean());
 		} catch (Exception e) {
 			logger.error("@@@ varsql bean error dbMeta :{} ", e.getMessage(), e);
 		}
 
 		// script object load
 		try {
-			this.ddlScript = getBeanObject(DDLScriptOTHER.class, DDLScript.class);
+			this.ddlScript = getBeanObject(annoInfo.ddlBean());
 		} catch (Exception e) {
 			logger.error("@@@ varsql bean error ddlScript :{} ", e.getMessage(), e);
 		}
 
 		// tableReportImpl set meata handler load
 		try {
-			this.tableReport = getBeanObject(TableReportOTHER.class, TableReport.class);
+			this.tableReport = getBeanObject(annoInfo.tableReportBean());
 		} catch (Exception e) {
 			logger.error("@@@ varsql bean error tableReport :{} ", e.getMessage(), e);
 		}
 		
 		// sql command type factory
 		try {
-			this.commandTypeFactory = getBeanObject(CommandTypeFactoryOther.class, CommandTypeFactory.class);
+			this.commandTypeFactory = getBeanObject(annoInfo.commandTypeBean());
 		} catch (Exception e) {
 			logger.error("@@@ varsql bean error commandTypeFactory :{} ", e.getMessage(), e);
 		}
 		
 		try {
-			this.statementSetter = getBeanObject(StatementSetterOther.class, StatementSetter.class);
+			this.statementSetter = getBeanObject(annoInfo.statementSetterBean());
 		} catch (Exception e) {
 			logger.error("@@@ varsql bean error statementSetter :{} ", e.getMessage(), e);
 		}
 	}
 
-	private <T> T getBeanObject(Class<?> clazz, Class<?> classSuffix) throws Exception {
-		String nameLowerCase = getDbVenderName().toLowerCase();
-		String cls = String.format("%s.%s.%s%s", "com.varsql.db.ext", nameLowerCase, StringUtils.capitalize(nameLowerCase), classSuffix.getSimpleName());
+	private <T> T getBeanObject(Class<?> clazz) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 
-		try{
-			Class.forName(cls);
-		}catch(Exception e){
-			cls = clazz.getName();
-		}
-
-		Constructor[] constructorArr = Class.forName(cls).getDeclaredConstructors();
-		boolean flag=false ;
+		Constructor[] constructorArr = (Constructor[]) clazz.getDeclaredConstructors();
+		boolean flag = false;
 		for (int i = 0; i < constructorArr.length; i++) {
 			Class[] paramArr = constructorArr[i].getParameterTypes();
-
-			for(Class tmpParam : paramArr){
-				if(tmpParam == MetaControlBean.class){
+			for (Class<MetaControlBean> tmpParam : paramArr) {
+				if (tmpParam == MetaControlBean.class)
 					flag = true;
-				}
 			}
 		}
 
 		if(flag){
-			return (T)Class.forName(cls).getDeclaredConstructor(MetaControlBean.class).newInstance(this);
+			return (T)clazz.getDeclaredConstructor(MetaControlBean.class).newInstance(this);
 		}else{
-			return (T)Class.forName(cls).getDeclaredConstructor().newInstance();
+			return (T)clazz.getDeclaredConstructor().newInstance();
 		}
 	}
 

@@ -1,6 +1,7 @@
-package com.varsql.core.db.meta;
+package com.varsql.db.ext.other;
 
 import com.varsql.core.db.MetaControlBean;
+import com.varsql.core.db.meta.AbstractDBMeta;
 
 /**
  *

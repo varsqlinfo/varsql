@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import org.apache.commons.codec.binary.Hex;
 
+import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.datatype.AbstractDataTypeFactory;
 import com.varsql.core.db.datatype.DBColumnMetaInfo;
 import com.varsql.core.db.datatype.DataExceptionReturnType;
@@ -14,15 +15,16 @@ import com.varsql.core.db.datatype.DataTypeHandler;
 import com.varsql.core.db.datatype.DefaultDataType;
 import com.varsql.core.db.datatype.VenderDataType;
 import com.varsql.core.db.datatype.handler.ResultSetHandler;
+import com.varsql.core.db.meta.MetaBeanConfig;
+import com.varsql.db.ext.oracle.OracleDBMeta;
 
 /**
+ * sqlserver data type
  * 
- * @FileName  : SqlserverDataTypeFactory.java
- * @프로그램 설명 : sqlserver data type
- * @Date      : 2022. 3. 18. 
- * @작성자      : ytkim
- * @변경이력 :
+ * @author ytkim
+ *
  */
+@MetaBeanConfig(dbVenderType = DBVenderType.SQLSERVER, metaBean = OracleDBMeta.class, ddlBean = SqlserverDDLScript.class, dataTypeBean = SqlserverDataTypeFactory.class, statementSetterBean = SqlserverStatementSetter.class, commandTypeBean = SqlserverCommandTypeFactory.class)
 public class SqlserverDataTypeFactory extends AbstractDataTypeFactory{
 	
 	public SqlserverDataTypeFactory() {

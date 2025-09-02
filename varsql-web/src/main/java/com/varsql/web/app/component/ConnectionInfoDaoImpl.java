@@ -15,15 +15,6 @@ public class ConnectionInfoDaoImpl implements ConnectionInfoDao {
 	
 	ConnectionInfoComponent connectionInfoDao = null; 
 	
-	
-	
-	
-	// 체크 할것. 
-	
-	
-	
-
-	
 	public ConnectionInfoDaoImpl() {
 		connectionInfoDao =VarsqlBeanUtils.getBean("connectionInfoDao", ConnectionInfoComponent.class);
 	}

@@ -152,9 +152,9 @@ public class OracleDBMeta extends AbstractDBMeta{
 
 		try(SqlSession sqlSession = SQLManager.getInstance().getSqlSession(dataParamInfo.getVconnid());){
 			if("viewMetadata".equals(queryId)){
-				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("viewList" ,dataParamInfo));
+				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("viewList", dataParamInfo));
 			}else{
-				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList" ,dataParamInfo));
+				tableInfoHandler = new TableInfoHandler(dbInstanceFactory.getDataTypeImpl(), sqlSession.selectList("tableList", dataParamInfo));
 				if(dataParamInfo.getCustom() != null && dataParamInfo.getCustom().containsKey(OBJECT_NAME_LIST_KEY) && tableInfoHandler.getTableNameList() !=null  && tableInfoHandler.getTableNameList().size() > 0){
 					dataParamInfo.addCustom(OBJECT_NAME_LIST_KEY, tableInfoHandler.getTableNameList());
 				}
