@@ -66,6 +66,7 @@ public class ConnectionInfoComponent {
 			.minIdle(NumberUtils.toInt(dto.getConnection().getMinIdle()+"", 5))
 			.connectionTimeOut(NumberUtils.toInt(dto.getConnection().getTimeout()+"", 18000))
 			.exportCount(NumberUtils.toInt(dto.getConnection().getExportcount()+"", 1000))
+			.maxSelectCount(NumberUtils.toInt(dto.getConnection().getMaxSelectCount()+"", 1000))
 			.testWhileIdle("Y".equals(dto.getConnection().getTestWhileIdle()))
 			.enableConnectionPool(!"N".equals(dto.getConnection().getEnableConnectionPool()))
 			.validationQuery(StringUtils.isBlank(validation_query) ? ValidationProperty.getInstance().validationQuery(type) : validation_query)

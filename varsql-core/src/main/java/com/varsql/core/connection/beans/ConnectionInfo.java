@@ -32,6 +32,7 @@ public class ConnectionInfo implements Serializable {
 	private String password;
 	private int connectionTimeOut;
 	private int exportCount;
+	private int maxSelectCount;
 	private int initialSize=5;
 	private int maxActive=10;
 	private int minIdle=3;
@@ -56,7 +57,8 @@ public class ConnectionInfo implements Serializable {
 	public ConnectionInfo(String connid, DBVersionInfo version, String aliasName, String type, String url, String username, String password
 			, int connectionTimeOut, int exportCount, int initialSize, int maxActive, int minIdle, int maxIdle, long maxWait
 			, long timebetweenevictionrunsmillis, boolean testWhileIdle, String validationQuery, String useColumnLabel
-			, String connectionOptions, boolean enableConnectionPool, JDBCDriverInfo jdbcDriverInfo, String schema, String databaseName, boolean createConnectionPool) {
+			, String connectionOptions, boolean enableConnectionPool, JDBCDriverInfo jdbcDriverInfo, String schema, String databaseName, boolean createConnectionPool
+			, int maxSelectCount) {
 		
 		this.connid = connid;
 		this.aliasName = aliasName;
@@ -82,6 +84,7 @@ public class ConnectionInfo implements Serializable {
 		this.schema = schema;
 		this.databaseName = databaseName;
 		this.createConnectionPool = createConnectionPool;
+		this.maxSelectCount = maxSelectCount;
 	}
 	
 	public void setEnableConnectionPool(boolean enableConnectionPool){

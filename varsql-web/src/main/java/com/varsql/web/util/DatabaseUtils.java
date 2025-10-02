@@ -60,6 +60,7 @@ public final class DatabaseUtils {
 			.version(dbConnectionEntity.getVdbversion())
 			.schemaViewYn(dbConnectionEntity.getSchemaViewYn())
 			.maxSelectCount(ConvertUtils.intValue(dbConnectionEntity.getMaxSelectCount()))
+			.maxExportCount(ConvertUtils.intValue(dbConnectionEntity.getExportcount()))
 			.build();
 	}
 	

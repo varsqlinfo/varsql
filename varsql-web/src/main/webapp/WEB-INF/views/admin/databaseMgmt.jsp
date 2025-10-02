@@ -510,7 +510,7 @@ VarsqlAPP.vueServiceBean( {
 					,schemaViewYn: 'N'
 					,useColumnLabel: 'Y'
 					,testWhileIdle: 'N'
-					,enableConnectionPool:'Y'
+					,enableConnectionPool:'N'
 				}
 			}else{
 				this.detailFlag = true;

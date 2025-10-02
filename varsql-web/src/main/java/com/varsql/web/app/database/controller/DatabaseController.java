@@ -111,6 +111,7 @@ public class DatabaseController extends AbstractController {
 		model.addAttribute(HttpParamConstants.SCREEN_CONFIG_INFO, databaseServiceImpl.schemas(preferencesInfo));
 		model.addAttribute("vname", vname);
 		model.addAttribute("limitSelectRow", databaseinfo.getMaxSelectCount());
+		model.addAttribute("maxExportCount", databaseinfo.getMaxExportCount());
 
 		model.addAttribute(HttpParamConstants.DATABASE_SCREEN_SETTING, VarsqlUtils.mapToJsonObjectString(preferencesServiceImpl.findMainSettingInfo(preferencesInfo)));
 

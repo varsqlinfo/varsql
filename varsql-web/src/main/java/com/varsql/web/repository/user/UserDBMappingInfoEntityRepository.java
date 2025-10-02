@@ -94,7 +94,8 @@ public interface UserDBMappingInfoEntityRepository extends DefaultJpaRepository,
 					.lazyLoad(dbConnEntity.getLazyloadYn())
 					.version(dbConnEntity.getVdbversion())
 					.schemaViewYn(dbConnEntity.getSchemaViewYn())
-					.maxSelectCount(ConvertUtils.intValue(dbConnEntity.getMaxSelectCount()));
+					.maxSelectCount(ConvertUtils.intValue(dbConnEntity.getMaxSelectCount()))
+					.maxExportCount(ConvertUtils.intValue(dbConnEntity.getExportcount()));
 				
 				if(item.getProvider() != null) {
 					if(StringUtils.isBlank(item.getProvider().getDbType()) && tmpAuthority.equals(AuthorityTypeImpl.ADMIN)) {

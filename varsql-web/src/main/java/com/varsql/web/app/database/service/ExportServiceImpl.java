@@ -425,6 +425,9 @@ public class ExportServiceImpl{
 
 		String exportTempFilePath = FileServiceUtils.getSavePath(UploadFileType.TEMP).toAbsolutePath().toString();
 		
+		boolean isAdmin = SecurityUtil.isAdmin();
+		int maxExportCount = databaseInfo.getMaxExportCount();
+		
 		Map<String, JobExecuteResult> tableExportCount = new HashMap<>();
 		try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile), Charset.forName(charset));) {
 
@@ -433,7 +436,11 @@ public class ExportServiceImpl{
 				++idx;
 
 				SqlExecuteDTO seDto = new SqlExecuteDTO();
-				seDto.setLimit(dataExportVO.getLimit());
+				
+				if(!isAdmin) {
+					seDto.setLimit(dataExportVO.getLimit() > maxExportCount ? maxExportCount : dataExportVO.getLimit());
+				}
+				
 				seDto.setDatabaseInfo(databaseInfo);
 
 				String objectName = prefixSchema + item.getName();

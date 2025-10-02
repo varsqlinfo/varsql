@@ -25,19 +25,21 @@ public class DatabaseInfo implements java.io.Serializable {
 	private boolean schemaViewYn;
 	private String version;
 	private int maxSelectCount;
+	private int maxExportCount;
 	
 	public static DatabaseInfo toDatabaseInfo(ConnectionInfo connectionInfo) {
 		return DatabaseInfo.builder()
 				.vconnid(connectionInfo.getConnid())
 				.type(connectionInfo.getType())
 				.name(connectionInfo.getAliasName())
-				.maxSelectCount(connectionInfo.getExportCount())
+				.maxSelectCount(connectionInfo.getMaxSelectCount())
+				.maxExportCount(connectionInfo.getExportCount())
 				.build();
 	}
 
 	@Builder
 	public DatabaseInfo(String vconnid, String type, String name, String basetableYn, String lazyLoad, String version, 
-			String schemaViewYn, int maxSelectCount){
+			String schemaViewYn, int maxSelectCount, int maxExportCount){
 		
 		this.vconnid= vconnid;
 		this.type= type.toUpperCase();
@@ -47,5 +49,6 @@ public class DatabaseInfo implements java.io.Serializable {
 		this.schemaViewYn= "Y".equals(schemaViewYn);
 		this.version= version;
 		this.maxSelectCount = maxSelectCount;
+		this.maxExportCount = maxExportCount;
 	}
 }
