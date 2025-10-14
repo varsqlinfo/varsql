@@ -62,11 +62,15 @@
 <entry key="admin.menu.database">Database Management</entry>
 <entry key="admin.menu.databaseoptmgmt">Database Option Management</entry>
 <entry key="admin.menu.managermgmt">Manager Authorization Management</entry>
-<entry key="admin.menu.databaseusermgmt"><![CDATA[Database & Manager Management]]></entry>
+<entry key="admin.menu.databasemanagermgmt"><![CDATA[Database & Manager Management]]></entry>
 <entry key="admin.menu.report">Report</entry>
 <entry key="admin.menu.dbmenumgmt">Menu Management</entry>
 <entry key="admin.menu.errorlog">Error Logs</entry>
 <entry key="admin.menu.jdbcprovidermgmt">JDBC Provider Management</entry>
+<entry key="admin.menu.env">Environment Info</entry>
+<entry key="admin.menu.appEnv">App Info</entry>
+<entry key="admin.menu.javaEnv">Java Info</entry>
+<entry key="admin.menu.systeminfo">System Info</entry>
 
 <!-- app management menu -->
 <entry key="manager.menu.usermgmt">User Management</entry>

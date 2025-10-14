@@ -338,7 +338,7 @@
 <entry key="db.schemaviewyn">스키마 전체 보기</entry>
 <entry key="db.vid">Id</entry>
 <entry key="db.vpw">Password</entry>
-<entry key="db.enableConnectionPool">DB Metadata Pool 활성</entry>
+<entry key="db.enableConnectionPool">DB Pool 활성화</entry>
 <entry key="db.lazyloadyn">Async 로드</entry>
 <entry key="db.basetableyn">Base 테이블 사용여부</entry>
 <entry key="db.vconnopt">Connection Option</entry>

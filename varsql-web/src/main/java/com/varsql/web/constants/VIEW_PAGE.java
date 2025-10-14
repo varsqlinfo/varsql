@@ -21,6 +21,7 @@ public enum VIEW_PAGE{
 	, MANAGER_lOG("/manager/log")
 	, MANAGER_TASK("/manager/task")
 	, ADMIN("/admin")
+	, ADMIN_ENV("/admin/env")
 	, SETUP("/setup")
 
 	,BOARD("/board");

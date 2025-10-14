@@ -338,7 +338,7 @@
 <entry key="db.schemaviewyn">View All Schemas</entry>
 <entry key="db.vid">ID</entry>
 <entry key="db.vpw">Password</entry>
-<entry key="db.enableConnectionPool">Enable DB Metadata Pool</entry>
+<entry key="db.enableConnectionPool">Enable DB Pool</entry>
 <entry key="db.lazyloadyn">Async Load</entry>
 <entry key="db.basetableyn">Use Base Table</entry>
 <entry key="db.vconnopt">Connection Option</entry>

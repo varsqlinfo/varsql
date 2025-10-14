@@ -507,7 +507,7 @@ VarsqlAPP.vueServiceBean( {
 					,vurl: ""
 					,basetableYn: 'Y'
 					,lazyloadYn: 'N'
-					,schemaViewYn: 'N'
+					,schemaViewYn: 'Y'
 					,useColumnLabel: 'Y'
 					,testWhileIdle: 'N'
 					,enableConnectionPool:'N'

@@ -4,6 +4,8 @@ import java.util.Properties;
 
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 
 @Getter
@@ -18,6 +20,7 @@ public class MailConfigBean {
 	private String username;
 	
 	@Transient
+	@JsonIgnore
 	private String password;
 	
 	private String smtpAuth;

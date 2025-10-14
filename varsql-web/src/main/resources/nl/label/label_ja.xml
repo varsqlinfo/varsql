@@ -338,7 +338,7 @@
 <entry key="db.schemaviewyn">スキーマ全体表示</entry>
 <entry key="db.vid">ID</entry>
 <entry key="db.vpw">パスワード</entry>
-<entry key="db.enableConnectionPool">DB Metadata Pool アクティブ</entry>
+<entry key="db.enableConnectionPool">DB Pool アクティブ</entry>
 <entry key="db.lazyloadyn">非同期ロード</entry>
 <entry key="db.basetableyn">ベーステーブル使用可否</entry>
 <entry key="db.vconnopt">接続オプション</entry>

@@ -337,7 +337,7 @@
 <entry key="db.schemaviewyn">查看全部模式</entry>
 <entry key="db.vid">ID</entry>
 <entry key="db.vpw">密码</entry>
-<entry key="db.enableConnectionPool">DB Metadata Pool 激活</entry>
+<entry key="db.enableConnectionPool">启用数据库连接池</entry>
 <entry key="db.lazyloadyn">异步加载</entry>
 <entry key="db.basetableyn">是否使用基本表</entry>
 <entry key="db.vconnopt">连接选项</entry>

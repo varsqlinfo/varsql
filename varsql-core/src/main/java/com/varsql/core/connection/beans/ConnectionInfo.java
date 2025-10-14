@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.db.meta.DBVersionInfo;
 
@@ -29,6 +30,7 @@ public class ConnectionInfo implements Serializable {
 	private String databaseName;
 
 	@Transient
+	@JsonIgnore
 	private String password;
 	private int connectionTimeOut;
 	private int exportCount;

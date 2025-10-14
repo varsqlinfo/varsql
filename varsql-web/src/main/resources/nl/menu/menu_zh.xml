@@ -61,11 +61,15 @@
 <entry key="admin.menu.database">数据库管理</entry>
 <entry key="admin.menu.databaseoptmgmt">数据库选项管理</entry>
 <entry key="admin.menu.managermgmt">管理员权限管理</entry>
-<entry key="admin.menu.databaseusermgmt"><![CDATA[数据库 & 管理员管理]]></entry>
+<entry key="admin.menu.databasemanagermgmt"><![CDATA[数据库 & 管理员管理]]></entry>
 <entry key="admin.menu.report">报告</entry>
 <entry key="admin.menu.dbmenumgmt">菜单管理</entry>
 <entry key="admin.menu.errorlog">错误日志</entry>
 <entry key="admin.menu.jdbcprovidermgmt">JDBC提供者管理</entry>
+<entry key="admin.menu.env">环境信息</entry>
+<entry key="admin.menu.appEnv">应用信息</entry>
+<entry key="admin.menu.javaEnv">Java 信息</entry>
+<entry key="admin.menu.systeminfo">系统信息</entry>
 
 <!-- 应用管理菜单 -->
 <entry key="manager.menu.usermgmt">用户管理</entry>

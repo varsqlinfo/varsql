@@ -63,7 +63,7 @@ def def_build= [
 ]
 
 ext {
-	varsqlVersion = '1.3.29'
+	varsqlVersion = '1.3.30'
 	varsqlJavaVersion = '17'
 	varsqlServletVersion = '3.1'
 }

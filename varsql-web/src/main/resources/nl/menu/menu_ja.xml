@@ -62,11 +62,15 @@
 <entry key="admin.menu.database">Database 管理</entry>
 <entry key="admin.menu.databaseoptmgmt">Database オプション 管理</entry>
 <entry key="admin.menu.managermgmt">マネージャー 権限 管理</entry>
-<entry key="admin.menu.databaseusermgmt"><![CDATA[Database & マネージャー 管理]]></entry>
+<entry key="admin.menu.databasemanagermgmt"><![CDATA[Database & マネージャー 管理]]></entry>
 <entry key="admin.menu.report">Report</entry>
 <entry key="admin.menu.dbmenumgmt">メニュー管理</entry>
 <entry key="admin.menu.errorlog">エラーログ</entry>
 <entry key="admin.menu.jdbcprovidermgmt">JDBC プロバイダ 管理</entry>
+<entry key="admin.menu.env">環境情報</entry>
+<entry key="admin.menu.appEnv">アプリ情報</entry>
+<entry key="admin.menu.javaEnv">Java情報</entry>
+<entry key="admin.menu.systeminfo">System 情報</entry>
 
 <!-- アプリ管理メニュー -->
 <entry key="manager.menu.usermgmt">ユーザー 管理</entry>
