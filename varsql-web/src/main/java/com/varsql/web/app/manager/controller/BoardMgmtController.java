@@ -16,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,6 +36,7 @@ import com.varsql.web.dto.board.BoardResponseDTO;
 import com.varsql.web.model.entity.FileBaseEntity;
 import com.varsql.web.model.entity.board.BoardFileEntity;
 import com.varsql.web.util.FileServiceUtils;
+import com.varsql.web.util.MarkdownXssUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.app.beans.ResponseResult;
@@ -173,9 +175,50 @@ public class BoardMgmtController extends AbstractController {
 
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("param", HttpUtils.getServletRequestParam(req));
-		model.addAttribute("articleInfo", VartechUtils.objectToJsonString(boardMgmtService.viewBoardInfo(boardCode, articleId)));
-
+		BoardResponseDTO dto = new BoardResponseDTO();
+		dto.setBoardCode(boardCode);
+		dto.setArticleId(articleId);
+		
+		model.addAttribute("articleInfo", VartechUtils.objectToJsonString(dto));
+		
 		return getModelAndView("/boardDetail", VIEW_PAGE.MANAGER_BOARD, model);
+	}
+	
+	/**
+	 * xss 방어 컨텐츠 보기 
+	 * @param boardCode
+	 * @param articleId
+	 * @param req
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@PostMapping(value = "/viewContents")
+	public  @ResponseBody ResponseResult viewContents(@RequestParam(value = HttpParamConstants.BOARD_CODE, required = true) String boardCode
+			, @RequestParam(value = "articleId" , required = true) long articleId
+			, HttpServletRequest req, ModelAndView mav) throws Exception {
+		
+		BoardResponseDTO dto = boardMgmtService.viewBoardInfo(boardCode, articleId);
+		dto.setContents(MarkdownXssUtils.sanitizeAndSerializeHTML(dto.getContents()));
+		
+		return ResponseResult.builder().item(dto).build();
+	}
+	
+	/**
+	 * 컨텐츠 보기 
+	 * @param boardCode
+	 * @param articleId
+	 * @param req
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@PostMapping(value = "/contents")
+	public  @ResponseBody ResponseResult contents(@RequestParam(value = HttpParamConstants.BOARD_CODE, required = true) String boardCode
+			, @RequestParam(value = "articleId" , required = true) long articleId
+			, HttpServletRequest req, ModelAndView mav) throws Exception {
+		
+		return ResponseResult.builder().item(boardMgmtService.viewBoardInfo(boardCode, articleId)).build();
 	}
 	
 	/**
@@ -220,8 +263,7 @@ public class BoardMgmtController extends AbstractController {
 
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("param", HttpUtils.getServletRequestParam(req));
-		model.addAttribute("articleInfo", VartechUtils.objectToJsonString(dto));
-
+		
 		return getModelAndView("/boardWrite", VIEW_PAGE.MANAGER_BOARD, model);
 	}
 	

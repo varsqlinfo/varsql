@@ -86,12 +86,11 @@ public class DatabaseSourceGenerateController extends AbstractController  {
 	 */
 	@RequestMapping(value="/createTableDDL", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult createTableDDL(PreferencesRequestDTO preferencesInfo, 
-			@RequestParam(value = "schema", required = true) String schema,
 			@RequestParam(value = "convertDb", required = true) String convertDb,
 			@RequestParam(value = "templateParam", required = true) String templateParam,
 			
 			HttpServletRequest req,  HttpServletResponse res) throws Exception {
 		
-		return VarsqlUtils.getResponseResultItemList(databaseSourceGenImpl.createTableDDL(preferencesInfo, schema, convertDb, templateParam));
+		return VarsqlUtils.getResponseResultItemList(databaseSourceGenImpl.createTableDDL(preferencesInfo, convertDb, templateParam));
 	}
 }

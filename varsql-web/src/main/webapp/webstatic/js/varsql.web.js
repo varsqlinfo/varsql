@@ -130,6 +130,11 @@ if (typeof window != "undefined") {
 				,"/webstatic/js/plugins/board/editor/toast/tui-color-picker.css"
 			]
 		}
+		, 'purify': {
+			'js': [
+				"/webstatic/js/plugins/dompurify/purify.min.js"
+			]
+		}
 	};
 
 	_$base.getContextPathUrl = function(url) {

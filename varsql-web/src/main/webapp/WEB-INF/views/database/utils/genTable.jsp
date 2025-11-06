@@ -347,7 +347,6 @@ VarsqlAPP.vueServiceBean( {
 				,convertDb : this.dbType
 				,templateParam : JSON.stringify({
 					"dbType" : this.dbType
-					,"schema" : this.schema
 					,"objectName" : tableName
 					,"keyList":keyList
 					,"columnList": columnList

@@ -19,7 +19,7 @@
 				{{articleInfo.authorName}} {{articleInfo.regDt}}
 			</div>
 		</div>
-		<div class="file-list-area" v-if="articleInfo.fileList.length > 0">
+		<div class="file-list-area" v-if="articleInfo.fileList && articleInfo.fileList.length > 0">
 			<div><spring:message code="attach.file" text="첨부파일"/></div>
 			<ul class="file-list">
 				<li v-for="(item, index) in articleInfo.fileList" class="file-list-item">
@@ -71,7 +71,7 @@
 								</template>
 							</div>
 							<template v-if="commentItem.indent == 0">
-								<ul class="list-group list-group-flush" v-if="commentItem.fileList.length > 0">
+								<ul class="list-group list-group-flush" v-if="commentItem.fileList && commentItem.fileList.length > 0">
 									<li v-for="(fileItem, index) in commentItem.fileList" class="list-group-item">
 										<div class="text-ellipsis" :title="fileItem.fileName">
 											<a href="javascript:;" @click="download(fileItem)">
@@ -135,6 +135,7 @@
 	</div>
 </div>
 
+
 <script>
 VARSQL.loadResource(['fileupload',"toast.editor"]);
 VarsqlAPP.vueServiceBean({
@@ -159,23 +160,34 @@ VarsqlAPP.vueServiceBean({
 		,init : function (){
 			var _this =this;
 			
-			const viewer  = new toastui.Editor.factory({
-	            el: document.querySelector('#contentViewer'), 
-	            height: '500px',  
-	            linkAttributes:{target:"_blank"},
-	            viewer: true,
-	            initialValue : this.articleInfo.contents,
-	            plugins: [
-                    [toastui.Editor.plugin.chart],
-                    toastui.Editor.plugin.colorSyntax,
-                   // [toastui.Editor.plugin.codeSyntaxHighlight, { highlighter: Prism }],
-                    toastui.Editor.plugin.tableMergedCell,
-                    [
-                        toastui.Editor.plugin.uml,
-                        { rendererURL: "http://www.plantuml.com/plantuml/svg/" }
-                    ]
-                ],
-	        });
+			this.$ajax({
+				url: {type:VARSQL.uri.manager, url:'/boardMgmt/viewContents'}
+				,data: {
+					'articleId' : this.articleInfo.articleId
+					,boardCode : this.articleInfo.boardCode
+				}
+				,success: (resData) => {
+					this.articleInfo  = resData.item;
+					
+					const viewer  = new toastui.Editor.factory({
+			            el: document.querySelector('#contentViewer'), 
+			            height: '500px',  
+			            linkAttributes:{target:"_blank"},
+			            viewer: true,
+			            initialValue : resData.item.contents,
+			            plugins: [
+		                    [toastui.Editor.plugin.chart],
+		                    toastui.Editor.plugin.colorSyntax,
+		                   // [toastui.Editor.plugin.codeSyntaxHighlight, { highlighter: Prism }],
+		                    toastui.Editor.plugin.tableMergedCell,
+		                    [
+		                        toastui.Editor.plugin.uml,
+		                        { rendererURL: "http://www.plantuml.com/plantuml/svg/" }
+		                    ]
+		                ],
+			        });
+				}
+			})
 			
 			setTimeout(()=>{
 				this.commentEditor = new toastui.Editor({

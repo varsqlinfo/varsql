@@ -71,7 +71,7 @@ public class DatabaseSourceGenImpl{
 	 * @param templateParam
 	 * @return
 	 */
-	public List<DDLInfo> createTableDDL(PreferencesRequestDTO preferencesInfo, String schema, String convertDb, String templateParam) {
+	public List<DDLInfo> createTableDDL(PreferencesRequestDTO preferencesInfo, String convertDb, String templateParam) {
 		DDLTemplateParam ddlTemplateParam = VartechUtils.jsonStringToObject(templateParam, DDLTemplateParam.class, true);
 		
 		List<DDLInfo> reval = new ArrayList<DDLInfo>();

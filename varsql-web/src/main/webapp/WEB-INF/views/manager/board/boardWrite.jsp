@@ -32,19 +32,22 @@
 </div>
 
 <script>
-VARSQL.loadResource(['fileupload',"toast.editor"]);
+VARSQL.loadResource(['fileupload',"toast.editor","purify"]);
 VarsqlAPP.vueServiceBean({
 	el: '#vueArea'
 	,data: {
 		boardCode : '<c:out value="${boardCode}"/>'
+		,param :{
+			boardCode : '<c:out value="${param.boardCode}"/>'
+			,articleId : '<c:out value="${param.articleId}"/>'
+		}
 		,articleInfo : VARSQL.util.objectMerge({
-				title : ''
-				,contents : ''
-				,noticeYn : 'N'
-				,removeFiles:[]
-				,fileList : []
-			},${articleInfo}
-		)
+			title : ''
+			,contents : ''
+			,noticeYn : 'N'
+			,removeFiles:[]
+			,fileList : []
+		})
 		,fileUploadObj : {}
 		,editor : false
 	}
@@ -66,6 +69,7 @@ VarsqlAPP.vueServiceBean({
 			});
 			
 			setTimeout(()=>{
+				var editerEle = document.querySelector('#articleContent');
 				this.editor = new toastui.Editor({
 		            el: document.querySelector('#articleContent'),
 		            height: '500px',                        
@@ -109,8 +113,19 @@ VarsqlAPP.vueServiceBean({
 		            }
 		        });
 				
-				if(!VARSQL.isBlank(this.articleInfo.articleId)){
-					this.editor.setMarkdown(this.articleInfo.contents);
+				if(!VARSQL.isBlank(this.param.articleId)){
+					
+					this.$ajax({
+						url: {type:VARSQL.uri.manager, url:'/boardMgmt/contents'}
+						,data: {
+							'articleId' : this.param.articleId
+							,boardCode : this.param.boardCode
+						}
+						,success: (resData) => {
+							this.articleInfo =  VARSQL.util.objectMerge(this.articleInfo, resData.item);
+							this.editor.setMarkdown(resData.item.contents)
+						}
+					})
 				}
 				
 			},100); 
@@ -155,11 +170,12 @@ VarsqlAPP.vueServiceBean({
 			}
 			
 			var contents = this.editor.getMarkdown(); 
+			
 			if (contents.length < 1) {
 			    VARSQL.toastMessage('msg.content.enter.param',VARSQL.message('content'));
 			    return ; 
 			}
-						
+			
 			saveInfo.contents = contents;
 
 			var fileUploadObj = this.fileUploadObj;

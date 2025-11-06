@@ -34,6 +34,7 @@ import com.varsql.web.dto.board.BoardResponseDTO;
 import com.varsql.web.model.entity.FileBaseEntity;
 import com.varsql.web.model.entity.board.BoardFileEntity;
 import com.varsql.web.util.FileServiceUtils;
+import com.varsql.web.util.MarkdownXssUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.app.beans.ResponseResult;
@@ -151,11 +152,66 @@ public class BoardController extends AbstractController {
 
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("param", HttpUtils.getServletRequestParam(req));
-		model.addAttribute("articleInfo", VartechUtils.objectToJsonString(boardService.viewBoardInfo(boardCode, articleId)));
+		
+		BoardResponseDTO dto = new BoardResponseDTO();
+		dto.setBoardCode(boardCode);
+		dto.setArticleId(articleId);
+		
+		model.addAttribute("articleInfo", VartechUtils.objectToJsonString(dto));
 
 		return getModelAndView("/boardDetail", VIEW_PAGE.BOARD, model);
 	}
+	
+	/**
+	 * xss 방어 컨텐츠 보기 
+	 * @param boardCode
+	 * @param articleId
+	 * @param req
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/{"+HttpParamConstants.BOARD_CODE+"}/viewContents", method = RequestMethod.POST)
+	public  @ResponseBody ResponseResult viewContent(@PathVariable(required = true, name=HttpParamConstants.BOARD_CODE) String boardCode
+			, @RequestParam(value = "articleId" , required = true) long articleId
+			, HttpServletRequest req, ModelAndView mav) throws Exception {
 
+		boardCode = VarsqlUtils.getVonnid(req);
+
+		BoardResponseDTO dto = boardService.viewBoardInfo(boardCode, articleId);
+		dto.setContents(MarkdownXssUtils.sanitizeAndSerializeHTML(dto.getContents()));
+
+		return ResponseResult.builder().item(dto).build();
+	}
+	
+	/**
+	 * 컨텐츠 보기 
+	 * @param boardCode
+	 * @param articleId
+	 * @param req
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
+	@PostMapping(value = "/{"+HttpParamConstants.BOARD_CODE+"}/contents")
+	public  @ResponseBody ResponseResult contents(@RequestParam(value = HttpParamConstants.BOARD_CODE, required = true) String boardCode
+			, @RequestParam(value = "articleId" , required = true) long articleId
+			, HttpServletRequest req, ModelAndView mav) throws Exception {
+		
+		boardCode = VarsqlUtils.getVonnid(req);
+		
+		return ResponseResult.builder().item(boardService.viewBoardInfo(boardCode, articleId)).build();
+	}
+	
+	/**
+	 * 삭제
+	 * @param boardCode
+	 * @param articleId
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/{"+HttpParamConstants.BOARD_CODE+"}/delete", method = RequestMethod.DELETE)
 	public @ResponseBody ResponseResult delete(@PathVariable(required = true, name=HttpParamConstants.BOARD_CODE) String boardCode
 			, @RequestParam(value = "articleId" , required = true)  long articleId
@@ -163,7 +219,16 @@ public class BoardController extends AbstractController {
 			, HttpServletResponse res) throws Exception {
 		return boardService.deleteBoardInfo(VarsqlUtils.getVonnid(req), articleId);
 	}
-
+	
+	/**
+	 * 수정
+	 * @param boardCode
+	 * @param articleId
+	 * @param req
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/{"+HttpParamConstants.BOARD_CODE+"}/modify", method = RequestMethod.GET)
 	public  ModelAndView modify(@PathVariable(required = true, name=HttpParamConstants.BOARD_CODE) String boardCode
 			, @RequestParam(value = "articleId" , required = true)  long articleId
@@ -179,7 +244,6 @@ public class BoardController extends AbstractController {
 
 		ModelMap model = mav.getModelMap();
 		model.addAttribute("param", HttpUtils.getServletRequestParam(req));
-		model.addAttribute("articleInfo", VartechUtils.objectToJsonString(dto));
 
 		return getModelAndView("/boardWrite", VIEW_PAGE.BOARD, model);
 	}

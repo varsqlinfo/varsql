@@ -30,6 +30,7 @@ import com.varsql.web.repository.board.BoardCommentRepository;
 import com.varsql.web.repository.board.BoardFileRepository;
 import com.varsql.web.repository.board.BoardRepository;
 import com.varsql.web.repository.spec.BoardSpec;
+import com.varsql.web.util.MarkdownXssUtils;
 import com.varsql.web.util.NumberUtils;
 import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
@@ -117,6 +118,8 @@ public class BoardService{
 			});
 			boardEntity.setFileList(boardFileList);
 		}
+		
+		//boardEntity.setContents(MarkdownXssUtils.sanitizeAndSerializeMarkdown(boardEntity.getContents()));
 
 		boardEntityRepository.save(boardEntity);
 
@@ -254,6 +257,8 @@ public class BoardService{
 			});
 			boardCommentEntity.setFileList(boardFileList);
 		}
+		
+		boardCommentEntity.setContents(MarkdownXssUtils.sanitizeAndSerializeHTML(boardCommentEntity.getContents()));
 
 		BoardCommentEntity saveEntity = boardCommentEntityRepository.save(boardCommentEntity);
 

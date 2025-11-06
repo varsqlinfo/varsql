@@ -180,7 +180,6 @@ public class DatabaseUtilsController extends AbstractController  {
 	/**
 	 * excel -> ddl 변환
 	 *
-	 * @method : genTable
 	 * @param mav
 	 * @param req
 	 * @return

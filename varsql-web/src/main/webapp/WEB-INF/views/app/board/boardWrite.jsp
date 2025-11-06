@@ -36,14 +36,17 @@ VARSQL.loadResource(['fileupload',"toast.editor"]);
 VarsqlAPP.vueServiceBean({
 	el: '#vueArea'
 	,data: {
-		articleInfo : VARSQL.util.objectMerge({
-				title : ''
-				,contents : ''
-				,noticeYn : 'N'
-				,removeFiles:[]
-				,fileList : []
-			},${articleInfo}
-		)
+		param :{
+			boardCode : '<c:out value="${param.boardCode}"/>'
+			,articleId : '<c:out value="${param.articleId}"/>'
+		},
+		articleInfo : {
+			title : ''
+			,contents : ''
+			,noticeYn : 'N'
+			,removeFiles:[]
+			,fileList : []
+		}
 		,fileUploadObj : {}
 		,editor : false
 	}
@@ -108,8 +111,19 @@ VarsqlAPP.vueServiceBean({
 		            }
 		        });
 				
-				if(!VARSQL.isBlank(this.articleInfo.articleId)){
-					this.editor.setMarkdown(this.articleInfo.contents);
+				if(!VARSQL.isBlank(this.param.articleId)){
+					
+					this.$ajax({
+						url: '<varsql-app:boardUrl addUrl="contents" contextPath="false"/>'
+						,data: {
+							'articleId' : this.param.articleId
+							,boardCode : this.param.boardCode
+						}
+						,success: (resData) => {
+							this.articleInfo =  VARSQL.util.objectMerge(this.articleInfo, resData.item);
+							this.editor.setMarkdown(resData.item.contents)
+						}
+					})
 				}
 				
 			},100); 
@@ -153,6 +167,10 @@ VarsqlAPP.vueServiceBean({
 			}
 						
 			saveInfo.contents = contents;
+			
+			
+			console.log('------------')
+			console.log(contents)
 
 			var fileUploadObj = this.fileUploadObj;
 
