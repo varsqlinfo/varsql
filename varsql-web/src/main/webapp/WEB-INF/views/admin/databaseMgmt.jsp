@@ -534,6 +534,7 @@ VarsqlAPP.vueServiceBean( {
 
 					_this.$ajax({
 						url : {type:VARSQL.uri.admin, url:'/databaseMgmt/dbSave'}
+						,loadSelector:'body'
 						,data : param
 						,success:function (resData){
 							if(VARSQL.req.validationCheck(resData)){

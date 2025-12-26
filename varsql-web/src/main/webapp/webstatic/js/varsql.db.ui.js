@@ -862,14 +862,14 @@ _ui.layout = {
 	}
 	,initEvt : function (){
 		var _self = this;
-		var splitterInitFlag = false;
+		var initBoardFlag = false;
 		
 		var boardEle = $('#varsqlBoardWrapper'); 
 		// board toggle btn
 		$('.database-board-view-btn').on('click.viewbtn', function (e){
 			
-			if(splitterInitFlag === false){
-				splitterInitFlag = true;
+			if(initBoardFlag === false){
+				initBoardFlag = true;
 				$('#mainArticleFrame').attr('src', _g_options.boardUrl);
 			}
 
@@ -879,6 +879,16 @@ _ui.layout = {
 				boardEle.addClass('on');
 			}
 		})
+		
+		// close btn
+		$('.database-board-refresh-btn').on('click', function (){
+			if(boardEle.hasClass('on')){
+				$('#mainArticleFrame').attr('src', _g_options.boardUrl);
+			}else{
+				initBoardFlag = false;	
+			}
+		})
+		
 		// close btn
 		$('.database-board-close-btn').on('click', function (){
 			$('.database-board-view-btn').trigger('click.viewbtn');

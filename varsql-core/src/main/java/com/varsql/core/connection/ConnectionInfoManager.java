@@ -5,6 +5,10 @@ import java.sql.SQLException;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.sql.DataSource;
 
@@ -25,170 +29,238 @@ import com.varsql.core.sql.util.JdbcUtils;
 import com.vartech.common.utils.StringUtils;
 
 /**
- *
- * @FileName  : ConnectionFactory.java
- * @프로그램 설명 : Connection Factory
- * @Date      : 2018. 2. 13.
- * @작성자      : ytkim
- * @변경이력 :
+ * ConnectionInfo Manager - Web-safe (non-blocking) - Serial execution -
+ * Reload-safe - Graceful shutdown
  */
-public final class ConnectionInfoManager{
+public final class ConnectionInfoManager {
 
-	private final Logger logger = LoggerFactory.getLogger(ConnectionInfoManager.class);
+    private final int TIMEOUT;
+    private final Logger logger = LoggerFactory.getLogger(ConnectionInfoManager.class);
 
+    /** 캐시 */
+    private final ConcurrentHashMap<String, ConnectionInfo> connectionConfig = new ConcurrentHashMap<>();
 
-	private final ConcurrentHashMap<String, ConnectionInfo> connectionConfig = new ConcurrentHashMap<String, ConnectionInfo>();
+    /** connid별 lock 객체 */
+    private final ConcurrentHashMap<String, Object> poolLocks = new ConcurrentHashMap<>();
 
+    /** 순차 실행용 executor (shutdown 용도) */
+    private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r);
+        t.setName("connection-info-executor");
+        t.setDaemon(false);
+        return t;
+    });
 
-	private ConnectionInfoDao connectionInfoDao;
+    private static final AtomicBoolean shutdownHookAdded = new AtomicBoolean(false);
 
-	private ConnectionInfoManager() {
-		init();
-	}
+    private ConnectionInfoDao connectionInfoDao;
 
+    private ConnectionInfoManager() {
+        init();
+        addShutdownHook();
+        int dbNetworkTimeout = Configuration.getInstance().getDbNetworkTimeout();
+        TIMEOUT = dbNetworkTimeout > 0 ? dbNetworkTimeout : 60;
+    }
 
-	/**
-	 *
-	 * @Method Name  : getConnectionInfo
-	 * @Method 설명 : connection info
-	 * @작성일   : 2018. 2. 13.
-	 * @작성자   : ytkim
-	 * @변경이력  :
-	 * @param connid
-	 * @return
-	 * @throws SQLException
-	 * @throws Exception
-	 */
-	public synchronized ConnectionInfo getConnectionInfo(String connid) throws ConnectionFactoryException{
-		return getConnectionInfo(connid, false);
-	}
-	public synchronized ConnectionInfo getConnectionInfo(String connid, boolean reloadFlag) throws ConnectionFactoryException{
-		if(reloadFlag==false && connectionConfig.containsKey(connid)){
-			return connectionConfig.get(connid);
-		}else{
-			ConnectionInfo connInfo;
-			try {
-				connInfo = connectionInfoDao.getConnectionInfo(connid);
-				
-				if(connInfo==null) {
-					logger.error("connection info not found : {}", connid);
-					throw new ConnectionFactoryException("connection info not found : "+ connid);
-				}
-				
-				DataSource dataSource = JdbcUtils.getDataSource(connInfo);
-						
-				try(Connection conn = dataSource.getConnection()){
-					if(conn == null) {
-						throw new ConnectionFactoryException(VarsqlAppCode.EC_FACTORY_CONNECTION_ERROR ,"createConnectionInfo error : [" + connInfo.getConnid() + "]");
-					}
-					
-					// catalog
-					try {
-						connInfo.setDatabaseName(conn.getCatalog());
-					}catch(SQLException e1) {
-						logger.error("connection getCatalog: {}", e1.getMessage());
-					}
-					
-					//schema
-					String schema ="";
-					try {
-						schema = conn.getSchema();
-						
-						if(StringUtils.isBlank(schema)) {
-							try {
-								schema = conn.getMetaData().getUserName();
-							}catch(SQLException e3) {
-								logger.error("connection getUserName: {}", e3.getMessage());
-							};
-						}
-					}catch(SQLException e1) {
-						logger.error("connection getSchema: {}", e1.getMessage());
-						try {
-							schema = conn.getMetaData().getUserName();
-						}catch(SQLException e3) {
-							logger.error("connection getUserName: {}", e3.getMessage());
-						};
-					}
-					
-					connInfo.setSchema(schema);
-					
-					if(DBVenderType.getDBType(connInfo.getType()).isUseDatabaseName()) {
-						connInfo.setSchema(connInfo.getDatabaseName());
-					}
-				}
-				
-				this.connectionConfig.put(connid, connInfo);
-				
-				return connInfo; 
-			} catch (Exception e) {
-				throw new ConnectionFactoryException(e);
-			}
-			
-		}
-	}
-	
-	/**
-	 * connection 정보 존재 하는지 여부 체크. 
-	 * 
-	 * @param connid
-	 * @return
-	 */
-	public boolean exists(String connid) {
-		return this.connectionConfig.containsKey(connid);
-	}
-	
-	/**
-	 * item 삭제.
-	 * @param connid
-	 */
-	public void remove(String connid) {
-		this.connectionConfig.remove(connid);
-	}
-	
-	public int size() {
-		return this.connectionConfig.size();
-	}
-	
-	public Set<Entry<String, ConnectionInfo>> entrySet() {
-		return this.connectionConfig.entrySet();
-	}
+    /** connid별 lock 생성/조회 */
+    private Object getLock(String connid) {
+        return poolLocks.computeIfAbsent(connid, k -> new Object());
+    }
 
-	private static class FactoryHolder{
+    /*
+     * =========================================================
+     * Public API
+     * =========================================================
+     */
+    public ConnectionInfo getConnectionInfo(String connid) throws ConnectionFactoryException {
+        return getConnectionInfo(connid, false);
+    }
+
+    public ConnectionInfo getConnectionInfo(String connid, boolean reloadFlag) throws ConnectionFactoryException {
+        synchronized (getLock(connid)) {
+            if (reloadFlag) {
+                connectionConfig.remove(connid);
+            }
+
+            ConnectionInfo cached = connectionConfig.get(connid);
+            if (cached != null) {
+                return cached;
+            }
+
+            return loadConnectionInfo(connid);
+        }
+    }
+
+    /*
+     * =========================================================
+     * Internal Logic
+     * =========================================================
+     */
+    private ConnectionInfo loadConnectionInfo(String connid) {
+        try {
+            ConnectionInfo connInfo = connectionInfoDao.getConnectionInfo(connid);
+
+            if (connInfo == null) {
+                logger.error("connection info not found : {}", connid);
+                throw new ConnectionFactoryException("connection info not found : " + connid);
+            }
+
+            DataSource dataSource = JdbcUtils.getDataSource(connInfo);
+
+            try (Connection conn = dataSource.getConnection()) {
+
+                JdbcUtils.setNetworkTimeout(conn, connInfo.getType(), TIMEOUT - 5);
+
+                // catalog
+                try {
+                    connInfo.setDatabaseName(conn.getCatalog());
+                } catch (SQLException e) {
+                    logger.warn("getCatalog error: {}", e.getMessage());
+                }
+
+                // schema
+                String schema = "";
+                try {
+                    schema = conn.getSchema();
+                    if (StringUtils.isBlank(schema)) {
+                        schema = conn.getMetaData().getUserName();
+                    }
+                } catch (SQLException e) {
+                    try {
+                        schema = conn.getMetaData().getUserName();
+                    } catch (SQLException ex) {
+                        logger.warn("getUserName error: {}", ex.getMessage());
+                    }
+                }
+
+                connInfo.setSchema(schema);
+
+                if (DBVenderType.getDBType(connInfo.getType()).isUseDatabaseName()) {
+                    connInfo.setSchema(connInfo.getDatabaseName());
+                }
+            }
+
+            connectionConfig.put(connid, connInfo);
+            return connInfo;
+
+        } catch (Exception e) {
+            throw new ConnectionFactoryException(e);
+        }
+    }
+
+    /*
+     * =========================================================
+     * Cache API
+     * =========================================================
+     */
+    public boolean exists(String connid) {
+        return connectionConfig.containsKey(connid);
+    }
+
+    public void remove(String connid) {
+        connectionConfig.remove(connid);
+    }
+
+    public int size() {
+        return connectionConfig.size();
+    }
+
+    public Set<Entry<String, ConnectionInfo>> entrySet() {
+        return connectionConfig.entrySet();
+    }
+
+    /*
+     * =========================================================
+     * Singleton
+     * =========================================================
+     */
+    private static class FactoryHolder {
         private static final ConnectionInfoManager instance = new ConnectionInfoManager();
     }
 
-	public static ConnectionInfoManager getInstance() {
-		return FactoryHolder.instance;
+    public static ConnectionInfoManager getInstance() {
+        return FactoryHolder.instance;
     }
 
-	private void init() {
-		
-		logger.debug("connection info config scan package : {}", Configuration.getInstance().getConnectiondaoPackage());
-		try {
-			Reflections reflections = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage(Configuration.getInstance().getConnectiondaoPackage())).setScanners(new TypeAnnotationsScanner(), new SubTypesScanner()));
+    /*
+     * =========================================================
+     * Init
+     * =========================================================
+     */
+    private void init() {
+        logger.debug("connection info config scan package : {}", Configuration.getInstance().getConnectiondaoPackage());
 
-			Set<Class<?>> types = reflections.getTypesAnnotatedWith(ConnectionInfoConfig.class);
-			StringBuffer sb =new StringBuffer();
+        try {
+            Reflections reflections = new Reflections(new ConfigurationBuilder()
+                    .setUrls(ClasspathHelper.forPackage(Configuration.getInstance().getConnectiondaoPackage()))
+                    .setScanners(new TypeAnnotationsScanner(), new SubTypesScanner()));
 
-			for (Class<?> type : types) {
-				ConnectionInfoConfig annoInfo = type.getAnnotation(ConnectionInfoConfig.class);
-				sb.append("beanType : [").append(annoInfo.beanType());
-				sb.append("] primary : [").append(annoInfo.primary()).append("]");
-				sb.append("] beanName : [").append(annoInfo.beanName()).append("]");
+            Set<Class<?>> types = reflections.getTypesAnnotatedWith(ConnectionInfoConfig.class);
 
-				connectionInfoDao =	(ConnectionInfoDao)type.getDeclaredConstructor().newInstance(new Object[] {});
-				
-				if(annoInfo.primary() == true) {
-					break ;
-				}
-			}
+            StringBuilder sb = new StringBuilder();
 
-			if(connectionInfoDao ==null) {
-				throw new ConnectionFactoryException(VarsqlAppCode.EC_FACTORY_CONNECTION_INFO, "ConnectionInfoDao bean null; config info : "+ sb.toString());
-			}
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			throw new  ConnectionFactoryException("ConnectionInfoDao bean: "+ e.getMessage());
-		}
-	}
+            for (Class<?> type : types) {
+                ConnectionInfoConfig anno = type.getAnnotation(ConnectionInfoConfig.class);
+
+                sb.append("beanType: [").append(anno.beanType()).append("] primary: [").append(anno.primary())
+                        .append("] beanName: [").append(anno.beanName()).append("]");
+
+                connectionInfoDao = (ConnectionInfoDao) type.getDeclaredConstructor().newInstance();
+
+                if (anno.primary()) {
+                    break;
+                }
+            }
+
+            if (connectionInfoDao == null) {
+                throw new ConnectionFactoryException(VarsqlAppCode.EC_FACTORY_CONNECTION_INFO,
+                        "ConnectionInfoDao bean null; " + sb.toString());
+            }
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new ConnectionFactoryException("ConnectionInfoDao bean: " + e.getMessage());
+        }
+    }
+
+    /*
+     * =========================================================
+     * Shutdown
+     * =========================================================
+     */
+    private void addShutdownHook() {
+        if (shutdownHookAdded.compareAndSet(false, true)) {
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                logger.info("ConnectionInfoManager shutdown start");
+                shutdownExecutor(executor, "connectionInfoExecutor");
+                logger.info("ConnectionInfoManager shutdown end");
+            }));
+        }
+    }
+
+    private void shutdownExecutor(ExecutorService executor, String name) {
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                logger.warn("{} not terminated, forcing shutdown", name);
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    public void shutdown() {
+        logger.info("ConnectionInfoManager executor shutdown");
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
 }

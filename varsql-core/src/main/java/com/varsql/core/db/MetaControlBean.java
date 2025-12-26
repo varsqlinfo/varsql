@@ -281,7 +281,7 @@ public class MetaControlBean {
 		}catch(Exception e){
 			logger.error("msg : {}, objArr : {}", e.getMessage(), StringUtils.join(objNm), e);
 		}
-		return Collections.EMPTY_LIST;
+		return Collections.emptyList();
 	}
 	
 	public String getDefaultValueToVenderValue(String val, DataType dataType){

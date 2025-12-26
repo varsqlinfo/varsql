@@ -525,12 +525,12 @@ if (typeof window != "undefined") {
 			if (option.dataType == 'jsonp') {
 				option.timeout = option.timeout || 10000;
 			}
-
-			var ajaxUid = _$base.generateUUID();
-
-			_currentAjaxUid = ajaxUid;
 			
 			var ajaxOpt = _$base.util.objectMerge({}, _defaultAjaxOption, option);
+			
+			var ajaxUid = (ajaxOpt.data||{}).requid$$ || _$base.generateUUID();
+
+			_currentAjaxUid = ajaxUid;
 			
 			if(VARSQL.isString(option.data)){
 				ajaxOpt.contentType = 'application/json';

@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.varsql.web.app.manager.service.ManagerCommonServiceImpl;
 import com.varsql.web.app.manager.service.TaskSqlMgmtService;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.constants.HttpParamConstants;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.varsql.web.dto.task.TaskSqlRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
@@ -145,6 +146,21 @@ public class TaskSqlMgmtController extends AbstractController {
 	@PostMapping({"/execute" })
 	public @ResponseBody ResponseResult execute(@RequestParam(value = "taskId", required = true) String taskId, HttpServletRequest req) throws Exception {
 		DataMap param = HttpUtils.getServletRequestParam(req);
-		return taskSqlMgmtService.execute(taskId, param, VarsqlUtils.getClientIp(req));
+		
+		logger.info("task execute taskId: {}, ip: {} ", taskId, VarsqlUtils.getClientIp(req));
+		
+		return taskSqlMgmtService.execute(taskId, param.getString(HttpParamConstants.REQ_UID));
+	}
+	
+	/**
+	 * task 이력 조회
+	 * 
+	 * @param taskId
+	 * @param req
+	 * @return
+	 */
+	@PostMapping("/history")
+	public @ResponseBody ResponseResult history(@RequestParam(value = "taskId" , required = true) String taskId, HttpServletRequest req){
+		return taskSqlMgmtService.findHistory(taskId, HttpUtils.getSearchParameter(req));
 	}
 }

@@ -99,9 +99,19 @@
 						</div>
 					</div>
 				</div>
-
-				<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
-				</form>
+				
+				<div class="view-area" :class="viewMode=='form'?'on':''">
+					<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
+					</form>
+				</div>
+				
+				<div class="view-area" :class="viewMode=='log'?'on':''">
+					<div class="row">
+						<label class="control-label"><spring:message code="history" text="History" /></label> 
+						<div id="historyList"></div>
+					</div>
+				</div>
+				
 			</div>
 			<!-- /.panel-body -->
 		</div>
@@ -136,7 +146,7 @@ VarsqlAPP.vueServiceBean( {
 		init : function(){
 			var _self = this; 
 			
-			this.form = new DaraForm(document.getElementById("addForm"), {
+			this.form = Daracl.form.create(document.getElementById("addForm"), {
 				message : "This value is not valid",
 				style : {
 					position : 'left-right',
@@ -371,8 +381,11 @@ VarsqlAPP.vueServiceBean( {
 			
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/task/sql/execute'}
+				,loadSelector : 'body'
+			 	,enableLoadSelectorBtn : true 
 				,data : {
 					taskId : this.detailItem.taskId
+					,requid$$ : this.detailItem.taskId
 				}
 				,success:function (resData){
 					if(resData.resultCode != 200){
@@ -406,6 +419,56 @@ VarsqlAPP.vueServiceBean( {
 					
 				}
 			});
+		}
+		,setHistoryGrid : function (resData){
+			var _this = this;
+			
+			if($.pubGrid('#historyList')){
+				$.pubGrid('#historyList').resizeDraw();
+				$.pubGrid('#historyList').setData({
+					items : resData.list
+					,paging : resData.page
+				});
+				return ; 
+			}
+			
+			$.pubGrid('#historyList',{
+				tColItem : [
+					{key :'instanceId', label:'InstanceId', width:70}
+					,{key :'status', label:'Status', width:70}
+					,{key :'runType', label:'Type', width:50}
+					,{key :'startTime', label:'Start Time',align:'center', width:150}
+					,{key :'endTime', label:'End Time', width:150}
+					,{key :'runTime', label:'Run Time', width:50, formatter : function (cellInfo){
+						var val = cellInfo.item[cellInfo.colInfo.key]; 
+						return (val < 1 ? 0: val)+' sec'; 
+					}}
+					,{key :'resultCount', label:'Result Count', width:50}
+					,{key :'failCount', label:'Fail Count', width:50}
+					,{key :'message', label:'Message', width:70}
+					,{key :'customInfo', label:'Custom Info', width:70}
+				]
+				,rowOptions:{	// 로우 옵션.
+					height: 30	// cell 높이
+				}
+				,valueFilter : function (colInfo, objValue){
+					var val = objValue[colInfo.key];
+					if(colInfo.key=='log' && !VARSQL.isBlank(val) && val.length > 1000){
+							return val.substring(0, 1000)+'...';
+					}else{
+						return val;
+					}
+				}
+				,tbodyItem : resData.list
+				,height : 520
+				,navigation: {
+					enablePaging : true
+					,callback : function (no){
+						_this.historyView(no);
+					}
+				}
+				,paging : resData.page
+			})
 		}
 	}
 });

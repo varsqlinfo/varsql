@@ -90,7 +90,7 @@ public class SqlExecuteManager {
 	 * @param requid
 	 */
 	public synchronized void removeStatementInfo(String requid) {
-		removeStatementInfo(requid, true);
+		removeStatementInfo(requid, false);
 	}
 	
 	/**

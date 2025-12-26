@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import com.varsql.core.common.util.JdbcDriverLoader;
 import com.varsql.core.connection.ConnectionFactory;
+import com.varsql.core.connection.ConnectionInfoManager;
 
 import ch.qos.logback.classic.LoggerContext;
 
@@ -22,9 +23,15 @@ public class ShutdownHookConfiguration {
 			System.out.println("quartz shutdown error : "+ e.getMessage());
 		}
 		
+		try {
+            ConnectionInfoManager.getInstance().shutdown();
+        } catch (Exception e) {
+        	System.out.println("ConnectionInfoManager shutdown error : " +  e.getMessage());
+        }
+		
 		// pool shutdown
 		try {
-			ConnectionFactory.poolShutdown();
+			ConnectionFactory.getInstance().allPoolShutdown();
 		} catch (Exception e) {
 			System.out.println("pool shutdown error : "+ e.getMessage());
 		}

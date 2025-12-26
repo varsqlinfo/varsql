@@ -139,7 +139,7 @@ public class SQLServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	public ResponseResult sqlExecute(SqlExecuteDTO sqlExecuteInfo, String ip) throws Exception {
 
 		ResponseResult result = new ResponseResult();

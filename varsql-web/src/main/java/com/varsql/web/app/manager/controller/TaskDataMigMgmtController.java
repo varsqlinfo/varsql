@@ -155,4 +155,16 @@ public class TaskDataMigMgmtController extends AbstractController {
 		DataMap param = HttpUtils.getServletRequestParam(req);
 		return taskDataMigMgmtService.execute(taskId, param, req);
 	}
+	
+	/**
+	 * task 이력 조회
+	 * 
+	 * @param taskId
+	 * @param req
+	 * @return
+	 */
+	@PostMapping("/history")
+	public @ResponseBody ResponseResult history(@RequestParam(value = "taskId" , required = true) String taskId, HttpServletRequest req){
+		return taskDataMigMgmtService.findHistory(taskId, HttpUtils.getSearchParameter(req));
+	}
 }

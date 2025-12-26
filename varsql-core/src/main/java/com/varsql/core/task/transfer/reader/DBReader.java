@@ -55,6 +55,7 @@ public class DBReader extends AbstractSourceReader{
 		
 		SqlStatementInfo seDto = new SqlStatementInfo();
 		seDto.setLimit(-1);
+		seDto.setRequid$$(sourceVO.getRequid());
 		
 		DatabaseInfo databaseInfo = sourceVO.getTypeInfo();
 		

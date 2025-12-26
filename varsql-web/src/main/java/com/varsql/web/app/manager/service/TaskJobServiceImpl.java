@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.exception.VarsqlRuntimeException;
-import com.varsql.web.app.scheduler.job.TaskExecuteJob;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.scheduler.JobDetailDTO;
@@ -19,6 +18,7 @@ import com.varsql.web.model.entity.scheduler.JobEntity;
 import com.varsql.web.model.mapper.scheduler.JobMapper;
 import com.varsql.web.repository.scheduler.JobEntityRepository;
 import com.varsql.web.repository.task.TaskRepository;
+import com.varsql.web.scheduler.job.TaskExecuteJob;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;

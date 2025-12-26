@@ -19,41 +19,56 @@ import com.vartech.common.utils.StringUtils;
 */
 public abstract class AbstractSsoHandler implements SsoHandler {
 
-	final static String REDIRECT_URL ="redirectURL"; 
+	final static String REDIRECT_URL ="redirectURL";
+	
+	final static String FAILURE_REDIRECT_URL ="failureRedirectURL"; 
+	
+	/**
+	 * login page url
+	 */
+	@Override
+	public String loginURL(HttpServletRequest request, HttpServletResponse response) {
+		return "";
+	}
 	
 	// sso 체크. 
 	@Override
-	public boolean beforeSsoHandler(HttpServletRequest request, HttpServletResponse response) {
+	public boolean beforeSso(HttpServletRequest request, HttpServletResponse response) {
 		return true;
 	}
 	
 	@Override
-	public Map<String, Object> customUserInfo(HttpServletRequest request, HttpServletResponse response,	@SuppressWarnings("rawtypes") Map userInfo) {
+	public Map<String, Object> getAdditionalUserInfo(HttpServletRequest request, HttpServletResponse response,	@SuppressWarnings("rawtypes") Map userInfo) {
 		return null;
 	}
 
 	@Override
-	public boolean afterSsoHandler(HttpServletRequest request, HttpServletResponse response, Object auth) {
+	public boolean afterSso(HttpServletRequest request, HttpServletResponse response, Object auth) {
 		return true;
-	}
-
-	@Override
-	public List<String> userAuthorities(String userId, HttpServletRequest request, HttpServletResponse response) {
-		return Collections.EMPTY_LIST;
 	}
 	
 	@Override
-	public String successRedirectURL(HttpServletRequest request, HttpServletResponse response) {
-		String redirectURL = request.getParameter(REDIRECT_URL); 
+	public String failureRedirectURL(HttpServletRequest request, HttpServletResponse response, Object auth) {
+		String redirectURL = request.getParameter(FAILURE_REDIRECT_URL); 
 		if(!StringUtils.isBlank(redirectURL)) {
 			return redirectURL;
 		}
 		
 		return null;
 	}
+
+	@Override
+	public List<String> getAdditionalAuthorities(String userId, HttpServletRequest request, HttpServletResponse response) {
+		return Collections.emptyList();
+	}
 	
 	@Override
-	public String loginURL(HttpServletRequest request, HttpServletResponse response) {
-		return "";
+	public String successRedirectURL(HttpServletRequest request, HttpServletResponse response, Object auth) {
+		String redirectURL = request.getParameter(REDIRECT_URL); 
+		if(!StringUtils.isBlank(redirectURL)) {
+			return redirectURL;
+		}
+		
+		return null;
 	}
 }

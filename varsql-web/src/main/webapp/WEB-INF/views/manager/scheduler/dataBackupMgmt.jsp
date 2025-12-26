@@ -461,7 +461,6 @@ VarsqlAPP.vueServiceBean( {
 					
 				}
 			});
-			
 		}
 		// schema info
 		,getSchemaInfo : function (id){

@@ -25,6 +25,8 @@ import lombok.ToString;
 @Setter
 @ToString
 public class SourceVO {
+	private String requid;
+	
 	private SOURCE_TYPE sourceType;
 	
 	private DB_READ_TYPE readType;

@@ -320,7 +320,7 @@ public final class SQLResultSetUtils {
 	 */
 	public static List<Map> resultList(ResultSet rs, DBVenderType dbType, boolean useColumnLabel) throws SQLException{
 		if (rs == null) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 		
 		DataTypeFactory dataTypeFactory = MetaControlFactory.getDbInstanceFactory(dbType).getDataTypeImpl();

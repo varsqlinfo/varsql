@@ -13,12 +13,14 @@ import com.varsql.web.model.entity.scheduler.JobHistoryEntity;
 import com.varsql.web.model.entity.scheduler.JobHistoryLogEntity;
 import com.varsql.web.model.entity.sql.SqlHistoryEntity;
 import com.varsql.web.model.entity.sql.SqlStatisticsEntity;
+import com.varsql.web.model.entity.task.TaskHistoryEntity;
 import com.varsql.web.repository.db.DBConnHistEntityRepository;
 import com.varsql.web.repository.scheduler.JobHistoryEntityRepository;
 import com.varsql.web.repository.scheduler.JobHistoryLogEntityRepository;
 import com.varsql.web.repository.sql.SqlExceptionLogEntityRepository;
 import com.varsql.web.repository.sql.SqlHistoryEntityRepository;
 import com.varsql.web.repository.sql.SqlStatisticsEntityRepository;
+import com.varsql.web.repository.task.TaskHistoryEntityRepository;
 import com.vartech.common.utils.CommUtils;
 
 import lombok.AllArgsConstructor;
@@ -46,10 +48,11 @@ public class CommonLogService{
 	
 	final private JobHistoryLogEntityRepository jobHistoryLogEntityRepository;
 	
+	final private TaskHistoryEntityRepository taskHistoryEntityRepository;
+	
 	/**
-	 * error insert
+	 * error log insert
 	 *
-	 * @method : insertExceptionLog
 	 * @param exceptionType
 	 * @param e
 	 */
@@ -71,7 +74,6 @@ public class CommonLogService{
 	/**
 	 * sql history 저장.
 	 *
-	 * @method : saveSqlHistory
 	 * @param sqlHistoryEntity
 	 */
 	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
@@ -86,7 +88,6 @@ public class CommonLogService{
 	/**
 	 * 사용자 sql 로그 저장
 	 *
-	 * @method : sqlLogInsert
 	 * @param allSqlStatistics
 	 */
 	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
@@ -105,7 +106,6 @@ public class CommonLogService{
 	/**
 	 * 사용자 접속 로그 저장
 	 *
-	 * @method : saveDbConnectionHistory
 	 * @param dbConnHistEntity
 	 */
 	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
@@ -118,8 +118,8 @@ public class CommonLogService{
 	}
 	
 	/**
-	 *
-	 * @method : saveJobHistory
+	 * job batch 이력 등록.
+	 * 
 	 * @param jobHistoryEntity
 	 */
 	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
@@ -131,6 +131,12 @@ public class CommonLogService{
 		}
 	}
 	
+	/**
+	 * job batch 이력 등록. 
+	 * 
+	 * @param jobHistoryEntity
+	 * @param jobHistoryLogEntity
+	 */
 	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
 	public void saveJobHistory(JobHistoryEntity jobHistoryEntity, JobHistoryLogEntity jobHistoryLogEntity) {
 		try{
@@ -139,6 +145,19 @@ public class CommonLogService{
 			jobHistoryLogEntityRepository.save(jobHistoryLogEntity);
 		}catch(Exception e){
 			logger.error("saveJobHistory {}", e.getMessage());
+		}
+	}
+	
+	/**
+	 * task 이력 저장
+	 * @param taskHistoryEntity
+	 */
+	@Async(ResourceConfigConstants.APP_LOG_TASK_EXECUTOR)
+	public void saveTaskHistory(TaskHistoryEntity taskHistoryEntity) {
+		try{
+			taskHistoryEntityRepository.save(taskHistoryEntity);
+		}catch(Exception e){
+			logger.error("saveTaskHistory {}", e.getMessage());
 		}
 	}
 	

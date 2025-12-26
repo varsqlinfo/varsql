@@ -124,6 +124,10 @@ public class JPAConfigurer {
 
         hibernateProperties.setProperty("hibernate.envers.autoRegisterListeners", "false");	// 감사 로그 등록 여부.
         
+        // 컬럼명 대문자로 보이게 처리. 
+        hibernateProperties.setProperty("hibernate.physical_naming_strategy", "org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl");
+        hibernateProperties.setProperty("hibernate.implicit_naming_strategy", "org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl");
+        
         DBVenderType dbType = DBVenderType.getDBType(Configuration.getInstance().getDbType());
         
         

@@ -168,10 +168,6 @@ VarsqlAPP.vueServiceBean({
 						
 			saveInfo.contents = contents;
 			
-			
-			console.log('------------')
-			console.log(contents)
-
 			var fileUploadObj = this.fileUploadObj;
 
 			var rejectedFiles = fileUploadObj.getRejectedFiles();

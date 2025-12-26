@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.varsql.web.app.scheduler.JobType;
+import com.varsql.web.scheduler.JobType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

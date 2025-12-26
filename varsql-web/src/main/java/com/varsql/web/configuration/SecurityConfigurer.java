@@ -140,7 +140,6 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 		
 		if(!Configuration.getInstance().isInit()) {
 			System.out.println("is init : " +  Configuration.getInstance().isInit());
-			System.out.println("app filter  ");
 			
 			http.addFilterBefore(new AppInitFilter(), BasicAuthenticationFilter.class);
 			return ;

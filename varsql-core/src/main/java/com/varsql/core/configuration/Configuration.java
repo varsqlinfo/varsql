@@ -59,6 +59,8 @@ public class Configuration extends AbstractConfiguration{
 	private final String BACKUP_EXPIRE_PATH = "backup.expire.day";
 	private final String BACKUP_EXPIRE_CRON = "backup.expire.cron";
 	
+	private final String DB_NETWORK_TIMEOUT = "db.network.timeout";
+	
 	private final String DEFAULT_CONTEXT_PATH = "/varsql";
 
 	private PasswordType passwordType;
@@ -76,6 +78,8 @@ public class Configuration extends AbstractConfiguration{
 	private String connectiondaoPackage;
 	
 	private int port;
+	
+	private int dbNetworkIimeout;
 
 	private boolean useConnUID = true;
 	
@@ -199,6 +203,7 @@ public class Configuration extends AbstractConfiguration{
 		fileUploadSize  = Long.parseLong(props.getProperty(FILE_UPLOAD_SIZE, "1048576000"));
 		fileUploadSizePerFile = Long.parseLong(props.getProperty(FILE_UPLOAD_SIZEPERFILE, "1048576000"));
 		fileUploadMaxInMemorySize = Integer.parseInt(props.getProperty(FILE_UPLOAD_MAX_IN_MEMORY_SIZE, "0"));
+		dbNetworkIimeout = Integer.parseInt(props.getProperty(DB_NETWORK_TIMEOUT, "60"));
 		
 		// varsql server config
 		protocol = props.getProperty("varsql.protocol", "http");
@@ -481,6 +486,10 @@ public class Configuration extends AbstractConfiguration{
 	 */
 	public boolean existsAppConfigFile() {
 		return new File(VARSQL_INSTALL_PATH, VARSQL_PROPERTIES_FILE).exists();
+	}
+
+	public int getDbNetworkTimeout() {
+		return this.dbNetworkIimeout;
 	}
 
 }

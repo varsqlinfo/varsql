@@ -71,7 +71,7 @@ public final class SQLManager {
 
 	public SqlSession getSqlSession(String connid) throws ConnectionFactoryException {
 		if(ConnectionFactory.getInstance().isShutdown(connid)) {
-			return null;
+			throw new ConnectionFactoryException(VarsqlAppCode.EC_FACTORY_CONNECTION_ERROR, "connection is shutdown : [" + connid + "]");
 		}
 
 		if (!sqlSessionFactoryMap.containsKey(connid)) {

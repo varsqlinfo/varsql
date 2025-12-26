@@ -115,7 +115,7 @@ public final class JdbcDriverLoader {
 			try {
 				deregisterDriver(entry.getKey());
 			} catch (Exception ex) {
-				logger.error("Not deregistering JDBC driver id : {} error message : {}", entry.getKey(), ex.getMessage());
+				logger.error("Not deregistering JDBC driver id : {} error message : {}", entry.getKey(), ex.getMessage(), ex);
 			}
 		}
 	}
@@ -129,8 +129,9 @@ public final class JdbcDriverLoader {
 		try {
 			logger.info("DeregisterDriver driver id: {}", driverId);
 			DriverManager.deregisterDriver(driver);
+			DRIVER_CACHE.remove(driverId);
 		} catch (Exception ex) {
-			logger.error("Not deregistering JDBC driver id : {} error message : {}", driverId, ex.getMessage());
+			logger.error("Not deregistering JDBC driver id : {} error message : {}", driverId, ex.getMessage(), ex);
 		}
 	}
 }

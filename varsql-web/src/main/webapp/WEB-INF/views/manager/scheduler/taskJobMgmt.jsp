@@ -103,7 +103,10 @@
 					</div>
 				</div>
 
-				<div id="addForm" :class="viewMode=='form'?'on':''"></div>
+				<div class="view-area" :class="viewMode=='form'?'on':''">
+					<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
+					</form>
+				</div>
 					
 				<div class="view-area" :class="viewMode=='log'?'on':''">
 					<div class="row">
@@ -146,7 +149,7 @@ VarsqlAPP.vueServiceBean( {
 		init : function(){
 			var _self = this; 
 			
-			this.form = new DaraForm(document.getElementById("addForm"), {
+			this.form = Daracl.form.create(document.getElementById("addForm"), {
 				message : "This value is not valid",
 				style : {
 					position : 'left-right',
@@ -168,17 +171,19 @@ VarsqlAPP.vueServiceBean( {
 					},
 				},
 				fields : [ 
-					 {	name : "jobName", label : VARSQL.message('name'), renderType : "text", required :true}
-					 ,{	name : "vconnid", label : 'vconnid', renderType : "hidden", defaultValue : 'task'}
-					, { name : "cronExpression", label : VARSQL.message('cron.expression'), renderType : "text", required :true
+					 { name : "jobName", label : VARSQL.message('name'), renderType : "text", required :true}
+					,{ name : "vconnid", label : 'vconnid', renderType : "hidden", defaultValue : 'task'}
+					,{ name : "cronExpression", label : VARSQL.message('cron.expression'), renderType : "text", required :true
 							,placeholder:"0 0 3 * * ? "
 							,description : `<div>
 								<span>ex :0 0 3 * * ? </span> <br/>
 								<span>Seconds Minutes Hours Day Month Week Year</span>
 							</div>`}
-					, { name : "jobDescription", label : VARSQL.message('desc'), renderType : "textarea" ,customOptions:{rows:2}}
-	            	,{
+					,{ name : "jobDescription", label : VARSQL.message('desc'), renderType : "textarea", customOptions :{rows:2}}
+					,{ name : "taskMapping", label : VARSQL.message('Task Mapping'), renderType : "textarea", style:{position:"top-left"}, customOptions :{rows:2}}
+					,{
 				        name: "triggerInfo",
+				        style:{position:"top-left"},
 				        label: VARSQL.message("trigger.info"),
 				        renderType: 'custom',
 				        template: '<div id="triggerList" style="width:100%; height:150px;position: relative;"></div>',
@@ -189,7 +194,6 @@ VarsqlAPP.vueServiceBean( {
 		                }
 				        ,renderer: {
 			        	  mounted: (field, element) => {
-			        		  
 			              }
 				          ,getValue(){
 				            return '';

@@ -12,7 +12,8 @@
 <link href="${pageContextPath}/webstatic/css/pub.all.min.css" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/jquery.toast.min.css" rel="stylesheet">
 <link href="${pageContextPath}/webstatic/css/varsql.app.min.css?v=${varsqlfn:staticResourceVersion('')}" rel="stylesheet">
-<link href="${pageContextPath}/webstatic/js/plugins/dara/dara.form.min.css" rel="stylesheet">
+<link href="${pageContextPath}/webstatic/js/plugins/dara/daracl.vender.min.css" rel="stylesheet">
+<link href="${pageContextPath}/webstatic/js/plugins/dara/daracl.form.min.css" rel="stylesheet">
 
 <script src="${pageContextPath}/webstatic/js/plugins/filesaver/FileSaver.min.js"></script>
 
@@ -24,7 +25,8 @@
 <script src="<varsql:messageResourceUrl/>" type="text/javascript"></script>
 
 <script src="${pageContextPath}/webstatic/js/vue.min.js"></script>
-<script src="${pageContextPath}/webstatic/js/plugins/dara/dara.form.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/dara/daracl.vender.min.js"></script>
+<script src="${pageContextPath}/webstatic/js/plugins/dara/daracl.form.min.js"></script>
 
 <script src="${pageContextPath}/webstatic/js/varsql.web.js?v=${varsqlfn:staticResourceVersion('')}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.ui.js?v=${varsqlfn:staticResourceVersion('')}"></script>

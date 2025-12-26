@@ -63,7 +63,7 @@ def def_build= [
 ]
 
 ext {
-	varsqlVersion = '1.3.31'
+	varsqlVersion = '1.3.32'
 	varsqlJavaVersion = '17'
 	varsqlServletVersion = '3.1'
 }
@@ -235,12 +235,12 @@ subprojects {
 		implementation group: 'org.antlr' , name: 'stringtemplate' , version: '4.0.2'
 		implementation group: 'com.github.jknack' , name: 'handlebars' , version: '4.3.0'
 		
-		
+		/*
 		// markdown Core parser
 		implementation group: 'com.vladsch.flexmark' , name: 'flexmark' , version: '0.64.8'
 		// Optional: AST utilities (Document, Node 등 사용 시)
 		implementation group: 'com.vladsch.flexmark' , name: 'flexmark-util-ast' , version: '0.64.8'
-		
+		*/
 		implementation group: 'org.jsoup' , name: 'jsoup' , version: '1.17.1'
 		
 		// jstl apache 모듈로 변경.

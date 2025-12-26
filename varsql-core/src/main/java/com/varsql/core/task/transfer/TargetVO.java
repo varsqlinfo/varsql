@@ -20,6 +20,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TargetVO {
+	private String requid;
 	
 	private TRANSFER_TYPE transferType;
 	

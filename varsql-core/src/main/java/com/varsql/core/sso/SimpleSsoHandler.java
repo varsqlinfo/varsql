@@ -21,7 +21,7 @@ public class SimpleSsoHandler extends AbstractSsoHandler{
 	final String SSO_TOKEN = "ssoToken";
 
 	@Override
-	public boolean beforeSsoHandler(HttpServletRequest request, HttpServletResponse response) {
+	public boolean beforeSso(HttpServletRequest request, HttpServletResponse response) {
 
 		String ssoToken = request.getParameter(SSO_TOKEN);
 
@@ -35,7 +35,7 @@ public class SimpleSsoHandler extends AbstractSsoHandler{
 	}
 
 	@Override
-	public String handler(HttpServletRequest request, HttpServletResponse response) {
+	public String extractUserId(HttpServletRequest request, HttpServletResponse response) {
 		boolean autoLogin = "Y".equalsIgnoreCase(request.getParameter("59d8b888657b3fa591b092204e2cc3b4"));
 
 		String ssoToken = request.getParameter(SSO_TOKEN);

@@ -50,7 +50,7 @@ public class VarsqlSsoFilter extends OncePerRequestFilter {
             FilterChain filterChain) throws ServletException, IOException {
 
     	if(ssoHandler != null) {
-    		ssoComponent.ssoLogin(ssoHandler.handler(request, response));
+    		ssoComponent.ssoLogin(ssoHandler.extractUserId(request, response));
     	}
 
         filterChain.doFilter(request,response);

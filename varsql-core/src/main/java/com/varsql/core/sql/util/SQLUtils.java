@@ -211,6 +211,8 @@ public final class SQLUtils {
 
 		String requid = sqlExecuteInfo.getRequid$$();
 		
+		requid = StringUtils.isBlank(requid) ? VartechUtils.generateUUID() : requid;
+		
 		String executeQuery = tmpSqlSource.getQuery();
 		
 		SqlExecuteBean seb = SqlExecuteBean.builder().reqUid(requid).ip(sqlExecuteInfo.getIp()).build();
@@ -345,7 +347,9 @@ public final class SQLUtils {
 	    	//logger.error(" sqlData : {}", tmpSqlSource.getQuery() ,e);
 	    	throw new SQLException(ssrv.getResultMessage() , e);
 		} finally {
+			SqlExecuteManager.getInstance().removeStatementInfo(requid);
 	    	JdbcUtils.close(stmt, rs);
+	    	
 	    }
 	    
 	    return ssrv;
@@ -561,7 +565,6 @@ public final class SQLUtils {
 
 		querySb.append("update ").append(target).append(" set ");
 
-		StringBuilder paramSb =new StringBuilder();
 		boolean firstFlag = true;
 		
 		List<ExportColumnInfo> newColumnList = new LinkedList<ExportColumnInfo>();
@@ -603,9 +606,3 @@ public final class SQLUtils {
 		return new GenQueryInfo(querySb.toString(), newColumnList);
 	}
 }
-
-
-
-
-
-

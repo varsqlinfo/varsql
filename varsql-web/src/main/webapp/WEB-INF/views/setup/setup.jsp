@@ -239,7 +239,7 @@ VarsqlAPP.vueServiceBean({
 	}
 	,methods:{
 		init : function (){
-			this.form = new DaraForm(document.getElementById("accountForm"), {
+			this.form = Daracl.form.create(document.getElementById("accountForm"), {
 				message : "This value is not valid",
 				style : {
 					position : 'left-right',

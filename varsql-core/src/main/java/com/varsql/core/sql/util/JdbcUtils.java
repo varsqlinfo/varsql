@@ -72,6 +72,12 @@ public final class JdbcUtils {
 	public static void connectionCheck(String driverId, String driverClass, String dbType, String connectionUrl, Properties p,
 			List<FileInfo> driverJarFiles, String validationQuery, int networkTimeout, int queryTimeout) throws ClassNotFoundException, IOException, SQLException, InstantiationException, IllegalAccessException {
 
+		boolean ok = JdbcNetworkChecker.check(connectionUrl, DBVenderType.getDBType(dbType),  (int) TimeUnit.SECONDS.toMillis(networkTimeout));
+		
+		if (!ok) {
+		    throw new IllegalStateException("DB network unreachable");
+		}
+		
 		PreparedStatement pstmt = null;
 
 		Connection connChk = null;
@@ -81,17 +87,7 @@ public final class JdbcUtils {
 			
 			connChk = dbDriver.connect(connectionUrl, p);
 			
-			if(hasMethodName(connChk.getClass(), "setNetworkTimeout")) {
-				
-				Executor executor= null; 
-				if (dbType.equalsIgnoreCase("mysql")) {
-					executor = new MysqlExecutor();
-				} else {
-					executor = Executors.newSingleThreadExecutor();
-				}
-				
-				connChk.setNetworkTimeout(executor, (int) TimeUnit.SECONDS.toMillis(networkTimeout));
-			}
+			setNetworkTimeout(connChk, dbType, networkTimeout);
 			
 			pstmt = connChk.prepareStatement(validationQuery);
 
@@ -105,27 +101,48 @@ public final class JdbcUtils {
 		}
 	}
 	
-	public static boolean connectionTest(DBVenderType dbType, String driverClass, String connectionUrl,  String user,
-			 String pw, int networkTimeout, int queryTimeout) throws ClassNotFoundException, IOException, SQLException, InstantiationException, IllegalAccessException {
-		
-		PreparedStatement pstmt = null;
-		
-		Connection connChk = null;
-		try {
+	/**
+	 * set network timeout
+	 *  
+	 * @param connChk connection 
+	 * @param dbType	db type
+	 * @param networkTimeout	timeout value
+	 * @throws SQLException
+	 */
+	public static void setNetworkTimeout(Connection connChk, String dbType, int networkTimeout) throws SQLException {
+		if(hasMethodName(connChk.getClass(), "setNetworkTimeout")) {
 			
 			Executor executor= null; 
-			if (dbType.name().equalsIgnoreCase("mysql")) {
+			if (dbType.equalsIgnoreCase("mysql")) {
 				executor = new MysqlExecutor();
 			} else {
 				executor = Executors.newSingleThreadExecutor();
 			}
 			
+			connChk.setNetworkTimeout(executor, (int) TimeUnit.SECONDS.toMillis(networkTimeout));
+		}
+		
+	}
+
+	public static boolean connectionTest(DBVenderType dbType, String driverClass, String connectionUrl,  String user,
+			 String pw, int networkTimeout, int queryTimeout) throws ClassNotFoundException, IOException, SQLException, InstantiationException, IllegalAccessException {
+		
+		
+		boolean ok = JdbcNetworkChecker.check(connectionUrl, dbType,  (int) TimeUnit.SECONDS.toMillis(networkTimeout));
+		
+		if (!ok) {
+		    throw new IllegalStateException("DB network unreachable");
+		}
+
+		PreparedStatement pstmt = null;
+		
+		Connection connChk = null;
+		try {
+			
 			Class.forName(driverClass);
 			connChk= DriverManager.getConnection(connectionUrl, user, pw);
 			
-			if(hasMethodName(connChk.getClass(), "setNetworkTimeout")) {
-				connChk.setNetworkTimeout(executor, (int) TimeUnit.SECONDS.toMillis(networkTimeout));
-			}
+			setNetworkTimeout(connChk, dbType.getName(), networkTimeout);
 			
 			pstmt = connChk.prepareStatement(ValidationProperty.getInstance().validationQuery(dbType));
 			
@@ -167,7 +184,6 @@ public final class JdbcUtils {
 		
 		return false; 
 	}
-	
 	
 	private static class MysqlExecutor implements Executor {
 		@Override

@@ -5,31 +5,29 @@ import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import com.varsql.core.db.valueobject.DatabaseInfo;
-import com.varsql.core.db.valueobject.SqlStatementInfo;
+import com.varsql.core.common.constants.ExecuteType;
 import com.varsql.core.exception.NotFoundException;
-import com.varsql.core.sql.util.SQLUtils;
-import com.varsql.core.task.Task;
-import com.varsql.core.task.sql.SQLTask;
+import com.varsql.web.dto.task.TaskExecutionVO;
+import com.varsql.web.dto.task.TaskHistoryResponseDTO;
 import com.varsql.web.dto.task.TaskSqlRequestDTO;
 import com.varsql.web.dto.task.TaskSqlResponseDTO;
-import com.varsql.web.exception.DatabaseNotFoundException;
 import com.varsql.web.model.base.AbstractRegAuditorModel;
+import com.varsql.web.model.entity.scheduler.JobHistoryEntity;
 import com.varsql.web.model.entity.task.TaskSqlEntity;
-import com.varsql.web.repository.db.DBConnectionEntityRepository;
+import com.varsql.web.repository.task.TaskHistoryEntityRepository;
 import com.varsql.web.repository.task.TaskSqlRepository;
+import com.varsql.web.scheduler.task.SqlTaskRunner;
 import com.varsql.web.util.VarsqlBeanUtils;
 import com.varsql.web.util.VarsqlUtils;
-import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.utils.StringUtils;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * sql task service
@@ -38,14 +36,15 @@ import com.vartech.common.utils.StringUtils;
  *
  */
 @Component
+@RequiredArgsConstructor
 public class TaskSqlMgmtService {
 	private final static Logger logger = LoggerFactory.getLogger(TaskSqlMgmtService.class);
 	
-	@Autowired
-	private TaskSqlRepository taskSqlRepository;
+	final private TaskSqlRepository taskSqlRepository;
 	
-	@Autowired
-	private DBConnectionEntityRepository dbConnectionEntityRepository;
+	final private SqlTaskRunner sqlTaskService;
+	
+	final private TaskHistoryEntityRepository taskHistoryEntityRepository;
 	
 	/**
 	 * 목록 
@@ -129,43 +128,27 @@ public class TaskSqlMgmtService {
 	 * sql task 실행. 
 	 * 
 	 * @param taskId
+	 * @param object 
 	 * @param string 
 	 * @return
 	 * @throws SQLException 
 	 */
-	public ResponseResult execute(String taskId, DataMap reqParam, String ip) {
-		ResponseResult result = new ResponseResult();
+	public ResponseResult execute(String taskId, String requid) {
+		TaskExecutionVO vo = TaskExecutionVO.builder().taskId(taskId).requid(requid).runType(ExecuteType.NORMAL).build();
+		return sqlTaskService.run(vo).getCustomResult();
+	}
+	
+	/**
+	 * 이력 조회
+	 * 
+	 * @param taskId
+	 * @param schParam
+	 * @return
+	 */
+	public ResponseResult findHistory(String taskId, SearchParameter schParam) {
+		Page<TaskHistoryResponseDTO> result = taskHistoryEntityRepository.findByTaskId(taskId, VarsqlUtils.convertSearchInfoToPage(schParam, Sort.by(JobHistoryEntity.START_TIME).descending()));
 		
-		TaskSqlEntity item = taskSqlRepository.findByTaskId(taskId);
-		
-		if(item == null) {
-			throw new NotFoundException(String.format("[%s] task not found ",  taskId));
-		}
-		
-		DatabaseInfo dbinfo = dbConnectionEntityRepository.findDatabaseInfo(item.getVconnid());
-		
-		if(dbinfo==null) {
-			throw new DatabaseNotFoundException(String.format("[%s] db not found ", item.getVconnid()));
-		}
-		
-		SqlStatementInfo ssi = new SqlStatementInfo();
-		
-		ssi.setDatabaseInfo(dbinfo);
-		ssi.setSql(item.getSql());
-		ssi.setSqlParamMap(SQLUtils.stringParamListToMap(item.getParameter()));
-		
-		ssi.setLimit(-1);
-
-		Task sqlTask = new SQLTask(ssi);
-		
-		try {
-			sqlTask.submit();
-			result = sqlTask.result().getCustomResult();
-		} catch (Exception e) {
-			result = ResponseResult.builder().status(RequestResultCode.ERROR.getCode()).message(e.getMessage()).build();
-		}
-		
-		return result; 
+		return VarsqlUtils.getResponseResult(result.getContent(), result.getTotalElements(), schParam);
 	}
 
 }

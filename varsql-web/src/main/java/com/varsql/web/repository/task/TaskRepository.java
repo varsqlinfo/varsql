@@ -44,7 +44,7 @@ public interface TaskRepository extends DefaultJpaRepository, JpaRepository<Task
 			long totalCount = query.fetchCount();
 			
 			if(totalCount  < 1) {
-				return new PageImpl<>(Collections.EMPTY_LIST, convertSearchInfoToPage, totalCount);
+				return new PageImpl<TaskResponseDTO>(Collections.emptyList(), convertSearchInfoToPage, totalCount);
 			}
 			
 			List<TaskEntity> results = getQuerydsl().applyPagination(convertSearchInfoToPage, query).fetch();

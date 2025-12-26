@@ -18,10 +18,10 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.varsql.web.app.scheduler.InitJobBean;
-import com.varsql.web.app.scheduler.listener.JobsListenerImpl;
-import com.varsql.web.app.scheduler.listener.TriggerListenerImpl;
 import com.varsql.web.constants.ResourceConfigConstants;
+import com.varsql.web.scheduler.InitJobBean;
+import com.varsql.web.scheduler.listener.JobsListenerImpl;
+import com.varsql.web.scheduler.listener.TriggerListenerImpl;
 
 @Conditional(SchedulerCondition.class)
 public class QuartzConfig {

@@ -8,36 +8,35 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import com.varsql.core.common.beans.ProgressInfo;
-import com.varsql.core.connection.ConnectionInfoManager;
-import com.varsql.core.db.valueobject.DatabaseInfo;
+import com.varsql.core.common.constants.ExecuteType;
 import com.varsql.core.exception.NotFoundException;
-import com.varsql.core.task.Task;
-import com.varsql.core.task.transfer.SourceVO;
-import com.varsql.core.task.transfer.TargetVO;
 import com.varsql.core.task.transfer.TaskResult;
-import com.varsql.core.task.transfer.TaskTransferBuilder;
-import com.varsql.core.task.transfer.TaskTransferExecutor;
+import com.varsql.web.constants.HttpParamConstants;
 import com.varsql.web.constants.HttpSessionConstants;
+import com.varsql.web.dto.task.TaskExecutionVO;
+import com.varsql.web.dto.task.TaskHistoryResponseDTO;
 import com.varsql.web.dto.task.TaskTransferRequestDTO;
 import com.varsql.web.dto.task.TaskTransferResponseDTO;
 import com.varsql.web.model.base.AbstractRegAuditorModel;
+import com.varsql.web.model.entity.scheduler.JobHistoryEntity;
 import com.varsql.web.model.entity.task.TaskTransferEntity;
+import com.varsql.web.repository.task.TaskHistoryEntityRepository;
 import com.varsql.web.repository.task.TaskTransferRepository;
+import com.varsql.web.scheduler.task.TransferTaskRunner;
 import com.varsql.web.util.VarsqlBeanUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
-import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.StringUtils;
-import com.vartech.common.utils.VartechUtils;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * table data mig task service
@@ -46,11 +45,15 @@ import com.vartech.common.utils.VartechUtils;
  *
  */
 @Component
+@RequiredArgsConstructor
 public class TaskDataMigMgmtService {
 	private final static Logger logger = LoggerFactory.getLogger(TaskDataMigMgmtService.class);
 	
-	@Autowired
-	private TaskTransferRepository taskTransferRepository;
+	final private TaskTransferRepository taskTransferRepository;
+	
+	final private TransferTaskRunner transferTaskRunner;
+	
+	final private TaskHistoryEntityRepository taskHistoryEntityRepository;
 	
 	/**
 	 * 목록 
@@ -141,50 +144,36 @@ public class TaskDataMigMgmtService {
 	public ResponseResult execute(String taskId, DataMap reqParam, HttpServletRequest req) throws SQLException {
 		ResponseResult result = new ResponseResult();
 		
-		TaskTransferEntity item = taskTransferRepository.findByTaskId(taskId);
-		
-		if(item == null) {
-			throw new NotFoundException("task id not found : "+ taskId);
-		}
-		
-		SourceVO sourceVo = VartechUtils.jsonStringToObject(item.getSourceConfig(), SourceVO.class, true); 
-		TargetVO targetVo = VartechUtils.jsonStringToObject(item.getTargetConfig(), TargetVO.class, true);
-		
-		sourceVo.setTypeInfo(DatabaseInfo.toDatabaseInfo(ConnectionInfoManager.getInstance().getConnectionInfo(item.getSourceVconnid())));
-		
 		String progressUid = HttpUtils.getString(req, "progressUid");
 		String sessAttrKey = HttpSessionConstants.progressKey(progressUid);
 		HttpSession session = req.getSession();
 		
 		ProgressInfo progressInfo = new ProgressInfo();
-		sourceVo.setProgressInfo(progressInfo);
 		
 		session.setAttribute(sessAttrKey, progressInfo);
 		
-		targetVo.setTypeInfo(DatabaseInfo.toDatabaseInfo(ConnectionInfoManager.getInstance().getConnectionInfo(item.getTargetVconnid())));
-		
-		TaskResult taskResult = TaskResult.builder().build();
-		
-		try {
-			Task taskTransferExecutor = new TaskTransferExecutor(TaskTransferBuilder.builder()
-					.sourceVo(sourceVo)
-					.targetVo(targetVo)
-					.taskResult(taskResult)
-				.build());
-					
-			taskTransferExecutor.submit();
-			
-			result.setItemOne(taskTransferExecutor.result());
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			
-			result.setResultCode(RequestResultCode.ERROR);
-			result.setMessage(e.getMessage());
-		}
+		TaskExecutionVO taskExecutionVO = TaskExecutionVO.builder().taskId(taskId).requid(reqParam.getString(HttpParamConstants.REQ_UID)).runType(ExecuteType.NORMAL).build();
+		taskExecutionVO.setProgressInfo(progressInfo);
+		TaskResult taskResult = transferTaskRunner.run(taskExecutionVO);
 		
 		session.setAttribute(sessAttrKey, "complete");
 		
+		result.setItemOne(taskResult);
+		
 		return result; 
+	}
+	
+	/**
+	 * 이력 조회
+	 * 
+	 * @param taskId
+	 * @param schParam
+	 * @return
+	 */
+	public ResponseResult findHistory(String taskId, SearchParameter schParam) {
+		Page<TaskHistoryResponseDTO> result = taskHistoryEntityRepository.findByTaskId(taskId, VarsqlUtils.convertSearchInfoToPage(schParam, Sort.by(JobHistoryEntity.START_TIME).descending()));
+		
+		return VarsqlUtils.getResponseResult(result.getContent(), result.getTotalElements(), schParam);
 	}
 
 }

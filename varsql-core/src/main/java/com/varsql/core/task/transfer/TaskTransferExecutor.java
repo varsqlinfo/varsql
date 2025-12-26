@@ -9,8 +9,6 @@ import com.varsql.core.task.transfer.writer.AbstractTargetWriter;
 
 public class TaskTransferExecutor extends AbstractTaskTransfer {
 	
-	private TaskResult result;
-
 	public TaskTransferExecutor(TaskTransferBuilder taskTransferBuilder) {
 		super(taskTransferBuilder);
 	}

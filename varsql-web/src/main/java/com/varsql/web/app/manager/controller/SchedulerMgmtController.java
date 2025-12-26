@@ -70,10 +70,9 @@ public class SchedulerMgmtController extends AbstractController {
 		
 		return schedulerMgmtServiceImpl.jobCtrl(jobUid, mode);
 	}
+	
 	/**
-	 * 
-	 *
-	 * @method : history
+	 * job 이력 조회 
 	 * @param jobUid
 	 * @param mode
 	 * @return

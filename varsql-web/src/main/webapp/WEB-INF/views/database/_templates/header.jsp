@@ -195,4 +195,5 @@
 
 <div class="pull-right">
 	<a href="javascript:;" class="database-board-view-btn"><spring:message code="board" /></a>
+	<a href="javascript:;" class="database-board-refresh-btn"><i class="fa fa-refresh"></i></a>
 </div>

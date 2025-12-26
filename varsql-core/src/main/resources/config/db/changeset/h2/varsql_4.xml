@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<database>
+    <description>task 테이블 생성</description>
+    <apply>
+         <sql description="add task 테이블">
+<![CDATA[
+	ALTER TABLE VTQTZ_HISTORY ALTER COLUMN RUN_TYPE VARCHAR(6);
+	ALTER TABLE VTTASK_HISTORY ALTER COLUMN RUN_TYPE VARCHAR(6);
+	ALTER TABLE VTTASK_HISTORY ALTER COLUMN TASK_ID VARCHAR(36);
+]]>
+        </sql>
+    </apply>
+    <revert>
+        <sql description="vttask revert">
+        </sql>
+    </revert>
+</database>

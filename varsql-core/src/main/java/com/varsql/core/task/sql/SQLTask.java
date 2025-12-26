@@ -34,6 +34,7 @@ public class SQLTask implements Task{
 	
 	public SQLTask(SqlStatementInfo ssi) {
 		this.ssi = ssi; 
+		this.result = new ResponseResult();
 	}
 
 	@Override
@@ -42,9 +43,6 @@ public class SQLTask implements Task{
 		ResponseResult parseInfo = SqlSourceBuilder.parseResponseResult(ssi.getSql(), ssi.getSqlParam(), DBVenderType.getDBType( ssi.getDatabaseInfo().getType() ));
 
 		List<SqlSource> sqlList = parseInfo.getList();
-
-		int limit = ssi.getLimit();
-		limit = limit <= 0 ? SqlDataConstants.DEFAULT_LIMIT_ROW_COUNT : limit;
 
 		ArrayList<SqlSourceResultVO> reLst = new ArrayList<SqlSourceResultVO>();
 

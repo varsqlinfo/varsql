@@ -1,8 +1,5 @@
 package com.varsql.web.dto.scheduler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.varsql.web.model.entity.scheduler.TriggersEntity;
 
 import lombok.Builder;

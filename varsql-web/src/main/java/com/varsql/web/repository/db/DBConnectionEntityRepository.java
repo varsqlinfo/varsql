@@ -11,7 +11,7 @@ import com.querydsl.core.types.Projections;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.exception.ConnectionFactoryException;
-import com.varsql.web.app.component.ConnectionInfoDTO;
+import com.varsql.web.component.ConnectionInfoDTO;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.model.entity.db.QDBConnectionEntity;

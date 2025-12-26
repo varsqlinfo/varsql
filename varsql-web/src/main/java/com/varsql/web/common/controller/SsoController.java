@@ -18,7 +18,9 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -74,7 +76,7 @@ public class SsoController implements InitializingBean  {
 		}
 		*/
 
-		if(!ssoHandler.beforeSsoHandler(request, response)) {
+		if(!ssoHandler.beforeSso(request, response)) {
 			String loginUrl = ssoHandler.loginURL(request, response); 
 			if(StringUtils.isBlank(loginUrl)) {
 				return new ModelAndView("redirect:/");
@@ -82,28 +84,38 @@ public class SsoController implements InitializingBean  {
 			return new ModelAndView("redirect:"+ loginUrl);
 		}
 		
-		String usrid = ssoHandler.handler(request, response);
+		String usrid = ssoHandler.extractUserId(request, response);
 		
 		logger.debug("req ssoId : {}, uri : {} " , usrid, request.getRequestURI());
 
     	Authentication auth = ssoComponent.ssoLogin(usrid);
-
-    	if(auth == null ||!SecurityUtil.isAdmin(auth)) {
-    		
-    		logger.debug("auth : {} " , auth);
-    		
-    		request.setAttribute("ssoId", usrid);
-    		
-    		ssoHandler.afterSsoHandler(request, response, auth);
-    		
-    		if(!SecurityUtil.isAnonymous()) {
-				new SecurityContextLogoutHandler().logout(request, null, null);
-			}
-    		
+    	
+    	if(auth == null) {
     		return getLoginRedirectMav(request, ssoHandler.loginURL(request, response));
     	}
     	
-    	String redirectUrl = ssoHandler.successRedirectURL(request, response);
+    	if(!SecurityUtil.isAdmin(auth)) {
+    		
+    		if(!ssoHandler.afterSso(request, response, auth)) {
+    			request.setAttribute("ssoId", usrid);
+    			
+    			String failureRedirectUrl = ssoHandler.failureRedirectURL(request, response, auth);
+    			
+    			logger.debug("failureRedirectUrl: {}, auth: {} ", failureRedirectUrl, auth);
+    			
+    			if(!SecurityUtil.isAnonymous()) {
+    				new SecurityContextLogoutHandler().logout(request, null, null);
+    			}
+    			
+    			if(!StringUtils.isBlank(failureRedirectUrl)) {
+    				return new ModelAndView("redirect:" + failureRedirectUrl);
+    			}
+    		}
+    	}
+    	
+    	new HttpSessionSecurityContextRepository().saveContext(SecurityContextHolder.getContext(), request, response);
+    	
+    	String redirectUrl = ssoHandler.successRedirectURL(request, response, auth);
     	
     	if(StringUtils.isBlank(redirectUrl)) {
     		return new ModelAndView("redirect:" + AuthorityTypeImpl.USER.getMainPage());
