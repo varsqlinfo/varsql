@@ -748,7 +748,6 @@ ALTER TABLE VTQTZ_TRIGGERS ADD
     <sql description="inint db revert">
     
 drop sequence hibernate_sequence;
-drop table VTDATABASE_CHANGELOG;
 drop table VTSEQUENCE;
 drop table VTUSER;
 drop table VTUSER_REMEMBERME;
@@ -784,8 +783,6 @@ drop table VTBOARD_FILE;
 drop table VTDBTYPE_DRIVER_FILE;
 drop table VTEMAIL_TOKEN;
 drop table VTQTZ_JOB_SCHEDULE;
-drop table VTQTZ_HISTORY;
-drop table VTQTZ_HISTORY_LOG;
 drop table VTQTZ_CALENDARS;
 drop table VTQTZ_CRON_TRIGGERS;
 drop table VTQTZ_FIRED_TRIGGERS;

@@ -189,11 +189,16 @@ public final class ConnectionInfoManager {
      * =========================================================
      */
     private void init() {
-        logger.debug("connection info config scan package : {}", Configuration.getInstance().getConnectiondaoPackage());
+    	String connectiondaoPackage = Configuration.getInstance().getConnectiondaoPackage();
+        logger.debug("connection info config scan package : {}", connectiondaoPackage);
+        
+        if(StringUtils.isBlank(connectiondaoPackage)) {
+        	return ; 
+        }
 
         try {
             Reflections reflections = new Reflections(new ConfigurationBuilder()
-                    .setUrls(ClasspathHelper.forPackage(Configuration.getInstance().getConnectiondaoPackage()))
+                    .setUrls(ClasspathHelper.forPackage(connectiondaoPackage))
                     .setScanners(new TypeAnnotationsScanner(), new SubTypesScanner()));
 
             Set<Class<?>> types = reflections.getTypesAnnotatedWith(ConnectionInfoConfig.class);
