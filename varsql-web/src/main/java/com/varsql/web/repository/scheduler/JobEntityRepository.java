@@ -61,6 +61,8 @@ public interface JobEntityRepository extends DefaultJpaRepository, JpaRepository
 					dto.setJobData(jse.getJobData());
 					dto.setJobDescription(jse.getJobDescription());
 					dto.setCronExpression(jse.getCronExpression());
+					dto.setRegId(jse.getRegId());
+					dto.setRegDt(jse.getRegDt());
 					
 					// db connection info
 					if(de != null) {

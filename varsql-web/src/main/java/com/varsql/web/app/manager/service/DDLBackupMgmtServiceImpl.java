@@ -43,15 +43,15 @@ public class DDLBackupMgmtServiceImpl extends AbstractService{
 	
 	private final Logger logger = LoggerFactory.getLogger(DDLBackupMgmtServiceImpl.class);
 	
-	private String DDL_BACKUP_JOB_GROUP = "DDL_BACKUP";
+	private final String DDL_BACKUP_JOB_GROUP = "DDL_BACKUP";
 	
-	final private DBConnectionViewEntityRepository dbConnectionViewEntityRepository;
+	private final DBConnectionViewEntityRepository dbConnectionViewEntityRepository;
 	
-	final private DBConnectionEntityRepository  dbConnectionEntityRepository;
+	private final DBConnectionEntityRepository  dbConnectionEntityRepository;
 
-	final private JobEntityRepository jobEntityRepository;
+	private final JobEntityRepository jobEntityRepository;
 	
-	final private SchedulerMgmtServiceImpl schedulerMgmtServiceImpl;
+	private final SchedulerMgmtServiceImpl schedulerMgmtServiceImpl;
 	
 	/**
 	 * 목록보기

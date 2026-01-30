@@ -56,8 +56,9 @@ public class Configuration extends AbstractConfiguration{
 	private final String FILE_UPLOAD_SIZEPERFILE = "file.upload.sizeperfile";
 	private final String FILE_UPLOAD_MAX_IN_MEMORY_SIZE = "file.upload.maxinmemorysize";
 	private final String BACKUP_PATH = "backup.path";
-	private final String BACKUP_EXPIRE_PATH = "backup.expire.day";
-	private final String BACKUP_EXPIRE_CRON = "backup.expire.cron";
+	private final String BACKUP_CLEANUP_RETENTION_DAYS = "backup.cleanup.retention.days";
+	private final String BACKUP_CLEANUP_CRON = "backup.cleanup.cron";
+	private final String BACKUP_CLEANUP_EXCLUDE_DAYS = "backup.cleanup.exclude.days";
 	
 	private final String DB_NETWORK_TIMEOUT = "db.network.timeout";
 	
@@ -88,9 +89,10 @@ public class Configuration extends AbstractConfiguration{
 	private String fileUploadPath="";
 	
 	private String backupPath="";
-	private String backupExpireCron="";
+	private String backupCleanupCron="";
+	private String backupCleanupExcludeDays="";
 	
-	private int backupExpireDay = 30;
+	private int backupCleanupDay = 30;
 
 	private long fileUploadSize=0;
 
@@ -196,10 +198,11 @@ public class Configuration extends AbstractConfiguration{
 		// file upload config
 		fileUploadPath= props.getProperty(FILE_UPLOAD_PATH, getInstallRoot() +File.separator +DEFAULT_UPLOAD_FOLDER);
 		backupPath= props.getProperty(BACKUP_PATH, getInstallRoot() +File.separator + "backup");
-		backupExpireDay= Integer.parseInt(props.getProperty(BACKUP_EXPIRE_PATH, "30"));
+		backupCleanupDay= Integer.parseInt(props.getProperty(BACKUP_CLEANUP_RETENTION_DAYS, "30"));
 		
-		backupExpireDay = backupExpireDay > 0 ? backupExpireDay * -1 : backupExpireDay; 
-		backupExpireCron= props.getProperty(BACKUP_EXPIRE_CRON, "0 0 3 * * ?");
+		backupCleanupDay = backupCleanupDay > 0 ? backupCleanupDay * -1 : backupCleanupDay; 
+		backupCleanupCron= props.getProperty(BACKUP_CLEANUP_CRON, "0 0 3 * * ?");
+		backupCleanupExcludeDays= props.getProperty(BACKUP_CLEANUP_EXCLUDE_DAYS, "");
 		fileUploadSize  = Long.parseLong(props.getProperty(FILE_UPLOAD_SIZE, "1048576000"));
 		fileUploadSizePerFile = Long.parseLong(props.getProperty(FILE_UPLOAD_SIZEPERFILE, "1048576000"));
 		fileUploadMaxInMemorySize = Integer.parseInt(props.getProperty(FILE_UPLOAD_MAX_IN_MEMORY_SIZE, "0"));
@@ -231,7 +234,7 @@ public class Configuration extends AbstractConfiguration{
 		logger.info("file upload path : {}",fileUploadPath);
 		logger.info("backup path : {}",backupPath);
 		logger.info("file upload size:{}, MaxInMemorySize : {}, sizePerFile: {}, ", fileUploadSize, fileUploadMaxInMemorySize, fileUploadSizePerFile);
-		logger.info("backup file expire day : {}", backupExpireDay);
+		logger.info("backup file cleanup day : {}", backupCleanupDay);
 
 		passwordType = PasswordType.getType(props.getProperty(PASSWORD_INIT_TYPE,""));
 		
@@ -365,12 +368,16 @@ public class Configuration extends AbstractConfiguration{
 		return backupPath;
 	}
 	
-	public int backupExpireDay() {
-		return backupExpireDay;
+	public int getBackupCleanupDay() {
+		return backupCleanupDay;
 	}
 	
-	public String getBackupExpireCron() {
-		return backupExpireCron;
+	public String getBackupCleanupCron() {
+		return backupCleanupCron;
+	}
+	
+	public String getBackupCleanupExcludeDays() {
+		return backupCleanupExcludeDays;
 	}
 
 	public long getFileUploadSize() {

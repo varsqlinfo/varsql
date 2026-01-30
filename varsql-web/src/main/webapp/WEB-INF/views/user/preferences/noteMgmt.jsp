@@ -13,10 +13,10 @@
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<label>
-					<input type="radio" value="recv" v-model="message_type" @change="search()"><spring:message code="recv.msg" text="받은메시지" />
+					<input type="radio" value="recv" v-model="viewMode" @change="search()"><spring:message code="recv.msg" text="받은메시지" />
 				</label>
 				<label>
-					<input type="radio" value="send" v-model="message_type" @change="search()"><spring:message code="send.msg" text="보낸메시지"/>
+					<input type="radio" value="send" v-model="viewMode" @change="search()"><spring:message code="send.msg" text="보낸메시지"/>
 				</label>
 			</div>
 			<!-- /.panel-heading -->
@@ -56,7 +56,7 @@
 				<div class="table-responsive">
 					<div id="dataTables-example_wrapper"
 						class="dataTables_wrapper form-inline" role="grid">
-						<table :class="(message_type=='recv'?'view':'hidden')"
+						<table :class="(viewMode=='recv'?'view':'hidden')"
 							class="table table-striped table-bordered table-hover dataTable no-footer"
 							id="dataTables-example">
 							<thead>
@@ -92,7 +92,7 @@
 							</tbody>
 						</table>
 
-						<table :class="(message_type=='send'?'view':'hidden')"
+						<table :class="(viewMode=='send'?'view':'hidden')"
 							class="table table-striped table-bordered table-hover dataTable no-footer"
 							id="dataTables-example">
 							<thead>
@@ -141,11 +141,43 @@
 					</div>
 					<div class="form-group">
 						<div class="col-sm-12">
+					    	
 							<textarea class="form-control text required" rows="5" readonly="readonly">{{detailItem.noteCont}}</textarea>
+							<div v-if="detailItem.noteType != 'NOTE' && detailItem.batchInfo" >
+					    		<div style="padding:10px 0px 10px;" class="text-center">
+					    			<button class="btn btn-sm" @click="batchHistDetail()"  :class="detailItem.batchInfo.status =='FAILED'?'bg-danger':''" >Result View</button>
+					    		</div>
+					    		
+					    		<table class="table table-striped table-bordered table-hover dataTable no-footer" :class="detailItem.batchInfo.status =='FAILED'?'bg-danger':''" >
+									<colgroup>
+										<col style="width:140px;">
+										<col style="width:calc(100% - 140px);">
+									</colgroup>
+									<thead>
+										<tr role="row">
+											<th>
+												<spring:message	code="key" />
+											</th>
+											<th>
+												<spring:message	code="value" />
+											</th>
+										</tr>
+									</thead>
+									<tbody class="dataTableContent">
+										<tr v-for="(value, key, index) in batchInfo" :key="key"  class="gradeA" :class="index % 2 === 0 ? 'add' : 'even'">
+										  <td class="center">{{ key }}</td>
+										  <td >{{ value }}</td>
+										</tr>
+										<tr v-if="Object.keys(batchInfo).length === 0">
+											<td colspan="2"><div class="text-center"><spring:message code="msg.nodata"/></div></td>
+										</tr>
+									</tbody>
+								</table>
+					    	</div>
 						</div>
 					</div>
 
-					<div v-if="message_type=='send'">
+					<div v-if="viewMode=='send'">
 					 	<div><spring:message code="recv.user" text="받는사람"/></div>
 						<div class="form-group">
 							<div class="col-sm-12">
@@ -157,7 +189,7 @@
 							</div>
 						</div>
 					</div>
-					<div v-else>
+					<div v-else-if="viewMode != 'send' && detailItem.noteType == 'NOTE'">
 						<div class="pull-right" style="margin-bottom:10px;">
 							<button type="button" class="btn btn-sm btn-primary" @click="resendNote()"><spring:message code="reply" text="답장"/></button>
 						</div>
@@ -170,7 +202,6 @@
 								<colgroup>
 									<col style="width:calc(100% - 140px);">
 									<col style="width:140px;">
-
 								</colgroup>
 								<thead>
 									<tr role="row">
@@ -206,13 +237,14 @@
 </div>
 <!-- /.row -->
 
+
 <script>
 
 VarsqlAPP.vueServiceBean( {
 	el: '#epViewArea'
 	,data: {
 		list_count :10
-		,message_type : 'recv'
+		,viewMode : 'recv'
 		,searchVal : ''
 		,pageInfo : {}
 		,gridData :  []
@@ -220,6 +252,7 @@ VarsqlAPP.vueServiceBean( {
 		,selectItem :[]
 		,replyList :[]
 		,reNoteItem :{}
+		,batchInfo : {}
 	}
 	,methods:{
 		deleteMsg : function(){
@@ -236,26 +269,51 @@ VarsqlAPP.vueServiceBean( {
 			}
 
 			var param = {
-				messageType : _self.message_type
+				viewMode : _self.viewMode
 				,selectItem : selectItem.join(',')
 			};
 
 			this.$ajax({
 				data:param
-				,url : {type:VARSQL.uri.user, url:'/preferences/deleteMsg'}
+				,url : {type:VARSQL.uri.user, url:'/note/deleteMsg'}
 				,success:function (response){
 					_self.search();
+				}
+			});
+		}
+		// 배치 상세 보기. 
+		,batchHistDetail(){
+			const detailItem = this.detailItem;
+			
+			this.$ajax({
+			    url:{type:VARSQL.uri.user, url:'/detail/batch/hist/'+detailItem.batchInfo.histSeq}
+				,method:'get'
+			    ,data : {}
+			    ,success:(resData)=>{
+			    	this.batchInfo =resData.item;
 				}
 			});
 		}
 		,viewItem : function (item){
 			var _self =this;
 			item.reNoteCont ='';
-			this.detailItem = item;
+			item.batchInfo = {};
 			this.replyList = [];
+			this.batchInfo = {};
+			
+			if(item.noteType =='NOTE'){
+				this.detailItem = item;	
+			}else{
+				let reItem = VARSQL.util.objectMerge(item);
+				reItem.batchInfo = JSON.parse(reItem.noteCont)
+				reItem.noteCont = VARSQLTemplate.render.html(VARSQLTemplate.format.noteBatch, reItem);
+				this.detailItem = reItem;
+			}
+			
+			if(item.noteType != 'NOTE' || this.viewMode == 'send') return; 
 
 			this.$ajax({
-			    url:{type:VARSQL.uri.user, url:'/preferences/msgReplyList'}
+			    url:{type:VARSQL.uri.user, url:'/note/msgReplyList'}
 			    ,data : VARSQL.util.copyObject(item)
 			    ,success:function (resData){
 			    	_self.replyList = resData.list;
@@ -272,7 +330,7 @@ VarsqlAPP.vueServiceBean( {
 			params.recvId = 'resend';
 
 			this.$ajax({
-			    url:{type:VARSQL.uri.user, url:'/resendNote'}
+			    url:{type:VARSQL.uri.user, url:'/note/resend'}
 			    ,data:params
 			    ,success:function (resData){
 			    	VARSQL.toastMessage('msg.save.success');
@@ -294,13 +352,13 @@ VarsqlAPP.vueServiceBean( {
 
 			var param = {
 				pageNo : (no?no:1)
-				,messageType : _self.message_type
+				,viewMode : _self.viewMode
 				,rows: _self.list_count
 				,'searchVal':_self.searchVal
 			};
 
 			this.$ajax({
-				url : {type:VARSQL.uri.user, url:'/preferences/listMsg'}
+				url : {type:VARSQL.uri.user, url:'/note/list'}
 				,data : param
 				,success: function(resData) {
 					_self.gridData = resData.list;

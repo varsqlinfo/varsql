@@ -1,7 +1,9 @@
-package com.varsql.web.dto.scheduler;
+package com.varsql.web.dto.execution;
 
 import java.io.Serializable;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,13 +11,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class JobHistoryResponseDTO implements Serializable{
+@AllArgsConstructor
+@Builder
+public class ExecutionHistoryResponseDTO implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
 	private long histSeq; 
 	private String instanceId; 
-	private String jobUid; 
+	private String targetType; 
+	private String targetId; 
 	private String runType; 
 	private String startTime; 
 	private String endTime; 

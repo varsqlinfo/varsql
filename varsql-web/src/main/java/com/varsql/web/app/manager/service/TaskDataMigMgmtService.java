@@ -13,19 +13,20 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import com.varsql.core.common.beans.ProgressInfo;
+import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.ExecuteType;
 import com.varsql.core.exception.NotFoundException;
 import com.varsql.core.task.transfer.TaskResult;
 import com.varsql.web.constants.HttpParamConstants;
 import com.varsql.web.constants.HttpSessionConstants;
+import com.varsql.web.dto.execution.ExecutionHistoryResponseDTO;
 import com.varsql.web.dto.task.TaskExecutionVO;
-import com.varsql.web.dto.task.TaskHistoryResponseDTO;
 import com.varsql.web.dto.task.TaskTransferRequestDTO;
 import com.varsql.web.dto.task.TaskTransferResponseDTO;
 import com.varsql.web.model.base.AbstractRegAuditorModel;
-import com.varsql.web.model.entity.scheduler.JobHistoryEntity;
+import com.varsql.web.model.entity.execution.ExecutionHistoryEntity;
 import com.varsql.web.model.entity.task.TaskTransferEntity;
-import com.varsql.web.repository.task.TaskHistoryEntityRepository;
+import com.varsql.web.repository.execution.ExecutionHistoryEntityRepository;
 import com.varsql.web.repository.task.TaskTransferRepository;
 import com.varsql.web.scheduler.task.TransferTaskRunner;
 import com.varsql.web.util.VarsqlBeanUtils;
@@ -49,11 +50,11 @@ import lombok.RequiredArgsConstructor;
 public class TaskDataMigMgmtService {
 	private final static Logger logger = LoggerFactory.getLogger(TaskDataMigMgmtService.class);
 	
-	final private TaskTransferRepository taskTransferRepository;
+	private final TaskTransferRepository taskTransferRepository;
 	
-	final private TransferTaskRunner transferTaskRunner;
+	private final TransferTaskRunner transferTaskRunner;
 	
-	final private TaskHistoryEntityRepository taskHistoryEntityRepository;
+	private final ExecutionHistoryEntityRepository executionHistoryEntityRepository;
 	
 	/**
 	 * 목록 
@@ -154,11 +155,15 @@ public class TaskDataMigMgmtService {
 		
 		TaskExecutionVO taskExecutionVO = TaskExecutionVO.builder().taskId(taskId).requid(reqParam.getString(HttpParamConstants.REQ_UID)).runType(ExecuteType.NORMAL).build();
 		taskExecutionVO.setProgressInfo(progressInfo);
-		TaskResult taskResult = transferTaskRunner.run(taskExecutionVO);
+		TaskResult taskResult;
+		try {
+			taskResult = transferTaskRunner.run(taskExecutionVO);
+		} catch (Exception e) {
+			result.setResultCode(VarsqlAppCode.EC_TASK);
+			result.setMessage(e.getMessage());
+		}
 		
 		session.setAttribute(sessAttrKey, "complete");
-		
-		result.setItemOne(taskResult);
 		
 		return result; 
 	}
@@ -171,7 +176,7 @@ public class TaskDataMigMgmtService {
 	 * @return
 	 */
 	public ResponseResult findHistory(String taskId, SearchParameter schParam) {
-		Page<TaskHistoryResponseDTO> result = taskHistoryEntityRepository.findByTaskId(taskId, VarsqlUtils.convertSearchInfoToPage(schParam, Sort.by(JobHistoryEntity.START_TIME).descending()));
+		Page<ExecutionHistoryResponseDTO> result = executionHistoryEntityRepository.findByTargetId(taskId, ExecuteType.TASK, VarsqlUtils.convertSearchInfoToPage(schParam, Sort.by(ExecutionHistoryEntity.START_TIME).descending()));
 		
 		return VarsqlUtils.getResponseResult(result.getContent(), result.getTotalElements(), schParam);
 	}

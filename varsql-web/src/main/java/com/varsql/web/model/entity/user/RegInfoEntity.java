@@ -12,6 +12,7 @@ import org.springframework.data.annotation.Immutable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.varsql.web.constants.SecurityConstants;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -64,4 +65,18 @@ public class RegInfoEntity implements Serializable{
 	public String getViewName() {
 		return String.format("%s/%s", this.uid , this.uname);
 	}
+	
+	public static RegInfoEntity ofNullable(RegInfoEntity entity, String uid) {
+        if (entity != null) {
+            return entity;
+        }
+
+        RegInfoEntity defaultEntity = new RegInfoEntity();
+        defaultEntity.setUid(uid);
+        defaultEntity.setUname(SecurityConstants.SYSTEM_ID.equals(uid)?"SYSTEM":"Unknown");
+        defaultEntity.setOrgNm("");
+        defaultEntity.setDeptNm("");
+
+        return defaultEntity;
+    }
 }

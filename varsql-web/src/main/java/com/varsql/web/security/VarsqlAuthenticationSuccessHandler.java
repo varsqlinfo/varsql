@@ -52,9 +52,9 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	
 	private RequestCache requestCache = new HttpSessionRequestCache();
 
-	final private SecurityLogService securityLogService;
+	private final SecurityLogService securityLogService;
 	
-	final private UserCommonService userCommonService;
+	private final UserCommonService userCommonService;
 	
 	public VarsqlAuthenticationSuccessHandler(SecurityLogService securityLogService, UserCommonService userCommonService) {
 		super();
@@ -152,7 +152,7 @@ public class VarsqlAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 		List<AuthorityType> userScreen = new ArrayList<AuthorityType>();
 		for(AuthorityType auth : AuthorityTypeImpl.values()){
-			if(!AuthorityTypeImpl.GUEST.equals(auth) &&  topAuthority.getPriority() >=auth.getPriority()){
+			if(auth.getPriority() > 0 &&  topAuthority.getPriority() >=auth.getPriority()){
 				userScreen.add(auth);
 			}
 		}

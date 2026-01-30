@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -28,6 +27,8 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.StringUtils;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * -----------------------------------------------------------------------------
 * @fileName		: ManagerMgmtServiceImpl.java
@@ -41,14 +42,13 @@ import com.vartech.common.utils.StringUtils;
 *-----------------------------------------------------------------------------
  */
 @Service
+@RequiredArgsConstructor
 public class ManagerMgmtServiceImpl  extends AbstractService{
 	private final Logger logger = LoggerFactory.getLogger(ManagerMgmtServiceImpl.class);
 
-	@Autowired
-	private UserMgmtRepository userMgmtRepository;
+	private final UserMgmtRepository userMgmtRepository;
 
-	@Autowired
-	private DBManagerEntityRepository dbManagerRepository;
+	private final DBManagerEntityRepository dbManagerRepository;
 
 
 	/**

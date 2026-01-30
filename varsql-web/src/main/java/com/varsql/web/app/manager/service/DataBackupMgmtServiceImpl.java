@@ -48,15 +48,15 @@ public class DataBackupMgmtServiceImpl extends AbstractService{
 	
 	private final Logger logger = LoggerFactory.getLogger(DataBackupMgmtServiceImpl.class);
 	
-	private String TABLE_BACKUP_JOB_GROUP = "TABLE_DATA_BACKUP";
+	private final String TABLE_BACKUP_JOB_GROUP = "TABLE_DATA_BACKUP";
 	
-	final private DBConnectionViewEntityRepository dbConnectionViewEntityRepository;
+	private final DBConnectionViewEntityRepository dbConnectionViewEntityRepository;
 	
-	final private DBConnectionEntityRepository dbConnectionEntityRepository;
+	private final DBConnectionEntityRepository dbConnectionEntityRepository;
 
-	final private JobEntityRepository jobEntityRepository;
+	private final JobEntityRepository jobEntityRepository;
 	
-	final private SchedulerMgmtServiceImpl schedulerMgmtServiceImpl;
+	private final SchedulerMgmtServiceImpl schedulerMgmtServiceImpl;
 	
 	/**
 	 * 목록보기

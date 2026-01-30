@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.core.configuration.PreferencesDataFactory;
@@ -19,6 +18,8 @@ import com.varsql.web.util.ValidateUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  *
  * @FileName  : PreferencesServiceImpl.java
@@ -28,11 +29,11 @@ import com.vartech.common.app.beans.ResponseResult;
  * @프로그램 설명 :
  */
 @Service
+@RequiredArgsConstructor
 public class PreferencesServiceImpl{
 	private final Logger logger = LoggerFactory.getLogger(PreferencesServiceImpl.class);
 
-	@Autowired
-	private UserDBPreferencesEntityRepository userDBPreferencesEntityRepository ;
+	private final UserDBPreferencesEntityRepository userDBPreferencesEntityRepository ;
 
 	/**
 	 *

@@ -1,4 +1,4 @@
-package com.varsql.web.model.entity.scheduler;
+package com.varsql.web.model.entity.execution;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicUpdate;
 
-import com.varsql.web.model.id.JobHistoryLogID;
+import com.varsql.web.model.id.ExecutionHistoryLogID;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -19,11 +19,11 @@ import lombok.Setter;
 @DynamicUpdate
 @NoArgsConstructor
 @Entity
-@Table(name = JobHistoryLogEntity._TB_NAME)
-@IdClass(JobHistoryLogID.class)
-public class JobHistoryLogEntity{
+@Table(name = ExecutionHistoryLogEntity._TB_NAME)
+@IdClass(ExecutionHistoryLogID.class)
+public class ExecutionHistoryLogEntity{
 
-	public final static String _TB_NAME="VTQTZ_HISTORY_LOG";
+	public final static String _TB_NAME="VTEXECUTION_HISTORY_LOG";
 
 	@Id
 	private long histSeq; 
@@ -35,7 +35,7 @@ public class JobHistoryLogEntity{
 	private String log;
 
 	@Builder
-	public JobHistoryLogEntity (long histSeq, String logType, String log) {
+	public ExecutionHistoryLogEntity (long histSeq, String logType, String log) {
 		this.histSeq = histSeq;
 		this.logType = logType;
 		this.log = log;

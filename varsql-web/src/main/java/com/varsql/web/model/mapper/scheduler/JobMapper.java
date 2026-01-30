@@ -44,6 +44,7 @@ public interface JobMapper extends GenericMapper<JobResponseDTO, JobEntity> {
 	        if ( jobDBConnection == null || jobDBConnection.getVconnid()==null) {
 	            return jobResponseDTO;
 	        }
+	        jobResponseDTO.setDeleteVconnid(jobDBConnection.isDelYn());
 	        jobResponseDTO.setVconnid(jobDBConnection.getVconnid());
 	        jobResponseDTO.setVname(jobDBConnection.getVname());
 	        return jobResponseDTO;

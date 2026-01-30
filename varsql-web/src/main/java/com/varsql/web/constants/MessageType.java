@@ -1,19 +1,18 @@
 package com.varsql.web.constants;
 
 public enum MessageType{
-	USER_BLOCK("userBlock")
-	,USER_DB_BLOCK("dbBlock")
-	,NOTE("note");
+	USER_BLOCK
+	,USER_DB_BLOCK
+	,NOTE
+	,BATCH
+	,TASK;
 	
-	private String messageType;
-	
-	MessageType(String msgType) {
-		this.messageType = msgType;
+	public static MessageType fromString(String type) {
+		for(MessageType messageType : MessageType.values()) {
+			if(messageType.name().equals(type)) {
+				return messageType;
+			}
+		}
+		return null; 
 	}
-	
-	public String getMessageType() {
-		return messageType;
-	}
-	
-	
 }

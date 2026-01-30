@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +22,8 @@ import com.varsql.core.auth.AuthorityTypeImpl;
 import com.varsql.web.common.service.UserCommonService;
 import com.varsql.web.constants.VIEW_PAGE;
 import com.vartech.common.app.beans.ResponseResult;
+
+import lombok.RequiredArgsConstructor;
 
 
 
@@ -41,12 +42,12 @@ import com.vartech.common.app.beans.ResponseResult;
 *-----------------------------------------------------------------------------
  */
 @Controller
+@RequiredArgsConstructor
 public class LoginController extends AbstractController {
 
 	private final Logger logger = LoggerFactory.getLogger(LoginController.class);
 	
-	@Autowired
-	private UserCommonService userCommonService; 
+	private final UserCommonService userCommonService; 
 
 	@RequestMapping(value = "/login", method = {RequestMethod.POST, RequestMethod.GET})
 	public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {

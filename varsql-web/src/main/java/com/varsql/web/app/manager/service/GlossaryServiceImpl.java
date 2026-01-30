@@ -1,7 +1,6 @@
 package com.varsql.web.app.manager.service;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +13,8 @@ import com.varsql.web.repository.spec.GlossarySpec;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
+
+import lombok.RequiredArgsConstructor;
 
 
 /**
@@ -29,10 +30,10 @@ import com.vartech.common.app.beans.SearchParameter;
 *-----------------------------------------------------------------------------
  */
 @Service
+@RequiredArgsConstructor
 public class GlossaryServiceImpl{
 	
-	@Autowired
-	private GlossaryEntityRepository glossaryEntityRepository;
+	private final GlossaryEntityRepository glossaryEntityRepository;
 	
 	/**
 	 * @method  : selectGlossaryList

@@ -5,7 +5,6 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +20,8 @@ import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
+
+import lombok.RequiredArgsConstructor;
 
 
 
@@ -39,13 +40,13 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/admin/databaseMgmt")
+@RequiredArgsConstructor
 public class AdminDbMgmtController extends AbstractController{
 
 	/** The Constant logger. */
 	private final Logger logger = LoggerFactory.getLogger(AdminDbMgmtController.class);
 
-	@Autowired
-	private AdminDbMgmtServiceImpl adminServiceImpl;
+	private final AdminDbMgmtServiceImpl adminServiceImpl;
 
 	/**
 	 *

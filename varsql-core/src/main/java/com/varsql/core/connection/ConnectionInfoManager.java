@@ -78,10 +78,6 @@ public final class ConnectionInfoManager {
 
     public ConnectionInfo getConnectionInfo(String connid, boolean reloadFlag) throws ConnectionFactoryException {
         synchronized (getLock(connid)) {
-            if (reloadFlag) {
-                connectionConfig.remove(connid);
-            }
-
             ConnectionInfo cached = connectionConfig.get(connid);
             if (cached != null) {
                 return cached;
@@ -98,6 +94,11 @@ public final class ConnectionInfoManager {
      */
     private ConnectionInfo loadConnectionInfo(String connid) {
         try {
+        	
+        	if (connectionConfig.containsKey(connid)){
+                connectionConfig.remove(connid);
+            }
+        	
             ConnectionInfo connInfo = connectionInfoDao.getConnectionInfo(connid);
 
             if (connInfo == null) {

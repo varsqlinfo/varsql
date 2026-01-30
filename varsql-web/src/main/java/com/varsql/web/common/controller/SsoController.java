@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -35,6 +34,8 @@ import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.util.SecurityUtil;
 import com.vartech.common.utils.StringUtils;
 
+import lombok.RequiredArgsConstructor;
+
 /**
 *
 *
@@ -53,18 +54,17 @@ import com.vartech.common.utils.StringUtils;
 @Controller
 @Conditional(SsoController.SsoUrlCondition.class)
 @RequestMapping("/sso")
+@RequiredArgsConstructor
 public class SsoController implements InitializingBean  {
 
 	/** The Constant logger. */
 	private final static Logger logger = LoggerFactory.getLogger(SsoController.class);
 
-	@Autowired
 	@Qualifier(ResourceConfigConstants.APP_SSO_BEAN_FACTORY)
-    private SsoBeanFactory ssoBeanFactory;
+    private final SsoBeanFactory ssoBeanFactory;
 
-	@Autowired
 	@Qualifier(ResourceConfigConstants.APP_SSO_COMPONENT)
-	private SsoComponent ssoComponent;
+	private final SsoComponent ssoComponent;
 
 	private SsoHandler ssoHandler;
 

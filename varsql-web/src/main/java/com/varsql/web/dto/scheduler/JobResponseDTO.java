@@ -15,8 +15,13 @@ public class JobResponseDTO implements Serializable {
 
 	private String jobName; 
 	
+	// 커넥션 id
 	private String vconnid;
 	
+	// vconnid 삭제 여부
+	private boolean isDeleteVconnid;
+	
+	// 커넥션명
 	private String vname;
 	
 	private String jobData;

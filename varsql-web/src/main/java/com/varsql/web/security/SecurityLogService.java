@@ -2,7 +2,6 @@ package com.varsql.web.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.web.constants.ResourceConfigConstants;
@@ -11,6 +10,8 @@ import com.varsql.web.security.repository.UserLogHistRepository;
 import com.varsql.web.util.DefaultValueUtils;
 import com.vartech.common.app.beans.ClientInfo;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * security log
 * 
@@ -18,12 +19,12 @@ import com.vartech.common.app.beans.ClientInfo;
 * @author	: ytkim
  */
 @Service(value = ResourceConfigConstants.APP_SECURITY_LOG_SERVICE)
+@RequiredArgsConstructor
 public final class SecurityLogService {
 
 	private final Logger logger = LoggerFactory.getLogger(SecurityLogService.class);
-
-	@Autowired
-	private UserLogHistRepository userLogHistRepository;
+	
+	private final UserLogHistRepository userLogHistRepository;
 
 	/**
 	 *

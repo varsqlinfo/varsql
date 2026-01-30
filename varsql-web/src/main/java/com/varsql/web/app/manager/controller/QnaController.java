@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -28,6 +27,8 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
 
+import lombok.RequiredArgsConstructor;
+
 
 
 /**
@@ -44,12 +45,12 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/manager")
+@RequiredArgsConstructor
 public class QnaController extends AbstractController {
 
 	private final Logger logger = LoggerFactory.getLogger(QnaController.class);
 
-	@Autowired
-	private QnaServiceImpl qnaServiceImpl;
+	private final QnaServiceImpl qnaServiceImpl;
 	
 	/**
 	 *

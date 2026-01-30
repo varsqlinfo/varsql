@@ -106,6 +106,12 @@
 				<div class="view-area" :class="viewMode=='form'?'on':''">
 					<form id="addForm" name="addForm" class="form-horizontal" onsubmit="return false;">
 					</form>
+					
+					
+					<div style="margin-top:10px;">
+						<div>Task Mapping</div>
+						<div id="taskMappingId"></div>
+					</div>
 				</div>
 					
 				<div class="view-area" :class="viewMode=='log'?'on':''">
@@ -137,17 +143,19 @@ VarsqlAPP.vueServiceBean( {
 		,gridData :  []
 		,detailItem :{jobData:{}}
 		,viewMode : 'form'
-		,selectObj : {}
 		,historyItem : {}
 		,sqlEditor:{}
 		,triggerListObj : false
+		,taskList :[]
+		,mappedTaskList :[]
+		,selectObj : null
 	}
 	,created : function (){
 		this.setDetailItem('init');
 	}
 	,methods:{
 		init : function(){
-			var _self = this; 
+			const _this = this; 
 			
 			this.form = Daracl.form.create(document.getElementById("addForm"), {
 				message : "This value is not valid",
@@ -173,6 +181,14 @@ VarsqlAPP.vueServiceBean( {
 				fields : [ 
 					 { name : "jobName", label : VARSQL.message('name'), renderType : "text", required :true}
 					,{ name : "vconnid", label : 'vconnid', renderType : "hidden", defaultValue : 'task'}
+					,{ name : "continueOnError", label : 'continue On Error', renderType : "radio", defaultValue : 'true',
+						listItem: {
+				          list: [
+				            { label: "Y", value: "true", selected: true },
+				            { label: "N", value: "false" },
+				          ],
+				        }
+					}
 					,{ name : "cronExpression", label : VARSQL.message('cron.expression'), renderType : "text", required :true
 							,placeholder:"0 0 3 * * ? "
 							,description : `<div>
@@ -180,7 +196,6 @@ VarsqlAPP.vueServiceBean( {
 								<span>Seconds Minutes Hours Day Month Week Year</span>
 							</div>`}
 					,{ name : "jobDescription", label : VARSQL.message('desc'), renderType : "textarea", customOptions :{rows:2}}
-					,{ name : "taskMapping", label : VARSQL.message('Task Mapping'), renderType : "textarea", style:{position:"top-left"}, customOptions :{rows:2}}
 					,{
 				        name: "triggerInfo",
 				        style:{position:"top-left"},
@@ -199,34 +214,97 @@ VarsqlAPP.vueServiceBean( {
 				            return '';
 				          }
 				          ,setValue(value){
-				        	  if(_self.triggerListObj){
-				        	  	_self.triggerListObj.setData([]);
+				        	  if(_this.triggerListObj){
+				        	  	_this.triggerListObj.setData([]);
 				        	  }
 				          }
 				          ,focus(){
-				        	  //_self.sortRowObj.focus();
+				        	  //_this.sortRowObj.focus();
 				          }
 				        }
 				      }
 				 ]
 			});
 			
-			this.taskList();
+			this.selectObj= $.pubMultiselect('#taskMappingId', {
+				header : {
+					enableSourceLabel : true 	// source header label 보일지 여부
+					,enableTargetLabel : true 	// target header label 보일지 여부
+				}
+				,body : {
+					enableItemEvtBtn : true // 추가,삭제 버튼 보이기
+				}
+				,i18 : {
+					add : 'Add'
+					,remove : 'Del'
+				}
+				,height : 350
+				,enableAddItemCheck :false
+				,valueKey : 'taskId'
+				,labelKey : 'taskName'
+				,render: function (info){
+					var item = info.item;
+					return (item.taskName +'('+item.taskType+')');
+				}
+				,source : {
+					items : []
+					,emptyMessage :'검색해주세요.'
+					,search :{
+						enable : true
+						,callback : function (searchWord){
+							_this.getTaskList(1, searchWord);
+						}
+					}
+					,paging :{
+						unitPage : _this.unitPage
+						,callback : function (clickInfo){
+							_this.getTaskList(clickInfo.no, clickInfo.searchword);
+						}
+					}
+				}
+				,target : {
+					label : "Mapping Task"
+					,items : []
+					,emptyMessage :VARSQL.message('msg.nodata')
+				}
+				,footer: {
+					enable : true
+				}
+			});
+			
+			this.getTaskList();
 		}
-		,taskList : function (no){
+		// add task
+		,addTaskList(item){
+			const exists = this.mappedTaskList.some(
+			  task => task.taskId === item.taskId
+			);
+			
+			if (!exists) {
+				this.mappedTaskList.push(item);
+			}
+			
+		}
+		// m
+		,removeTaskList(item){
+			this.mappedTaskList = this.mappedTaskList.filter(
+			  task => task.taskId !== item.taskId
+			);
+			
+		}
+		// task list
+		,getTaskList : function (no, searchWord){
 			
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/taskJob/taskList'}
 				,data : {
 					pageNo: (no?no:1)
 					,rows: this.list_count
-					,'searchVal':this.searchVal
+					,'searchVal':searchWord
 				}
 				,loadSelector : '#addForm'
 				,success:(resData)=> {
-					console.log(resData.list);
-					
-					//task 할것. 
+					this.selectObj.setSourceItem(resData.list ||[], resData.page);	
 				}
 			})
 		}
@@ -298,9 +376,25 @@ VarsqlAPP.vueServiceBean( {
 					this.form.resetForm();
 				}
 				this.detailItem = {};
+				if(this.selectObj){
+					this.selectObj.setTargetItem([])
+				}
 			}else{
 				this.detailFlag = true;
 				this.detailItem = item;
+				item.vconnid= item.vconnid ?? "task";
+				
+				
+				try{
+					const jobData = JSON.parse(item.jobData)
+					const mappedTaskList = jobData.mappedTaskList ??[];
+					this.selectObj.setTargetItem(mappedTaskList)
+					item.continueOnError = jobData.continueOnError?? true;
+					
+				}catch(e){
+					console.log('ignore : ',e);
+				}
+				
 				this.form.setValue(item);
 				
 				this.setTriggerGrid();
@@ -313,12 +407,27 @@ VarsqlAPP.vueServiceBean( {
 			if(!this.form.isValidForm()){
 				return ;
 			}
+			
+			const targetItems = _this.selectObj.getTargetItem();
+			
+			if(targetItems.length < 1){
+				VARSQL.toastMessage('msg.add.param', 'Task');
+				return; 
+			}
 
 			if(!VARSQL.confirmMessage('msg.save.confirm')){
 				return ;
 			}
 			
 			this.form.getValue(true).then((formValue) => {
+				
+				const jobData ={}; 
+				jobData.mappedTaskList = targetItems.map(item=>{
+					return {taskName: item.taskName, taskId: item.taskId} 
+				});
+				
+				jobData.continueOnError = formValue.continueOnError;
+				formValue.jobData = JSON.stringify(jobData);
 				
 				_this.$ajax({
 					url : {type:VARSQL.uri.manager, url:'/taskJob/save'}
@@ -330,7 +439,7 @@ VarsqlAPP.vueServiceBean( {
 								return ;
 							}
 							
-							//_this.setDetailItem();
+							_this.setDetailItem();
 							_this.search();
 						}
 					}

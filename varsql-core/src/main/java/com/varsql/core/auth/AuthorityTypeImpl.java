@@ -1,7 +1,7 @@
 package com.varsql.core.auth;
 
 public enum AuthorityTypeImpl implements AuthorityType{
-	GUEST(-1, "screen.guest","/guest/"), USER(100, "screen.user","/user/"), MANAGER(500, "screen.manager","/manager/"), ADMIN(999, "screen.admin","/admin/");
+	GUEST(-1, "screen.guest","/guest/"), USER(100, "screen.user","/user/"), MANAGER(500, "screen.manager","/manager/"), ADMIN(999, "screen.admin","/admin/"), SYSTEM(-999, null, null);
 	
 	int priority = -1;
 	String i18N = "";

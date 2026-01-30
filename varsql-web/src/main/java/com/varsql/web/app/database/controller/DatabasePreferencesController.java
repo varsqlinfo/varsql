@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,12 +15,14 @@ import org.springframework.web.servlet.ModelAndView;
 import com.varsql.core.configuration.PreferencesDataFactory;
 import com.varsql.web.app.database.service.PreferencesServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.constants.HttpParamConstants;
 import com.varsql.web.constants.PreferencesConstants;
 import com.varsql.web.constants.VIEW_PAGE;
-import com.varsql.web.constants.HttpParamConstants;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
+
+import lombok.RequiredArgsConstructor;
 
 /**
 *-----------------------------------------------------------------------------
@@ -38,12 +39,12 @@ import com.vartech.common.app.beans.ResponseResult;
  */
 @Controller
 @RequestMapping("/database/preferences")
+@RequiredArgsConstructor
 public class DatabasePreferencesController extends AbstractController  {
 
 	private final Logger logger = LoggerFactory.getLogger(DatabasePreferencesController.class);
 
-	@Autowired
-	private PreferencesServiceImpl preferencesServiceImpl;
+	private final PreferencesServiceImpl preferencesServiceImpl;
 
 	@RequestMapping(value={"/main"}, method = RequestMethod.GET)
 	public ModelAndView main(@RequestParam(value = "conuid", required = true, defaultValue = "" )  String conuid, ModelAndView mav) throws Exception {

@@ -19,4 +19,6 @@ public interface SecurityConstants {
 	final String REMEMBERME_COOKIENAME = "VARSQLRTOKEN";
 	
 	public final String JSESSION_ID_COOKIE_NAME = "VSQLJSID";
+	
+	public final String SYSTEM_ID = "$SYSTEM$";
 }

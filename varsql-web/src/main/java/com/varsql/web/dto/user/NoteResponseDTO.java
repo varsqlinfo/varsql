@@ -30,6 +30,8 @@ public class NoteResponseDTO{
 	private String noteId;
 
 	private String noteTitle;
+	
+	private String noteType;
 
 	private String noteCont;
 
@@ -38,6 +40,8 @@ public class NoteResponseDTO{
 	private String regUserInfo;
 
 	private LocalDateTime regDt;
+	
+	private String viewDt;
 
 	private List<String> recvUsers;
 

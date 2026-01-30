@@ -3,7 +3,6 @@ package com.varsql.web.app.admin.service;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
-import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.vartech.common.app.beans.FileInfo;
 import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.BlankConstants;
 import com.varsql.core.common.constants.PathType;
@@ -40,6 +38,7 @@ import com.varsql.web.repository.db.DBTypeEntityRepository;
 import com.varsql.web.repository.spec.DBTypeDriverProviderSpec;
 import com.varsql.web.util.FileServiceUtils;
 import com.varsql.web.util.VarsqlUtils;
+import com.vartech.common.app.beans.FileInfo;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.RequestResultCode;
@@ -48,26 +47,21 @@ import com.vartech.common.utils.FileUtils;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechUtils;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class DriverProvierMgmtServiceImpl extends AbstractService {
 	private final Logger logger = LoggerFactory.getLogger(DriverProvierMgmtServiceImpl.class);
 
-	private DBTypeEntityRepository dbTypeEntityRepository;
+	private final DBTypeEntityRepository dbTypeEntityRepository;
 	
-	private DBTypeDriverProviderRepository dbTypeDriverProviderRepository;
+	private final DBTypeDriverProviderRepository dbTypeDriverProviderRepository;
 	
-	private DBTypeDriverEntityRepository dbTypeDriverModelRepository;
+	private final DBTypeDriverEntityRepository dbTypeDriverModelRepository;
 	
-	private DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository;
+	private final DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository;
 	
-	public DriverProvierMgmtServiceImpl(DBTypeEntityRepository dbTypeEntityRepository, DBTypeDriverProviderRepository dbTypeDriverProviderRepository
-			, DBTypeDriverEntityRepository dbTypeDriverModelRepository, DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository) {
-		this.dbTypeEntityRepository = dbTypeEntityRepository; 
-		this.dbTypeDriverProviderRepository = dbTypeDriverProviderRepository; 
-		this.dbTypeDriverModelRepository = dbTypeDriverModelRepository; 
-		this.dbTypeDriverFileEntityRepository = dbTypeDriverFileEntityRepository; 
-	}
-
 	public ResponseResult list(SearchParameter searchParameter) {
 		Sort sort =Sort.by(Sort.Direction.DESC, DBTypeDriverProviderEntity.REG_DT).and(Sort.by(Sort.Direction.DESC, DBTypeDriverProviderEntity.PROVIDER_NAME));
 		

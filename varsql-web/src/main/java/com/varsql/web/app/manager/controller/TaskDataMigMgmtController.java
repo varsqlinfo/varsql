@@ -48,9 +48,9 @@ public class TaskDataMigMgmtController extends AbstractController {
 	/** The Constant logger. */
 	private final static Logger logger = LoggerFactory.getLogger(TaskDataMigMgmtController.class);
 	
-	final private TaskDataMigMgmtService taskDataMigMgmtService;
+	private final TaskDataMigMgmtService taskDataMigMgmtService;
 	
-	final private ManagerCommonServiceImpl dbnUserServiceImpl;
+	private final ManagerCommonServiceImpl dbnUserServiceImpl;
 	
 	/**
 	 * sql task 관리 페이지 보기

@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.varsql.web.dto.JobResultVO;
-import com.varsql.web.model.entity.scheduler.JobHistoryEntity;
-import com.varsql.web.repository.scheduler.JobHistoryEntityRepository;
+import com.varsql.web.model.entity.execution.ExecutionHistoryEntity;
+import com.varsql.web.repository.execution.ExecutionHistoryEntityRepository;
 import com.varsql.web.util.ConvertUtils;
 
 /**

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +28,8 @@ import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.utils.StringUtils;
 
+import lombok.RequiredArgsConstructor;
+
 /**
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
@@ -43,17 +44,15 @@ import com.vartech.common.utils.StringUtils;
 *-----------------------------------------------------------------------------
  */
 @Service
+@RequiredArgsConstructor
 public class DbGroupServiceImpl extends AbstractService{
 	private final Logger logger = LoggerFactory.getLogger(DbGroupServiceImpl.class);
 
-	@Autowired
-	private DBGroupEntityRepository dbGroupEntityRepository;
+	private final DBGroupEntityRepository dbGroupEntityRepository;
 
-	@Autowired
-	private DBGroupMappingDbEntityRepository dbGroupMappingDbEntityRepository;
+	private final DBGroupMappingDbEntityRepository dbGroupMappingDbEntityRepository;
 
-	@Autowired
-	private DBGroupMappingUserEntityRepository dbGroupMappingUserEntityRepository;
+	private final DBGroupMappingUserEntityRepository dbGroupMappingUserEntityRepository;
 
 	/**
 	 *

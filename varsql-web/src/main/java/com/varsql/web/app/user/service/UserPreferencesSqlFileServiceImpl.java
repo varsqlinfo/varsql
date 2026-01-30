@@ -4,7 +4,6 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +22,8 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.StringUtils;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  *
 *-----------------------------------------------------------------------------
@@ -38,11 +39,11 @@ import com.vartech.common.utils.StringUtils;
 *-----------------------------------------------------------------------------
  */
 @Service
+@RequiredArgsConstructor
 public class UserPreferencesSqlFileServiceImpl extends AbstractService{
 	private final Logger logger = LoggerFactory.getLogger(UserPreferencesSqlFileServiceImpl.class);
 
-	@Autowired
-	private SqlFileEntityRepository sqlFileEntityRepository;
+	private final SqlFileEntityRepository sqlFileEntityRepository;
 
 	/**
 	 *

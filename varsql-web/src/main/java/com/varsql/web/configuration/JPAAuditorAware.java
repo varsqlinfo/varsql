@@ -6,6 +6,8 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.varsql.web.constants.SecurityConstants;
+import com.varsql.web.scheduler.ExecuteContextHolder;
 import com.varsql.web.security.User;
 
 /**
@@ -26,6 +28,9 @@ public class JPAAuditorAware implements AuditorAware<String> {
 	public Optional<String> getCurrentAuditor() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (null == authentication || !authentication.isAuthenticated()) {
+			if(ExecuteContextHolder.isQuartzThread()) {
+				return Optional.of(SecurityConstants.SYSTEM_ID); 
+			}
 			return Optional.empty();
 		}
 		

@@ -3727,7 +3727,7 @@ _ui.SQL = {
 						};
 						
 						VARSQL.req.ajax({
-						    url:{type:VARSQL.uri.user, url:'/sendNote'}
+						    url:{type:VARSQL.uri.user, url:'/note/send'}
 						    ,data:params
 						    ,success:function (resData){
 						    	_self.noteDialog.dialog( "close" );

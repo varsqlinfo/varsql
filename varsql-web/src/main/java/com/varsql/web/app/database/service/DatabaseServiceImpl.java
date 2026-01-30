@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +40,8 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.sort.TreeDataSort;
 import com.vartech.common.utils.StringUtils;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  *
  * @FileName  : DatabaseServiceImpl.java
@@ -50,17 +51,15 @@ import com.vartech.common.utils.StringUtils;
  * @프로그램 설명 :
  */
 @Service
+@RequiredArgsConstructor
 public class DatabaseServiceImpl{
 	private final Logger logger = LoggerFactory.getLogger(DatabaseServiceImpl.class);
 
-	@Autowired
-	private DBConnTabEntityRepository dbConnTabEntityRepository;
+	private final DBConnTabEntityRepository dbConnTabEntityRepository;
 
-	@Autowired
-	private UserInfoRepository userInfoRepository;
+	private final UserInfoRepository userInfoRepository;
 	
-	@Autowired
-	private CommonLogService commonLogService;
+	private final CommonLogService commonLogService;
 
 	/**
 	 *

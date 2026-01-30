@@ -40,13 +40,13 @@ public class TaskJobServiceImpl extends AbstractService{
 	
 	private final Logger logger = LoggerFactory.getLogger(TaskJobServiceImpl.class);
 	
-	private String JOB_GROUP = "TASK_EXECUTE_JOB";
+	private final String JOB_GROUP = "TASK_EXECUTE_JOB";
 	
-	final private JobEntityRepository jobEntityRepository;
+	private final JobEntityRepository jobEntityRepository;
 	
-	final private SchedulerMgmtServiceImpl schedulerMgmtServiceImpl;
+	private final SchedulerMgmtServiceImpl schedulerMgmtServiceImpl;
 	
-	final private TaskRepository taskRepository;
+	private final TaskRepository taskRepository;
 	
 	/**
 	 * 목록보기

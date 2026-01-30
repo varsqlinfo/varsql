@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,13 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.core.configuration.Configuration;
 import com.varsql.web.app.admin.service.AdminDbMgmtServiceImpl;
 import com.varsql.web.app.admin.service.EnvironmentViewServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.constants.VIEW_PAGE;
-import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.VartechUtils;
+
+import lombok.RequiredArgsConstructor;
 
 
 
@@ -38,16 +37,15 @@ import com.vartech.common.utils.VartechUtils;
  */
 @Controller
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class AdminController extends AbstractController{
 
 	/** The Constant logger. */
 	private final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
-	@Autowired
-	private AdminDbMgmtServiceImpl adminDbMgmtServiceImpl;
+	private final AdminDbMgmtServiceImpl adminDbMgmtServiceImpl;
 	
-	@Autowired
-	private EnvironmentViewServiceImpl environmentViewServiceImpl;
+	private final EnvironmentViewServiceImpl environmentViewServiceImpl;
 
 	/**
 	 * @method  : mainpage

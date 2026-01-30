@@ -26,7 +26,7 @@ import com.vartech.common.utils.StringUtils;
 public class MailService {
 	private final Logger logger = LoggerFactory.getLogger(MailService.class);
 	
-	final private JavaMailSender mailSender;
+	private final JavaMailSender mailSender;
 	
 	public MailService(@Qualifier(ResourceConfigConstants.MAIL_SERVICE) JavaMailSender mailSender) {
 		this.mailSender = mailSender;

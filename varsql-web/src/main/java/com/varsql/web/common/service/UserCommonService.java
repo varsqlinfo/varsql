@@ -38,11 +38,11 @@ import com.vartech.common.utils.VartechUtils;
 public class UserCommonService {
 	private final Logger logger = LoggerFactory.getLogger(UserCommonService.class);
 	
-	final private EmailTokenEntityRepository emailTokenEntityRepository;
+	private final EmailTokenEntityRepository emailTokenEntityRepository;
 	
-	final private UserInfoRepository userInfoRepository;
+	private final UserInfoRepository userInfoRepository;
 	
-	final private UserDBMappingInfoEntityRepository userDBMappingInfoEntityRepository;
+	private final UserDBMappingInfoEntityRepository userDBMappingInfoEntityRepository;
 	
 	private MailService mailService; 
 	

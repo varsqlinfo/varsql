@@ -1,9 +1,11 @@
-package com.varsql.web.model.entity.scheduler;
+package com.varsql.web.model.entity.execution;
 
 import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,6 +14,7 @@ import javax.persistence.TableGenerator;
 
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.varsql.core.common.constants.ExecuteType;
 import com.varsql.web.constants.VarsqlJpaConstants;
 
 import lombok.Builder;
@@ -20,37 +23,39 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * schedule history
-* 
-* @fileName	: ScheduleHistoryEntity.java
+* execution history 
 * @author	: ytkim
- */
+*/
 @Getter
 @Setter
 @DynamicUpdate
 @NoArgsConstructor
 @Entity
-@Table(name = JobHistoryEntity._TB_NAME)
-public class JobHistoryEntity {
+@Table(name = ExecutionHistoryEntity._TB_NAME)
+public class ExecutionHistoryEntity {
 
-	public final static String _TB_NAME = "VTQTZ_HISTORY";
+	public final static String _TB_NAME = "VTEXECUTION_HISTORY";
 
 	@Id
 	@TableGenerator(
-		name = "jobHistoryIdGenerator"
+		name = "executionHistoryIdGenerator"
 		,table= VarsqlJpaConstants.TABLE_SEQUENCE_NAME
 		,pkColumnValue = _TB_NAME
 		,allocationSize = 1
 	)
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "jobHistoryIdGenerator")
+	@GeneratedValue(strategy = GenerationType.TABLE, generator = "executionHistoryIdGenerator")
 	@Column(name = "HIST_SEQ", nullable = false)
 	private long histSeq;
 	
 	@Column(name = "INSTANCE_ID")
 	private String instanceId;
 
-	@Column(name = "JOB_UID")
-	private String jobUid;
+	@Column(name = "TARGET_TYPE")
+	@Enumerated(EnumType.STRING)
+	private ExecuteType targetType;
+	
+	@Column(name = "TARGET_ID")
+	private String targetId;
 	
 	@Column(name = "RUN_TYPE")	// batch, run
 	private String runType;
@@ -80,10 +85,11 @@ public class JobHistoryEntity {
 	private String customInfo;
 
 	@Builder
-	public JobHistoryEntity(String instanceId, String jobUid, String runType, Timestamp startTime,
+	public ExecutionHistoryEntity(String instanceId, ExecuteType targetType, String targetId, String runType, Timestamp startTime,
 			Timestamp endTime, long runTime, long resultCount, long failCount, String message, String status,  String customInfo) {
 		this.instanceId = instanceId;
-		this.jobUid = jobUid;
+		this.targetType = targetType;
+		this.targetId = targetId;
 		this.runType = runType;
 		this.startTime = startTime;
 		this.endTime = endTime;
@@ -96,6 +102,7 @@ public class JobHistoryEntity {
 	}
 
 	public final static String HIST_SEQ = "histSeq";
+	public final static String TARGET_TYPE = "targetType";
 	public final static String INSTANCE_ID = "instanceId";
 	public final static String JOB_UID = "jobUid";
 	public final static String RUN_TYPE = "runType";

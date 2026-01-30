@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -17,12 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.web.app.user.service.UserPreferencesServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.common.service.UserCommonService;
 import com.varsql.web.constants.VIEW_PAGE;
-import com.varsql.web.dto.user.NoteRequestDTO;
 import com.varsql.web.dto.user.PasswordRequestDTO;
 import com.varsql.web.dto.user.QnARequesetDTO;
 import com.varsql.web.dto.user.UserModReqeustDTO;
@@ -30,8 +27,9 @@ import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.ValidateUtils;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  *
@@ -50,15 +48,14 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/user/preferences")
+@RequiredArgsConstructor
 public class UserPreferencesController extends AbstractController{
 
 	private final Logger logger = LoggerFactory.getLogger(UserPreferencesController.class);
 
-	@Autowired
-	private UserPreferencesServiceImpl userPreferencesServiceImpl;
+	private final UserPreferencesServiceImpl userPreferencesServiceImpl;
 	
-	@Autowired
-	private UserCommonService userCommonService;
+	private final UserCommonService userCommonService;
 
 	/**
 	 *
@@ -198,49 +195,6 @@ public class UserPreferencesController extends AbstractController{
 		setModelDefaultValue(req , model);
 
 		return getModelAndView("/qna", VIEW_PAGE.USER_PREFERENCES, model);
-	}
-
-	/**
-	 * @Method Name  : listMsg
-	 * @Method 설명 : 메시지 목록보기
-	 * @작성자   : ytkim
-	 * @작성일   : 2017. 11. 29.
-	 * @변경이력  :
-	 * @param req
-	 * @param res
-	 * @param mav
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value="/listMsg", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult listMsg(@RequestParam(value = "messageType" , required = true)  String messageType, HttpServletRequest req) throws Exception {
-		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-
-		return userPreferencesServiceImpl.selectUserMsg(messageType, searchParameter);
-	}
-
-	@RequestMapping(value="/msgReplyList", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult msgReplyList(NoteRequestDTO noteInfo) throws Exception {
-		return userPreferencesServiceImpl.selectUserMsgReply(noteInfo);
-	}
-
-	/**
-	 * @Method Name  : preferencesdeleteMsg
-	 * @Method 설명 : 메시지 목록보기
-	 * @작성자   : ytkim
-	 * @작성일   : 2017. 11. 29.
-	 * @변경이력  :
-	 * @param req
-	 * @param res
-	 * @param mav
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value="/deleteMsg", method = RequestMethod.POST)
-	public @ResponseBody ResponseResult preferencesdeleteMsg(@RequestParam(value = "messageType" , required = true)  String messageType
-			,@RequestParam(value = "selectItem" , required = true)  String selectItem) throws Exception {
-
-		return userPreferencesServiceImpl.deleteUserMsg( messageType,  selectItem);
 	}
 
 	/**

@@ -15,7 +15,6 @@ import java.util.zip.ZipFile;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,19 +38,22 @@ import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.IOUtils;
 import com.vartech.common.utils.StringUtils;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserPreferencesServiceFileImpl extends AbstractService {
 	private final Logger logger = LoggerFactory.getLogger(UserPreferencesServiceFileImpl.class);
 	
 	private final int MAX_LINE = 5000;
 
-	@Autowired
-	private FileInfoEntityRepository fileInfoEntityRepository;
+	private final FileInfoEntityRepository fileInfoEntityRepository;
 
 	public ResponseResult importFileList(UploadFileType fileType, String vconnid, SearchParameter searchParameter) {
 		Page<FileInfoEntity> result = fileInfoEntityRepository.findAll(
-				FileInfoSpec.fileTypeSearch(fileType, SecurityUtil.userViewId(), vconnid, searchParameter),
-				VarsqlUtils.convertSearchInfoToPage(searchParameter));
+			FileInfoSpec.fileTypeSearch(fileType, SecurityUtil.userViewId(), vconnid, searchParameter),
+			VarsqlUtils.convertSearchInfoToPage(searchParameter)
+		);
 		
 		List<Map> fileList = new ArrayList<>();
 	    result.getContent().forEach(entity -> {

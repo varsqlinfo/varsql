@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +20,13 @@ import com.varsql.web.configuration.AppResourceMessageBundleSource;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.utils.StringUtils;
 
+import lombok.RequiredArgsConstructor;
+
 @Controller
+@RequiredArgsConstructor
 public class MessageController {
-	@Autowired
-	private MessageResolveService messageResolveService;
+	
+	private final MessageResolveService messageResolveService;
 
 	@RequestMapping(value = "/i18nMessage", produces = "application/javascript; charset=utf-8")
 	@ResponseBody

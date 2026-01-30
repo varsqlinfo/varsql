@@ -3,7 +3,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,6 +42,9 @@ import com.vartech.common.crypto.EncryptDecryptException;
 import com.vartech.common.crypto.password.PasswordUtil;
 import com.vartech.common.utils.StringUtils;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  *
  *
@@ -59,32 +61,26 @@ import com.vartech.common.utils.StringUtils;
 *-----------------------------------------------------------------------------
  */
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class UserMgmtServiceImpl extends AbstractService{
+	
+	private final UserMgmtRepository userMgmtRepository;
 
-	@Autowired
-	private UserMgmtRepository userMgmtRepository;
+	private final DBManagerEntityRepository dbManagerEntityRepository;
 
-	@Autowired
-	private DBManagerEntityRepository dbManagerEntityRepository;
+	private final DBBlockingUserEntityRepository dbBlockingUserEntityRepository;
 
-	@Autowired
-	private DBBlockingUserEntityRepository dbBlockingUserEntityRepository;
+	private final DBGroupMappingUserEntityRepository dbGroupMappingUserEntityRepository;
 
-	@Autowired
-	private DBGroupMappingUserEntityRepository dbGroupMappingUserEntityRepository;
+	private final DBGroupEntityRepository dbGroupEntityRepository;
 
-	@Autowired
-	private DBGroupEntityRepository dbGroupEntityRepository;
+	private final UserDBConnectionEntityRepository userDBConnectionEntityRepository;
 
-	@Autowired
-	private UserDBConnectionEntityRepository userDBConnectionEntityRepository;
+	private final WebSocketServiceImpl webSocketServiceImpl;
 
-	@Autowired
-	private WebSocketServiceImpl webSocketServiceImpl;
-
-	@Autowired
 	@Qualifier(ResourceConfigConstants.APP_PASSWORD_ENCODER)
-	private PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 
 	/**
 	 *
@@ -121,6 +117,8 @@ public class UserMgmtServiceImpl extends AbstractService{
 	public ResponseResult updateAccept(String acceptyn, String selectItem) {
 		String[] viewidArr = StringUtils.split(selectItem,",");
 		AuthorityType role = "Y".equals(acceptyn)?AuthorityTypeImpl.USER:AuthorityTypeImpl.GUEST;
+		
+		log.info("user: {}, acceptyn: {}, view ids: {}", SecurityUtil.userViewId(), acceptyn, selectItem);
 
 		List<UserEntity> users= userMgmtRepository.findByViewidIn(Arrays.asList(viewidArr)).stream().map(item -> {
 			item.setUserRole(role.getName());
@@ -149,6 +147,8 @@ public class UserMgmtServiceImpl extends AbstractService{
 		if(!Configuration.getInstance().getPasswordResetMode().equals(VarsqlConstants.PASSWORD_RESET_MODE.MANAGER)) {
 			throw new VarsqlAppException(RequestResultCode.BAD_REQUEST.name());
 		}
+		
+		log.info("init password user: {}, user id: {}", SecurityUtil.userViewId(), viewid);
 		
 		String passwordInfo = PasswordUtil.createPassword(Configuration.getInstance().passwordType(), Configuration.getInstance().passwordInitSize());
 
@@ -204,12 +204,14 @@ public class UserMgmtServiceImpl extends AbstractService{
 				chkFlag =true;
 			}
 		}
+		
+		log.info("user db block user: {}, user id: {}, vconnid: {}", SecurityUtil.userViewId(), viewid, vconnid);
 
 		if(chkFlag){
 			if("block".equals(param.getString("mode"))) {
 				dbBlockingUserEntityRepository.save(DBBlockingUserEntity.builder().viewid(viewid).vconnid(vconnid).build());
 
-				webSocketServiceImpl.sendUserMessage(MessageDTO.builder().type(MessageType.USER_DB_BLOCK).message("block").build().addItem("vconuid", UUIDUtil.vconnidUUID(viewid, vconnid)), viewid);
+				webSocketServiceImpl.sendUserMessage(MessageDTO.builder().type(MessageType.USER_DB_BLOCK).message("block").recvIds(new String[] {viewid}).build().addItem("vconuid", UUIDUtil.vconnidUUID(viewid, vconnid)));
 			}else {
 				dbBlockingUserEntityRepository.deleteByVconnidAndViewid(vconnid, viewid);
 			}
@@ -245,6 +247,8 @@ public class UserMgmtServiceImpl extends AbstractService{
 				chkFlag =true;
 			}
 		}
+		
+		log.info("user block user: {}, user id: {}, blockYn: {}", SecurityUtil.userViewId(), viewid, blockYn);
 
 		if(chkFlag){
 			UserEntity userInfo =userMgmtRepository.findByViewid(viewid);
@@ -261,7 +265,7 @@ public class UserMgmtServiceImpl extends AbstractService{
 
 				if(blockYFlag) {
 					webSocketServiceImpl.sendUserMessage(MessageDTO.builder()
-							.type(MessageType.USER_BLOCK).message("block").build(), userInfo.getViewid());
+							.type(MessageType.USER_BLOCK).message("block").recvIds(new String[] {userInfo.getViewid()}).build());
 				}
 			}
 
@@ -291,6 +295,8 @@ public class UserMgmtServiceImpl extends AbstractService{
 		if(SecurityUtil.isAdmin() || SecurityUtil.isManager()){
 			chkFlag =true;
 		}
+		
+		log.info("remove user db group  user: {}, user id: {}, groupId: {}", SecurityUtil.userViewId(), viewid, groupId);
 
 		if(chkFlag){
 			dbGroupMappingUserEntityRepository.deleteByGroupIdAndViewid(groupId, viewid);

@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -38,21 +37,20 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.StringUtils;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class BoardService{
 	private final static Logger logger = LoggerFactory.getLogger(BoardService.class);
 
-	@Autowired
-	private BoardRepository boardEntityRepository;
+	private final BoardRepository boardEntityRepository;
 
-	@Autowired
-	private BoardCommentRepository boardCommentEntityRepository;
+	private final BoardCommentRepository boardCommentEntityRepository;
 
-	@Autowired
-	private BoardFileRepository boardFileEntityRepository;
+	private final BoardFileRepository boardFileEntityRepository;
 
-	@Autowired
-	private FileUploadService fileUploadService;
+	private final FileUploadService fileUploadService;
 
 	private final String BOARD_CONT_TYPE = "board";
 	private final String COMMENT_CONT_TYPE = "comment";

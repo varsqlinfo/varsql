@@ -13,7 +13,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @EqualsAndHashCode(of= {"histSeq","logType"})
-public class JobHistoryLogID implements Serializable {
+public class ExecutionHistoryLogID implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 

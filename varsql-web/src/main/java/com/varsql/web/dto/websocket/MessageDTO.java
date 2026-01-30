@@ -28,13 +28,17 @@ import lombok.Setter;
 public class MessageDTO{
 
 	private MessageType type;
+	private String title;
 	private String message;
+	private String[] recvIds;
 	private Map<String,String> item;
 
 	@Builder
-	public MessageDTO(MessageType type, String message) {
+	public MessageDTO(MessageType type, String title, String message, String[] recvIds) {
 		this.type = type;
+		this.title = title;
 		this.message = message;
+		this.recvIds = recvIds;
 	}
 
 	public MessageDTO addItem(String key, String value) {

@@ -1,6 +1,5 @@
 package com.varsql.web.app.database.service;
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -25,7 +24,6 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
@@ -86,6 +84,8 @@ import com.vartech.common.utils.IOUtils;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechUtils;
 
+import lombok.RequiredArgsConstructor;
+
 /**
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
@@ -100,14 +100,13 @@ import com.vartech.common.utils.VartechUtils;
 *-----------------------------------------------------------------------------
  */
 @Service
+@RequiredArgsConstructor
 public class ExportServiceImpl{
 	private final Logger logger = LoggerFactory.getLogger(ExportServiceImpl.class);
 
-	@Autowired
-	private PreferencesServiceImpl preferencesServiceImpl;
+	private final PreferencesServiceImpl preferencesServiceImpl;
 	
-	@Autowired
-	private FileInfoEntityRepository fileInfoEntityRepository;
+	private final FileInfoEntityRepository fileInfoEntityRepository;
 	
 	private int ZIP_BUFFER_SIZE = 2048;
 

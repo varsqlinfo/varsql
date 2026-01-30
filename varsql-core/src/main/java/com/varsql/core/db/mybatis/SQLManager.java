@@ -3,7 +3,6 @@ package com.varsql.core.db.mybatis;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Driver;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,7 +54,7 @@ public final class SQLManager {
 
 	private static Logger logger = LoggerFactory.getLogger(SQLManager.class);
 
-	final private static String LOG_PREFIX = "com.varsql.core.varsql_query";
+	private final static String LOG_PREFIX = "com.varsql.core.varsql_query";
 
 	private Map<String, SqlSessionFactory> sqlSessionFactoryMap = new ConcurrentHashMap<String, SqlSessionFactory>();
 
@@ -70,6 +69,7 @@ public final class SQLManager {
 	private SQLManager() {}
 
 	public SqlSession getSqlSession(String connid) throws ConnectionFactoryException {
+		
 		if(ConnectionFactory.getInstance().isShutdown(connid)) {
 			throw new ConnectionFactoryException(VarsqlAppCode.EC_FACTORY_CONNECTION_ERROR, "connection is shutdown : [" + connid + "]");
 		}
@@ -83,6 +83,7 @@ public final class SQLManager {
 
 	public synchronized void setSQLMapper(ConnectionInfo connInfo , Object obj){
 		try{
+			logger.debug("connInfo : {}", connInfo);
 			if(!(obj instanceof ConnectionFactory ||  obj instanceof SQLManager)){
 				logger.error("SQLManager setSQLMapper access denied object {}", obj );
 				throw new VarsqlRuntimeException(VarsqlAppCode.EC_DB_POOL,"SQLManager setSQLMapper access denied object "+obj);
@@ -90,11 +91,13 @@ public final class SQLManager {
 
 			SqlSessionFactory sqlSessionFactory = sqlSessionFactory(connInfo);
 
+			logger.debug("connection check start: {}", connInfo.getConnid());
 			try(Connection connChk = sqlSessionFactory.openSession().getConnection();){
 				JdbcUtils.close(connChk);
 			}
+			logger.debug("connection check end: {}", connInfo.getConnid());
 
-			sqlSessionFactoryMap.put(connInfo.getConnid() , sqlSessionFactory);
+			sqlSessionFactoryMap.put(connInfo.getConnid(), sqlSessionFactory);
 		} catch (Exception e) {
 			logger.error("connection info :  {}, error message : {} ", VartechReflectionUtils.reflectionToString(connInfo) , e.getMessage());
 			//logger.error("SQLManager :{} ", e.getMessage() , e);
@@ -113,6 +116,9 @@ public final class SQLManager {
 	 * @return
 	 */
 	private SqlSessionFactory sqlSessionFactory(ConnectionInfo connInfo) throws Exception {
+		
+		
+		logger.debug("sqlSessionFactory start : {}", connInfo.getConnid());
 		
 		Environment environment = new Environment(connInfo.getConnid(), new JdbcTransactionFactory(), dataSource(connInfo));
 
@@ -137,13 +143,15 @@ public final class SQLManager {
 				XMLMapperBuilder xmlMapperBuilder = new XMLMapperBuilder(resource.getInputStream(), configuration,	resource.toString(), configuration.getSqlFragments());
 				xmlMapperBuilder.parse();
 			} catch (Exception e) {
-				logger.error("mapper load fail : {}", resource.getFile().getAbsolutePath());
+				logger.error("mapper load fail : {}", resource.getFile().getAbsolutePath(), e);
 			} finally {
 				ErrorContext.instance().reset();
 			}
 		}
 
 		SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
+		
+		logger.debug("sqlSessionFactory end : {}", connInfo.getConnid());
 		
 		return sqlSessionFactory;
 	}
@@ -165,6 +173,8 @@ public final class SQLManager {
 	private DataSource dataSource(ConnectionInfo connInfo) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
 		Driver dbDriver = null;
 		
+		logger.info("datasource driver start : {} ", connInfo.getConnid());
+		
 		if (connInfo.getJdbcDriverInfo() != null) {
 			dbDriver = JdbcDriverLoader.getInstance().load(connInfo.getJdbcDriverInfo());
 			if (dbDriver != null) {
@@ -176,6 +186,8 @@ public final class SQLManager {
 			}
 		}
 		
+		logger.info("datasource isEnableConnectionPool : {} ", connInfo.isEnableConnectionPool());
+		
 		if(!connInfo.isEnableConnectionPool()) {
 	    	if(dbDriver != null) {
 	    		return new SingleDriverDataSource(dbDriver, connInfo.getUrl(), connInfo.getUsername(), connInfo.getPassword());
@@ -183,36 +195,47 @@ public final class SQLManager {
 				return new SingleConnectionDataSource(connInfo.getJdbcDriverInfo().getDriverClass(), connInfo.getUrl(), connInfo.getUsername(), connInfo.getPassword());
 	    	}
 		}
+		
+		logger.info("datasource datasource : {} ", connInfo.getConnid());
 			
 		BasicDataSource dataSource = new BasicDataSource();
-		
+
 		dataSource.setUrl(connInfo.getUrl());
 		dataSource.setUsername(connInfo.getUsername());
 		dataSource.setPassword(connInfo.getPassword());
 
-		dataSource.setInitialSize(5);
+		// ===== 풀 기본 =====
+		dataSource.setInitialSize(2);
 		dataSource.setMaxTotal(10);
-		dataSource.setMaxIdle(10);
-		dataSource.setMinIdle(0);
+		dataSource.setMaxIdle(5);
+		dataSource.setMinIdle(1);
+
+		// ===== 커넥션 검증 (옵션 조건 처리) =====
 		dataSource.setValidationQuery(connInfo.getValidationQuery());
 
-		dataSource.setTestOnBorrow(false);
-		dataSource.setTestOnReturn(false);
-		
 		if(connInfo.isTestWhileIdle()) {
-			dataSource.setTestWhileIdle(true);
+		    dataSource.setTestWhileIdle(true);            // idle 커넥션 검사
+		    dataSource.setTestOnBorrow(true);             // borrow 시 검증
+		    dataSource.setTestOnReturn(false);            // 반환 시 검증 불필요
+		    dataSource.setValidationQueryTimeout(3);      // 검증 쿼리 타임아웃
 		}
-		
-		dataSource.setTimeBetweenEvictionRunsMillis(150000);
 
-		dataSource.setNumTestsPerEvictionRun(5);
-		dataSource.setMinEvictableIdleTimeMillis(-1);
+		// ===== idle 커넥션 정리 =====
+		dataSource.setTimeBetweenEvictionRunsMillis(60_000);
+		dataSource.setMinEvictableIdleTimeMillis(300_000);
+		dataSource.setNumTestsPerEvictionRun(3);
+
+		// ===== 풀 고갈 시 hang 방지 =====
+		dataSource.setMaxWaitMillis(5_000);
+
+		// ===== 성능 옵션 =====
 		dataSource.setPoolPreparedStatements(true);
-		
-		if(dbDriver != null) {
-			dataSource.setDriver(dbDriver);
-		}else {
-			dataSource.setDriverClassName(connInfo.getJdbcDriverInfo().getDriverClass());
+
+		// ===== Driver 설정 =====
+		if (dbDriver != null) {
+		    dataSource.setDriver(dbDriver);
+		} else {
+		    dataSource.setDriverClassName(connInfo.getJdbcDriverInfo().getDriverClass());
 		}
 
 		return dataSource;
@@ -256,22 +279,46 @@ public final class SQLManager {
 	}
 
 	public synchronized void close(String connid) {
-		
-		if (sqlSessionFactoryMap.containsKey(connid)) {
-			logger.info("meta sql mapper datasource close connid: {} " , connid);
-			try {
-				
-				DataSource dataSource = sqlSessionFactoryMap.get(connid).getConfiguration().getEnvironment().getDataSource();
-				
-				if(dataSource instanceof BasicDataSource) {
-					((BasicDataSource) dataSource).close();
-				}
-				
-				sqlSessionFactoryMap.remove(connid);
-			} catch (SQLException e) {
-				throw new ConnectionException("mybatis datasource close connid:"+connid+", exception : "+e.getMessage() , e);
-			}
-		}
 
+	    SqlSessionFactory factory = sqlSessionFactoryMap.remove(connid);
+	    if (factory == null) {
+	        return;
+	    }
+
+	    logger.warn("FORCE CLOSE sqlSessionFactory start1 connid={}", connid);
+
+	    try {
+	        DataSource dataSource =
+	            factory.getConfiguration().getEnvironment().getDataSource();
+	        
+	        
+	        logger.warn("FORCE CLOSE sqlSessionFactory start2 connid={}", connid);
+
+	        // 1. DBCP 풀 강제 종료
+	        if (dataSource instanceof BasicDataSource) {
+	            BasicDataSource bds = (BasicDataSource) dataSource;
+	            if (!bds.isClosed()) {
+	                bds.close(); // 🔥 모든 커넥션 즉시 종료
+	            }
+	        }
+	        
+	        logger.warn("FORCE CLOSE sqlSessionFactory start3 connid={}", connid);
+
+	        // 2. SingleConnection 계열 (명시적 종료)
+	        if (dataSource instanceof SingleDriverDataSource) {
+	        	logger.debug("SingleDriverDataSource closed");
+	        }
+
+	        if (dataSource instanceof SingleConnectionDataSource) {
+	            // 실제 커넥션 유지 안 하지만, 확장 대비
+	            logger.debug("SingleConnectionDataSource closed");
+	        }
+
+	    } catch (Exception e) {
+	        logger.error("forceClose error connid={}", connid, e);
+	        throw new ConnectionException("mybatis datasource close connid:"+connid+", exception : "+e.getMessage() , e);
+	    }
+
+	    logger.warn("FORCE CLOSE sqlSessionFactory end connid={}", connid);
 	}
 }

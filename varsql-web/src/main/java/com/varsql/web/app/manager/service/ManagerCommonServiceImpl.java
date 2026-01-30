@@ -2,7 +2,6 @@ package com.varsql.web.app.manager.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -30,6 +29,8 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.constants.RequestResultCode;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * -----------------------------------------------------------------------------
 * @fileName		: ManagerCommonServiceImpl.java
@@ -43,14 +44,12 @@ import com.vartech.common.constants.RequestResultCode;
 *-----------------------------------------------------------------------------
  */
 @Service
+@RequiredArgsConstructor
 public class ManagerCommonServiceImpl extends AbstractService{
 
-	@Autowired
-	private UserMgmtRepository userMgmtRepository;
+	private final UserMgmtRepository userMgmtRepository;
 
-	@Autowired
-	private DBConnectionEntityRepository dbConnectionModelRepository;
-
+	private final DBConnectionEntityRepository dbConnectionModelRepository;
 
 	public List<DBConnectionResponseDTO> selectdbList() {
 		return dbConnectionModelRepository.findAll(

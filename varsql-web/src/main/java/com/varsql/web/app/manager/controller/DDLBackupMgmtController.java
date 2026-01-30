@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -28,6 +27,8 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
 
+import lombok.RequiredArgsConstructor;
+
 
 
 /**
@@ -38,15 +39,14 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/manager/ddlBackup")
+@RequiredArgsConstructor
 public class DDLBackupMgmtController extends AbstractController {
 
 	private final Logger logger = LoggerFactory.getLogger(DDLBackupMgmtController.class);
 
-	@Autowired
-	private DDLBackupMgmtServiceImpl ddlBackupMgmtServiceImpl;
+	private final DDLBackupMgmtServiceImpl ddlBackupMgmtServiceImpl;
 	
-	@Autowired
-	private ManagerCommonServiceImpl dbnUserServiceImpl;
+	private final ManagerCommonServiceImpl dbnUserServiceImpl;
 	
 	/**
 	 * ddl backup 관리
@@ -95,6 +95,7 @@ public class DDLBackupMgmtController extends AbstractController {
 			}
 			return VarsqlUtils.getResponseResultValidItem(result);
 		}
+		
 		return ddlBackupMgmtServiceImpl.save(jobRequestDTO);
 	}
 }

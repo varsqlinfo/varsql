@@ -2,11 +2,9 @@ package com.varsql.web.app.database.service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +23,8 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechUtils;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  *
  * @FileName  : SQLFileServiceImpl.java
@@ -34,14 +34,13 @@ import com.vartech.common.utils.VartechUtils;
  * @프로그램 설명 :
  */
 @Service
+@RequiredArgsConstructor
 public class SQLFileServiceImpl{
 	private final Logger logger = LoggerFactory.getLogger(SQLFileServiceImpl.class);
 
-	@Autowired
-	private SqlFileEntityRepository sqlFileEntityRepository;
+	private final SqlFileEntityRepository sqlFileEntityRepository;
 
-	@Autowired
-	private SqlFileTabEntityRepository sqlFileTabEntityRepository;
+	private final SqlFileTabEntityRepository sqlFileTabEntityRepository;
 	
 	private int MAX_SQL_PARAM_TOTAL_SIZE = 20000;
 	private int MAX_SQL_PARAM_UNIT_SIZE = 2000;

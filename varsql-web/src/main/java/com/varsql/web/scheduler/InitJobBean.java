@@ -49,7 +49,7 @@ public class InitJobBean {
 		
 		
 		dto.setJobUid("varsql_backup_file_delete_job");
-		dto.setCronExpression(Configuration.getInstance().getBackupExpireCron());
+		dto.setCronExpression(Configuration.getInstance().getBackupCleanupCron());
 		dto.setJobName("backupFileDeleteJob");
 		
 		String jobUid =  dto.getJobUid();

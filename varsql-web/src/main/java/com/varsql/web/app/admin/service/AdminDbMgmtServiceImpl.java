@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
@@ -66,6 +65,8 @@ import com.vartech.common.utils.PagingUtil;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechUtils;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  *
  * @FileName  : AdminDbMgmtServiceImpl.java
@@ -75,37 +76,29 @@ import com.vartech.common.utils.VartechUtils;
  * @프로그램 설명 :
  */
 @Service
+@RequiredArgsConstructor
 public class AdminDbMgmtServiceImpl extends AbstractService{
 	private final Logger logger = LoggerFactory.getLogger(AdminDbMgmtServiceImpl.class);
 
-	@Autowired
-	private DBTypeEntityRepository dbTypeEntityRepository;
+	private final DBTypeEntityRepository dbTypeEntityRepository;
 
-	@Autowired
-	private DBConnectionEntityRepository dbConnectionEntityRepository;
+	private final DBConnectionEntityRepository dbConnectionEntityRepository;
 
-	@Autowired
-	private DBTypeDriverEntityRepository dbTypeDriverEntityRepository;
+	private final DBTypeDriverEntityRepository dbTypeDriverEntityRepository;
 
-	@Autowired
-	private DBGroupMappingDbEntityRepository dbGroupMappingDbEntityRepository;
+	private final DBGroupMappingDbEntityRepository dbGroupMappingDbEntityRepository;
 
-	@Autowired
-	private DBManagerEntityRepository dbManagerRepository;
+	private final DBManagerEntityRepository dbManagerRepository;
 
-	@Autowired
 	@Qualifier(ResourceConfigConstants.USER_DETAIL_SERVICE)
-	private UserService userService;
+	private final UserService userService;
 
-	@Autowired
 	@Qualifier(ResourceConfigConstants.CACHE_MANAGER)
-	private CacheManager cacheManager;
+	private final CacheManager cacheManager;
 
-	@Autowired
-	private DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository;
+	private final DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository;
 
-	@Autowired
-	private DBTypeDriverProviderRepository dbTypeDriverProviderRepository;
+	private final DBTypeDriverProviderRepository dbTypeDriverProviderRepository;
 
 	/**
 	 *

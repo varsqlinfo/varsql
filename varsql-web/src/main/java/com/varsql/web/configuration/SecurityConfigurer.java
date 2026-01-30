@@ -56,6 +56,8 @@ import com.varsql.web.security.VarsqlBasicAuthenticationEntryPoint;
 import com.varsql.web.security.rememberme.RememberMeTokenRepository;
 import com.varsql.web.security.rememberme.RememberMeUserService;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * -----------------------------------------------------------------------------
 * @fileName		: SecurityConfig.java
@@ -70,24 +72,24 @@ import com.varsql.web.security.rememberme.RememberMeUserService;
  */
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-
+@RequiredArgsConstructor
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
-	final private String CSRF_TOKEN_NAME = "varsql_ct";
+	private final String CSRF_TOKEN_NAME = "varsql_ct";
 	
 	public static final String WEB_RESOURCES = "/webstatic/**";
 
-	private VarsqlBasicAuthenticationEntryPoint varsqlBasicAuthenticationEntryPoint;
+	private final VarsqlBasicAuthenticationEntryPoint varsqlBasicAuthenticationEntryPoint;
 
-	private VarsqlAuthenticationFailHandler varsqlAuthenticationFailHandler;
+	private final VarsqlAuthenticationFailHandler varsqlAuthenticationFailHandler;
 	
-	private VarsqlAuthenticationSuccessHandler varsqlAuthenticationSuccessHandler;
+	private final VarsqlAuthenticationSuccessHandler varsqlAuthenticationSuccessHandler;
 
-	private VarsqlAuthenticationLogoutHandler varsqlAuthenticationLogoutHandler;
+	private final VarsqlAuthenticationLogoutHandler varsqlAuthenticationLogoutHandler;
 
-	private VarsqlAuthenticationLogoutSuccessHandler varsqlAuthenticationLogoutSuccessHandler;
+	private final VarsqlAuthenticationLogoutSuccessHandler varsqlAuthenticationLogoutSuccessHandler;
 	
-	private BeanFactory beanFactory;
+	private final BeanFactory beanFactory;
 	
 	// web static resource path
 	private OrRequestMatcher staticRequestMatcher = new OrRequestMatcher(
@@ -105,22 +107,6 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 	
 	// ajax header matcher
 	private RequestMatcher ajaxRequestMatcher = new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest");
-
-	public SecurityConfigurer(
-			VarsqlBasicAuthenticationEntryPoint varsqlBasicAuthenticationEntryPoint
-			,VarsqlAuthenticationFailHandler varsqlAuthenticationFailHandler
-			,VarsqlAuthenticationLogoutHandler varsqlAuthenticationLogoutHandler
-			,VarsqlAuthenticationSuccessHandler varsqlAuthenticationSuccessHandler
-			,VarsqlAuthenticationLogoutSuccessHandler varsqlAuthenticationLogoutSuccessHandler
-			,BeanFactory beanFactory) {
-		
-		this.varsqlBasicAuthenticationEntryPoint = varsqlBasicAuthenticationEntryPoint; 
-		this.varsqlAuthenticationFailHandler = varsqlAuthenticationFailHandler; 
-		this.varsqlAuthenticationLogoutHandler = varsqlAuthenticationLogoutHandler; 
-		this.varsqlAuthenticationSuccessHandler = varsqlAuthenticationSuccessHandler; 
-		this.varsqlAuthenticationLogoutSuccessHandler = varsqlAuthenticationLogoutSuccessHandler; 
-		this.beanFactory = beanFactory; 
-	}
 
 	@Override
     public void configure(WebSecurity web) throws Exception {

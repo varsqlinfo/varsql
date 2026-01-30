@@ -4,7 +4,6 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +21,8 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.PagingUtil;
 
+import lombok.RequiredArgsConstructor;
+
 /**
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
@@ -36,14 +37,13 @@ import com.vartech.common.utils.PagingUtil;
 *-----------------------------------------------------------------------------
  */
 @Service
+@RequiredArgsConstructor
 public class PluginServiceImpl extends AbstractService{
 	private final Logger logger = LoggerFactory.getLogger(PluginServiceImpl.class);
 
-	@Autowired
-	private GlossaryEntityRepository glossaryEntityRepository;
+	private final GlossaryEntityRepository glossaryEntityRepository;
 
-	@Autowired
-	private SqlHistoryEntityRepository sqlHistoryEntityRepository;
+	private final SqlHistoryEntityRepository sqlHistoryEntityRepository;
 
 	/**
 	 *

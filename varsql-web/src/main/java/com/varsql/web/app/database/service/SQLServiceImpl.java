@@ -18,7 +18,6 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -88,6 +87,8 @@ import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.StringUtils.EscapeType;
 import com.vartech.common.utils.VartechUtils;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  *
  * @FileName  : SQLServiceImpl.java
@@ -97,14 +98,13 @@ import com.vartech.common.utils.VartechUtils;
  * @프로그램 설명 :
  */
 @Service
+@RequiredArgsConstructor
 public class SQLServiceImpl{
 	private final Logger logger = LoggerFactory.getLogger(SQLServiceImpl.class);
 
-	@Autowired
-	private CommonLogService commonLogService;
+	private final CommonLogService commonLogService;
 	
-	@Autowired
-	private FileInfoEntityRepository fileInfoEntityRepository;
+	private final FileInfoEntityRepository fileInfoEntityRepository;
 	
 	/**
 	 *

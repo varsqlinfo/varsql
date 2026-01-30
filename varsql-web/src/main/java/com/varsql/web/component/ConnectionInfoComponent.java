@@ -25,19 +25,17 @@ import com.vartech.common.app.beans.FileInfo;
 import com.vartech.common.crypto.EncryptDecryptException;
 import com.vartech.common.utils.StringUtils;
 
+import lombok.RequiredArgsConstructor;
+
 @Component("connectionInfoDao")
+@RequiredArgsConstructor
 public class ConnectionInfoComponent {
 
 	private final Logger logger = LoggerFactory.getLogger(ConnectionInfoComponent.class);
 
-	private DBConnectionEntityRepository dbConnectionEntityRepository;
+	private final DBConnectionEntityRepository dbConnectionEntityRepository;
 
-	private DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository;
-
-	public ConnectionInfoComponent(DBConnectionEntityRepository dbConnectionEntityRepository, DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository) {
-		this.dbConnectionEntityRepository = dbConnectionEntityRepository;
-		this.dbTypeDriverFileEntityRepository = dbTypeDriverFileEntityRepository;
-	}
+	private final DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository;
 
 	public ConnectionInfo getConnectionInfo(String connid) throws EncryptDecryptException {
 

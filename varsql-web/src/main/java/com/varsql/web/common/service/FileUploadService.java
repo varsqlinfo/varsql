@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -24,12 +23,14 @@ import com.vartech.common.utils.FileUtils;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechUtils;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class FileUploadService {
 	private final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
-	@Autowired
-	private FileInfoEntityRepository fileInfoEntityRepository;
+	private final FileInfoEntityRepository fileInfoEntityRepository;
 
 	public FileInfoEntity uploadFile(MultipartHttpServletRequest mtfRequest, UploadFileType fileType, String paramFileContId) {
 		List<FileInfoEntity> uploadFiles = uploadFiles(mtfRequest, fileType, paramFileContId);

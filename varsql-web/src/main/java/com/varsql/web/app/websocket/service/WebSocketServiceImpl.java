@@ -1,7 +1,6 @@
 package com.varsql.web.app.websocket.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -11,6 +10,8 @@ import com.varsql.web.constants.WebSocketConstants;
 import com.varsql.web.dto.websocket.MessageDTO;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechUtils;
+
+import lombok.RequiredArgsConstructor;
 
 /**
 *
@@ -27,16 +28,19 @@ import com.vartech.common.utils.VartechUtils;
 *-----------------------------------------------------------------------------
 */
 @Service
+@RequiredArgsConstructor
 public class WebSocketServiceImpl{
 	private final Logger logger = LoggerFactory.getLogger(WebSocketServiceImpl.class);
+
+	private final static String USER_PREFIX = WebSocketConstants.Type.USER_TOPIC.getClientDestination();
 	
-	@Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 	
-	final private static String USER_PREFIX = WebSocketConstants.Type.USER_TOPIC.getClientDestination();
 	
 	@Async(ResourceConfigConstants.APP_WEB_SOCKET_TASK_EXECUTOR)
-	public void sendUserMessage(MessageDTO msg , String... usrIds) {
+	public void sendUserMessage(MessageDTO msg) {
+		
+		String[] usrIds = msg.getRecvIds(); 
 		
 		if(logger.isDebugEnabled()) {
 			logger.debug("websocket send message : {} , receivers : {}", msg, StringUtils.join(',',usrIds));

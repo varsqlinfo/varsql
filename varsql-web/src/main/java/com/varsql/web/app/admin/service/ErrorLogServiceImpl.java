@@ -1,7 +1,6 @@
 package com.varsql.web.app.admin.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +11,8 @@ import com.varsql.web.repository.sql.SqlExceptionLogEntityRepository;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * -----------------------------------------------------------------------------
@@ -26,11 +27,11 @@ import com.vartech.common.app.beans.SearchParameter;
 *-----------------------------------------------------------------------------
  */
 @Service
+@RequiredArgsConstructor
 public class ErrorLogServiceImpl  extends AbstractService{
 	private final Logger logger = LoggerFactory.getLogger(ErrorLogServiceImpl.class);
 
-	@Autowired
-	private SqlExceptionLogEntityRepository sqlExceptionLogEntityRepository;
+	private final SqlExceptionLogEntityRepository sqlExceptionLogEntityRepository;
 
 	/**
 	 * @method  : selectErrorList

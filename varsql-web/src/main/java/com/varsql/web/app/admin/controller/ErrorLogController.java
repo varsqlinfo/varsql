@@ -2,7 +2,6 @@ package com.varsql.web.app.admin.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,6 +12,8 @@ import com.varsql.web.common.controller.AbstractController;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
+
+import lombok.RequiredArgsConstructor;
 
 
 
@@ -32,11 +33,10 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/admin/errorlogMgmt")
+@RequiredArgsConstructor
 public class ErrorLogController extends AbstractController{
 
-	@Autowired
-	private ErrorLogServiceImpl errorLogServiceImpl;
-
+	private final ErrorLogServiceImpl errorLogServiceImpl;
 
 	@RequestMapping(value="/list", method = RequestMethod.POST)
 	public @ResponseBody ResponseResult managerlist(HttpServletRequest req) throws Exception {

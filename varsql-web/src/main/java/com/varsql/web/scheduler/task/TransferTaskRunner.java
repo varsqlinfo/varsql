@@ -1,11 +1,9 @@
 package com.varsql.web.scheduler.task;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.stereotype.Component;
 
+import com.varsql.core.common.constants.ExecuteType;
 import com.varsql.core.connection.ConnectionInfoManager;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.exception.NotFoundException;
@@ -17,7 +15,8 @@ import com.varsql.core.task.transfer.TaskTransferBuilder;
 import com.varsql.core.task.transfer.TaskTransferExecutor;
 import com.varsql.web.common.service.CommonLogService;
 import com.varsql.web.dto.task.TaskExecutionVO;
-import com.varsql.web.model.entity.task.TaskHistoryEntity;
+import com.varsql.web.dto.websocket.MessageDTO;
+import com.varsql.web.model.entity.execution.ExecutionHistoryEntity;
 import com.varsql.web.model.entity.task.TaskTransferEntity;
 import com.varsql.web.repository.task.TaskTransferRepository;
 import com.varsql.web.util.ConvertUtils;
@@ -32,11 +31,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TransferTaskRunner implements TaskRunner{
 	
-	final private TaskTransferRepository taskTransferRepository;
+	private final TaskTransferRepository taskTransferRepository;
 	
-	final private CommonLogService commonLogService;
+	private final CommonLogService commonLogService;
 	
-	public TaskResult run(TaskExecutionVO vo) {
+	public TaskResult run(TaskExecutionVO vo) throws Exception {
 		log.info("task execution vo {}", vo);
 		String taskId = vo.getTaskId();
 		
@@ -46,6 +45,7 @@ public class TransferTaskRunner implements TaskRunner{
 		
 		TaskResult result=null;
 		String message = "";
+		MessageDTO messageDTO = null;
 		try {
 			
 			TaskTransferEntity item = taskTransferRepository.findByTaskId(taskId);
@@ -53,6 +53,12 @@ public class TransferTaskRunner implements TaskRunner{
 			if(item == null) {
 				throw new NotFoundException("task id not found : "+ taskId);
 			}
+			
+			messageDTO = MessageDTO.builder()
+					.title(item.getTaskName())
+					.recvIds(new String[] {item.getRegId()})
+					.build();
+			
 			
 			SourceVO sourceVo = VartechUtils.jsonStringToObject(item.getSourceConfig(), SourceVO.class, true); 
 			TargetVO targetVo = VartechUtils.jsonStringToObject(item.getTargetConfig(), TargetVO.class, true);
@@ -66,33 +72,33 @@ public class TransferTaskRunner implements TaskRunner{
 			
 			TaskResult taskResult = TaskResult.builder().build();
 			
-			try {
-				Task taskTransferExecutor = new TaskTransferExecutor(TaskTransferBuilder.builder()
-						.sourceVo(sourceVo)
-						.targetVo(targetVo)
-						.taskResult(taskResult)
-					.build());
-						
-				taskTransferExecutor.submit();
-				
-				result= taskTransferExecutor.result();
-				message = result.getErrorMessage();
-			} catch (Exception e) {
-				status = BatchStatus.FAILED;
-				log.error(e.getMessage(), e);
-				message = e.getMessage();
-				
-				result = TaskResult.builder()
-						.errorMessage(e.getMessage())
-						.build();
-			}
+			Task taskTransferExecutor = new TaskTransferExecutor(TaskTransferBuilder.builder()
+					.sourceVo(sourceVo)
+					.targetVo(targetVo)
+					.taskResult(taskResult)
+				.build());
+					
+			taskTransferExecutor.submit();
 			
+			result= taskTransferExecutor.result();
+			message = result.getErrorMessage();
+		} catch (Exception e) {
+			status = BatchStatus.FAILED;
+			log.error(e.getMessage(), e);
+			message = e.getMessage();
+			
+			result = TaskResult.builder()
+					.errorMessage(e.getMessage())
+					.build();
+			throw e;
 		}finally {
 			long endTime = System.currentTimeMillis();
-			commonLogService.saveTaskHistory(
-				TaskHistoryEntity.builder()
+			commonLogService.saveExecutionHistory(
+				messageDTO,
+				ExecutionHistoryEntity.builder()
 				.instanceId(CommUtils.getHostname())
-				.taskId(taskId)
+				.targetType(ExecuteType.TASK)
+				.targetId(taskId)
 				.runType(vo.getRunType().name())
 				.status(status.name())
 				.customInfo(VartechUtils.objectToJsonString(result))

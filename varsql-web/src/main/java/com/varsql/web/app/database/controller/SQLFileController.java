@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +15,8 @@ import com.varsql.web.dto.sql.SqlFileRequestDTO;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.HttpUtils;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  *
  * @FileName  : SQLController.java
@@ -26,11 +27,11 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/sql/file")
+@RequiredArgsConstructor
 public class SQLFileController extends AbstractController  {
 	private final Logger logger = LoggerFactory.getLogger(SQLFileController.class);
 
-	@Autowired
-	private SQLFileServiceImpl sqlFileServiceImpl;
+	private final SQLFileServiceImpl sqlFileServiceImpl;
 
 	/**
 	 * 쿼리 저장

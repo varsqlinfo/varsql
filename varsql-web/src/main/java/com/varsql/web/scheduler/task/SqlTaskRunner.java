@@ -3,6 +3,7 @@ package com.varsql.web.scheduler.task;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.stereotype.Component;
 
+import com.varsql.core.common.constants.ExecuteType;
 import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.SqlStatementInfo;
 import com.varsql.core.exception.NotFoundException;
@@ -12,8 +13,10 @@ import com.varsql.core.task.sql.SQLTask;
 import com.varsql.core.task.transfer.TaskResult;
 import com.varsql.web.common.service.CommonLogService;
 import com.varsql.web.dto.task.TaskExecutionVO;
+import com.varsql.web.dto.user.RegInfoDTO;
+import com.varsql.web.dto.websocket.MessageDTO;
 import com.varsql.web.exception.DatabaseNotFoundException;
-import com.varsql.web.model.entity.task.TaskHistoryEntity;
+import com.varsql.web.model.entity.execution.ExecutionHistoryEntity;
 import com.varsql.web.model.entity.task.TaskSqlEntity;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.repository.task.TaskSqlRepository;
@@ -31,13 +34,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SqlTaskRunner implements TaskRunner{
 	
-	final private TaskSqlRepository taskSqlRepository;
+	private final TaskSqlRepository taskSqlRepository;
 	
-	final private DBConnectionEntityRepository dbConnectionEntityRepository;
+	private final DBConnectionEntityRepository dbConnectionEntityRepository;
 	
-	final private CommonLogService commonLogService;
+	private final CommonLogService commonLogService;
 	
-	public TaskResult run(TaskExecutionVO vo) {
+	public TaskResult run(TaskExecutionVO vo) throws Exception {
 		log.info("task execution vo {}", vo);
 		
 		String taskId = vo.getTaskId();
@@ -48,6 +51,7 @@ public class SqlTaskRunner implements TaskRunner{
 		
 		TaskResult result;
 		String message = "";
+		MessageDTO messageDTO = null;
 		try {
 			
 			TaskSqlEntity item = taskSqlRepository.findByTaskId(taskId);
@@ -55,6 +59,11 @@ public class SqlTaskRunner implements TaskRunner{
 			if(item == null) {
 				throw new NotFoundException(String.format("[%s] task not found ",  taskId));
 			}
+			
+			messageDTO = MessageDTO.builder()
+					.title(item.getTaskName())
+					.recvIds(new String[] {item.getRegId()})
+					.build();
 			
 			DatabaseInfo dbinfo = dbConnectionEntityRepository.findDatabaseInfo(item.getVconnid());
 			
@@ -70,28 +79,30 @@ public class SqlTaskRunner implements TaskRunner{
 			ssi.setSqlParamMap(SQLUtils.stringParamListToMap(item.getParameter()));
 			
 			Task sqlTask = new SQLTask(ssi);
-			
-			try {
-				sqlTask.submit();
-				
-				result= sqlTask.result();
-				message = result.getErrorMessage();
-			} catch (Exception e) {
-				status = BatchStatus.FAILED;
-				log.error(e.getMessage(), e);
-				message = e.getMessage();
-				
-				result = TaskResult.builder()
-						.errorMessage(e.getMessage())
-						.build();
-			}
 		
+			sqlTask.submit();
+			
+			result= sqlTask.result();
+			message = result.getErrorMessage();
+			
+		} catch (Exception e) {
+			status = BatchStatus.FAILED;
+			log.error(e.getMessage(), e);
+			message = e.getMessage();
+			
+			result = TaskResult.builder()
+					.errorMessage(e.getMessage())
+					.build();
+			
+			throw e;
 		}finally {
 			long endTime = System.currentTimeMillis();
-			commonLogService.saveTaskHistory(
-				TaskHistoryEntity.builder()
+			commonLogService.saveExecutionHistory(
+				messageDTO,
+				ExecutionHistoryEntity.builder()
 				.instanceId(CommUtils.getHostname())
-				.taskId(taskId)
+				.targetType(ExecuteType.TASK)
+				.targetId(taskId)
 				.runType(vo.getRunType().name())
 				.status(status.name())
 				.startTime(ConvertUtils.longToTimestamp(startTime))

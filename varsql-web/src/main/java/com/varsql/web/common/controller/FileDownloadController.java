@@ -22,10 +22,10 @@ import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.model.entity.db.DBTypeDriverFileEntity;
-import com.varsql.web.model.entity.scheduler.JobHistoryEntity;
+import com.varsql.web.model.entity.execution.ExecutionHistoryEntity;
 import com.varsql.web.repository.app.FileInfoEntityRepository;
 import com.varsql.web.repository.db.DBTypeDriverFileEntityRepository;
-import com.varsql.web.repository.scheduler.JobHistoryEntityRepository;
+import com.varsql.web.repository.execution.ExecutionHistoryEntityRepository;
 import com.varsql.web.util.FileServiceUtils;
 import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
@@ -34,17 +34,17 @@ import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.StringUtils;
 import com.vartech.common.utils.VartechUtils;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/file")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FileDownloadController {
 	private final static Logger logger = LoggerFactory.getLogger(FileDownloadController.class);
 	
-	private FileInfoEntityRepository fileInfoEntityRepository;
-	private DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository;
-	private JobHistoryEntityRepository jobHistoryEntityRepository;
+	private final FileInfoEntityRepository fileInfoEntityRepository;
+	private final DBTypeDriverFileEntityRepository dbTypeDriverFileEntityRepository;
+	private final ExecutionHistoryEntityRepository executionHistoryEntityRepository;
 	
 	// 첨부파일 다운로드
 	@RequestMapping(value = "/download")
@@ -94,9 +94,9 @@ public class FileDownloadController {
 			fileErrorMessage(req, res, VarsqlAppCode.SECURITY_AUTH_ERROR);
 		}
 		
-		JobHistoryEntity she =null;
+		ExecutionHistoryEntity she =null;
 		if(fileId > 0) {
-			she = jobHistoryEntityRepository.findByHistSeq(fileId);
+			she = executionHistoryEntityRepository.findByHistSeq(fileId);
 		}
 		
 		String customInfo = she.getCustomInfo();

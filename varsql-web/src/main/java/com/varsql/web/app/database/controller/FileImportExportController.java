@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,14 +18,14 @@ import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.web.app.database.service.FileImportExportServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.common.service.FileUploadService;
-import com.varsql.web.constants.HttpSessionConstants;
 import com.varsql.web.constants.UploadFileType;
 import com.varsql.web.dto.file.FileImportInfo;
 import com.varsql.web.model.entity.app.FileInfoEntity;
 import com.varsql.web.util.SecurityUtil;
 import com.vartech.common.app.beans.ResponseResult;
-import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.StringUtils;
+
+import lombok.RequiredArgsConstructor;
 
 
 
@@ -45,15 +44,14 @@ import com.vartech.common.utils.StringUtils;
  */
 @Controller
 @RequestMapping("/database/file")
+@RequiredArgsConstructor
 public class FileImportExportController extends AbstractController {
 
 	private final Logger logger = LoggerFactory.getLogger(FileImportExportController.class);
 
-	@Autowired
-	private FileUploadService fileUploadService;
+	private final FileUploadService fileUploadService;
 
-	@Autowired
-	private FileImportExportServiceImpl fileImportExportServiceImpl;
+	private final FileImportExportServiceImpl fileImportExportServiceImpl;
 
 	/**
 	 *

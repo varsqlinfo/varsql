@@ -14,7 +14,7 @@ public class VarsqlNamespace extends TagSupport {
 
 	private static final long serialVersionUID = 1L;
 	
-	final private String prefix= "varsql_";
+	private final String prefix= "varsql_";
 	
 	@Override
 	public int doStartTag() throws JspException {

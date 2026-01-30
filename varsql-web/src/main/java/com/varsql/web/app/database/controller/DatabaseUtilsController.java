@@ -1,11 +1,9 @@
 package com.varsql.web.app.database.controller;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +19,6 @@ import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.sql.DDLTemplateCode;
 import com.varsql.core.sql.template.DDLTemplateFactory;
-import com.varsql.web.app.database.service.DatabaseSourceGenImpl;
 import com.varsql.web.app.database.service.PreferencesServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.common.service.UserCommonService;
@@ -31,6 +28,8 @@ import com.varsql.web.dto.user.PreferencesRequestDTO;
 import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
+
+import lombok.RequiredArgsConstructor;
 
 /**
 *-----------------------------------------------------------------------------
@@ -47,15 +46,14 @@ import com.vartech.common.app.beans.ResponseResult;
  */
 @Controller
 @RequestMapping("/database/utils")
+@RequiredArgsConstructor
 public class DatabaseUtilsController extends AbstractController  {
 
 	private final Logger logger = LoggerFactory.getLogger(DatabaseUtilsController.class);
 	
-	@Autowired
-	private UserCommonService userCommonService;
+	private final UserCommonService userCommonService;
 	
-	@Autowired
-	private PreferencesServiceImpl preferencesServiceImpl;
+	private final PreferencesServiceImpl preferencesServiceImpl;
 	
 	/**
 	 * excel -> ddl 변환

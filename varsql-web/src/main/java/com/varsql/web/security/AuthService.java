@@ -20,6 +20,8 @@ import com.varsql.web.security.repository.UserAuthRepository;
 import com.vartech.common.app.beans.DataMap;
 import com.vartech.common.utils.VartechUtils;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * 로그인 사용자 체크.
  * @FileName : AuthDAO.java
@@ -28,21 +30,16 @@ import com.vartech.common.utils.VartechUtils;
  * @Hisotry :
  */
 @Service(value = "authService")
+@RequiredArgsConstructor
 public final class AuthService {
 
 	private final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
-	@Autowired
-	private UserAuthRepository userAuthRepository;
+	private final UserAuthRepository userAuthRepository;
 	
-	private PasswordEncoder passwordEncoder;
-	
-	@Autowired
 	@Qualifier(ResourceConfigConstants.APP_PASSWORD_ENCODER)
-	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-		this.passwordEncoder = passwordEncoder;
-	}
-
+	private final PasswordEncoder passwordEncoder;
+	
 	/**
 	 *
 	 * @Method Name  : loadUserByUsername

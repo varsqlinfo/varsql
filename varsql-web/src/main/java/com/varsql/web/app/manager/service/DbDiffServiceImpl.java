@@ -1,8 +1,5 @@
 package com.varsql.web.app.manager.service;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,17 +8,12 @@ import org.springframework.stereotype.Service;
 import com.varsql.core.db.DBVenderType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
-import com.varsql.core.db.servicemenu.DBObjectType;
-import com.varsql.core.db.valueobject.BaseObjectInfo;
-import com.varsql.core.db.valueobject.DatabaseInfo;
 import com.varsql.core.db.valueobject.DatabaseParamInfo;
-import com.varsql.core.db.valueobject.ddl.DDLCreateOption;
 import com.varsql.web.model.entity.db.DBConnectionEntity;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
 import com.varsql.web.util.DatabaseUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.RequestResultCode;
-import com.vartech.common.utils.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,7 +36,7 @@ public class DbDiffServiceImpl{
 
 	private final Logger logger = LoggerFactory.getLogger(DbDiffServiceImpl.class);
 
-	final private DBConnectionEntityRepository  dbConnectionEntityRepository;
+	private final DBConnectionEntityRepository  dbConnectionEntityRepository;
 
 	/**
 	 *
@@ -58,6 +50,8 @@ public class DbDiffServiceImpl{
 	 * @throws SQLException
 	 */
 	public ResponseResult objectTypeList(String vconnid) throws SQLException {
+		
+		logger.debug("vconnid : {}",vconnid);
 
 		ResponseResult resultObject = new ResponseResult();
 

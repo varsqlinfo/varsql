@@ -5,5 +5,5 @@ import com.varsql.web.dto.task.TaskExecutionVO;
 
 public interface TaskRunner {
 	
-	public TaskResult run(TaskExecutionVO vo);
+	public TaskResult run(TaskExecutionVO vo) throws Exception;
 }

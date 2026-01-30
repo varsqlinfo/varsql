@@ -32,7 +32,7 @@ public enum TaskType{
 		return code;
 	}
 	
-	public static TaskType getComponentType(String type) {
+	public static TaskType fromString(String type) {
 		for(TaskType cmpType : TaskType.values()) {
 			if(cmpType.getTypeName().equals(type)) {
 				return cmpType;

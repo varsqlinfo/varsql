@@ -7,18 +7,13 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -28,12 +23,12 @@ import com.varsql.web.app.user.service.UserMainServiceImpl;
 import com.varsql.web.common.controller.AbstractController;
 import com.varsql.web.common.service.UserCommonService;
 import com.varsql.web.constants.VIEW_PAGE;
-import com.varsql.web.dto.user.NoteRequestDTO;
-import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
 import com.vartech.common.utils.VartechUtils;
+
+import lombok.RequiredArgsConstructor;
 
 
 /**
@@ -51,18 +46,16 @@ import com.vartech.common.utils.VartechUtils;
  */
 @Controller
 @RequestMapping("/user")
+@RequiredArgsConstructor
 public class UserMainController extends AbstractController{
 
 	private final Logger logger = LoggerFactory.getLogger(UserMainController.class);
 
-	@Autowired
-	private UserMainServiceImpl userMainServiceImpl;
+	private final UserMainServiceImpl userMainServiceImpl;
 
-	@Autowired
-	private DatabaseServiceImpl databaseServiceImpl;
+	private final DatabaseServiceImpl databaseServiceImpl;
 	
-	@Autowired
-	private UserCommonService userCommonService;
+	private final UserCommonService userCommonService;
 
 	@RequestMapping(value={"","/","/main"}, method = RequestMethod.GET)
 	public ModelAndView mainpage(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {
@@ -95,67 +88,6 @@ public class UserMainController extends AbstractController{
 		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
 
 		return userMainServiceImpl.selectSearchUserList(searchParameter);
-	}
-
-	/**
-	 *
-	 * @Method Name  : sendNote
-	 * @Method 설명 : 쪽지 보내기
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 5. 2.
-	 * @변경이력  :
-	 * @param noteInfo
-	 * @param result
-	 * @param req
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value={"/sendNote", "/resendNote"}, method = RequestMethod.POST)
-	public @ResponseBody ResponseResult sendNote(@Valid NoteRequestDTO noteInfo, BindingResult result, HttpServletRequest req) throws Exception {
-		if(result.hasErrors()){
-			for(ObjectError errorVal :result.getAllErrors()){
-				logger.warn("###  UserMainController sendNote check {}",errorVal.toString());
-			}
-			return VarsqlUtils.getResponseResultValidItem(result);
-		}
-
-		return userMainServiceImpl.insertSendNoteInfo(noteInfo, req.getRequestURI().indexOf("resendNote") > -1 ? true : false);
-	}
-
-	/**
-	 *
-	 * @Method Name  : message
-	 * @Method 설명 : 사용자 메모 목록.
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 8. 16.
-	 * @변경이력  :
-	 * @param req
-	 * @param response
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value={"/message"}, method = RequestMethod.POST)
-	public @ResponseBody ResponseResult message(@RequestParam(value = "messageType" , required = true)  String messageType, HttpServletRequest req) throws Exception {
-		SearchParameter searchParameter = HttpUtils.getSearchParameter(req);
-		
-		return userMainServiceImpl.selectMessageInfo(messageType, searchParameter);
-	}
-
-	/**
-	 *
-	 * @Method Name  : updMsgViewDt
-	 * @Method 설명 : 메시지 확인 날짜 업데이트
-	 * @작성자   : ytkim
-	 * @작성일   : 2019. 8. 16.
-	 * @변경이력  :
-	 * @param req
-	 * @param response
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value={"/updMsgViewDt"}, method = RequestMethod.POST)
-	public @ResponseBody ResponseResult updMsgViewDt(@RequestParam(value = "noteId" , required = true) String noteId) throws Exception {
-		return userMainServiceImpl.updateNoteViewDate(noteId);
 	}
 
 	/**

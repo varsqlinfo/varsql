@@ -5,6 +5,8 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -16,6 +18,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.varsql.web.constants.MessageType;
 import com.varsql.web.model.base.AbstractRegAuditorModel;
 import com.varsql.web.model.converter.BooleanToDelYnConverter;
 import com.varsql.web.model.entity.user.RegInfoEntity;
@@ -55,6 +58,10 @@ public class NoteEntity extends AbstractRegAuditorModel{
 
 	@Column(name ="NOTE_CONT")
 	private String noteCont;
+	
+	@Column(name ="NOTE_TYPE")
+	@Enumerated(EnumType.STRING)
+	private MessageType noteType;
 
 	@Column(name ="DEL_YN")
 	@Convert(converter=BooleanToDelYnConverter.class)
@@ -69,12 +76,13 @@ public class NoteEntity extends AbstractRegAuditorModel{
 	private Set<NoteMappingUserEntity> recvList;
 
 	@Builder
-	public NoteEntity(String noteId, String parentNoteId, String noteTitle, String noteCont, boolean delYn) {
+	public NoteEntity(String noteId, String parentNoteId, String noteTitle, String noteCont, boolean delYn, MessageType noteType) {
 		this.noteId = noteId;
 		this.parentNoteId = parentNoteId;
 		this.noteTitle = noteTitle;
 		this.noteCont = noteCont;
 		this.delYn = delYn;
+		this.noteType = noteType;
 	}
 
 	public static final String JOIN_RECV_LIST = "recvList";
@@ -88,4 +96,6 @@ public class NoteEntity extends AbstractRegAuditorModel{
 	public final static String NOTE_CONT="noteCont";
 
 	public final static String DEL_YN="delYn";
+	
+	public final static String NOTE_TYPE="noteType";
 }

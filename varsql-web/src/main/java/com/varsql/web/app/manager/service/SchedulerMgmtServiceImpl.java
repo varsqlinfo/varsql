@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.varsql.core.common.code.VarsqlAppCode;
+import com.varsql.core.common.constants.ExecuteType;
 import com.varsql.core.db.MetaControlBean;
 import com.varsql.core.db.MetaControlFactory;
 import com.varsql.core.db.servicemenu.DBObjectType;
@@ -18,14 +19,14 @@ import com.varsql.core.db.valueobject.DatabaseParamInfo;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.ResourceConfigConstants;
+import com.varsql.web.dto.execution.ExecutionHistoryResponseDTO;
 import com.varsql.web.dto.scheduler.JobDetailDTO;
 import com.varsql.web.dto.scheduler.JobVO;
-import com.varsql.web.dto.scheduler.JobHistoryResponseDTO;
+import com.varsql.web.model.entity.execution.ExecutionHistoryEntity;
 import com.varsql.web.model.entity.scheduler.JobEntity;
-import com.varsql.web.model.entity.scheduler.JobHistoryEntity;
 import com.varsql.web.repository.db.DBConnectionEntityRepository;
+import com.varsql.web.repository.execution.ExecutionHistoryEntityRepository;
 import com.varsql.web.repository.scheduler.JobEntityRepository;
-import com.varsql.web.repository.scheduler.JobHistoryEntityRepository;
 import com.varsql.web.scheduler.JOBServiceUtils;
 import com.varsql.web.scheduler.bean.JobBean;
 import com.varsql.web.util.VarsqlUtils;
@@ -51,14 +52,14 @@ public class SchedulerMgmtServiceImpl extends AbstractService{
 		RUN, PAUSE, RESUME
 	}
 	
-	final private DBConnectionEntityRepository  dbConnectionEntityRepository;
+	private final DBConnectionEntityRepository  dbConnectionEntityRepository;
 
-	final private JobEntityRepository jobEntityRepository;
+	private final JobEntityRepository jobEntityRepository;
 	
-	final private JobHistoryEntityRepository jobHistoryEntityRepository;  
+	private final ExecutionHistoryEntityRepository executionHistoryEntityRepository;  
 	
 	@Qualifier(ResourceConfigConstants.APP_SCHEDULER) 
-	final private Scheduler scheduler;
+	private final Scheduler scheduler;
 	
 	/**
 	 * 
@@ -192,7 +193,7 @@ public class SchedulerMgmtServiceImpl extends AbstractService{
 	 */
 	public ResponseResult findHistory(String jobUid, SearchParameter schParam) {
 		
-		Page<JobHistoryResponseDTO> result = jobHistoryEntityRepository.findByJobUid(jobUid, VarsqlUtils.convertSearchInfoToPage(schParam, Sort.by(JobHistoryEntity.START_TIME).descending()));
+		Page<ExecutionHistoryResponseDTO> result = executionHistoryEntityRepository.findByTargetId(jobUid, ExecuteType.BATCH, VarsqlUtils.convertSearchInfoToPage(schParam, Sort.by(ExecutionHistoryEntity.START_TIME).descending()));
 		
 		return VarsqlUtils.getResponseResult(result.getContent(), result.getTotalElements(), schParam);
 	}

@@ -495,5 +495,12 @@ VARSQLTemplate.render ={
 	}
 }
 
+// 공통 템플릿
+VARSQLTemplate.format = {
+	noteBatch :`Start : {{batchInfo.startTime}}
+End : {{batchInfo.endTime}}
+Status : {{batchInfo.status}}
+`
+}
 
 }(Handlebars, VARSQL));

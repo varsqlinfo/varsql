@@ -3,6 +3,10 @@
 <database>
     <description>설명</description>
     <apply>
+         <sql description="add default system user">
+        insert into VTUSER (VIEWID, UID, UPW, UNAME, ORG_NM, DEPT_NM, LANG, UEMAIL, MOBILE_NO, TEL_NO, EMP_NO, USER_ROLE, DESCRIPTION, ACCEPT_YN, BLOCK_YN, REG_ID, REG_DT, UPD_ID, UPD_DT )
+		values( '$SYSTEM$', '$SYSTEM$', 'upw', 'SYSTEM', '', '', '', '', '', '', '', 'SYSTEM', 'SYSTEM', 'N', 'N', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP );
+         </sql>
          <sql description="add dbtype">
 <![CDATA[
 -- db2

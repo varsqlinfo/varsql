@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,6 +17,8 @@ import com.varsql.web.util.SecurityUtil;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  *
@@ -36,12 +37,12 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/user/preferences/sqlFile")
+@RequiredArgsConstructor
 public class UserPreferencesSqlFileController extends AbstractController{
 
 	private final Logger logger = LoggerFactory.getLogger(UserPreferencesSqlFileController.class);
 
-	@Autowired
-	private UserPreferencesSqlFileServiceImpl userPreferencesSqlFileServiceImpl;
+	private final UserPreferencesSqlFileServiceImpl userPreferencesSqlFileServiceImpl;
 
 	/**
 	 *

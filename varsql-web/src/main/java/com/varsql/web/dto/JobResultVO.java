@@ -23,18 +23,16 @@ public class JobResultVO implements Serializable {
 	private JobType jobType;
 	
 	private long resultCount;
-	
 	private long failCount; 
 	
 	private String message;
-	
-	private Map customInfo;
-	
 	private String log;
+
+	private Map<String,Object> customInfo;
 	
-	public JobResultVO addCustomInfo(Object key, Object val) {
+	public JobResultVO addCustomInfo(String key, Object val) {
 		if(customInfo==null) {
-			customInfo = new HashMap(); 
+			customInfo = new HashMap<>(); 
 		}
 		
 		customInfo.put(key, val);

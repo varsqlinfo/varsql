@@ -19,9 +19,14 @@ import com.varsql.core.common.constants.ExecuteType;
 import com.varsql.core.exception.VarsqlRuntimeException;
 import com.varsql.web.common.service.CommonLogService;
 import com.varsql.web.dto.JobResultVO;
+import com.varsql.web.dto.scheduler.JobDetailDTO;
 import com.varsql.web.dto.scheduler.JobVO;
-import com.varsql.web.model.entity.scheduler.JobHistoryEntity;
-import com.varsql.web.model.entity.scheduler.JobHistoryLogEntity;
+import com.varsql.web.dto.user.RegInfoDTO;
+import com.varsql.web.dto.websocket.MessageDTO;
+import com.varsql.web.model.entity.execution.ExecutionHistoryEntity;
+import com.varsql.web.model.entity.execution.ExecutionHistoryLogEntity;
+import com.varsql.web.repository.scheduler.JobEntityRepository;
+import com.varsql.web.scheduler.ExecuteContextHolder;
 import com.varsql.web.scheduler.JOBServiceUtils;
 import com.varsql.web.util.ConvertUtils;
 import com.vartech.common.utils.StringUtils;
@@ -43,71 +48,94 @@ public abstract class JobBean extends QuartzJobBean implements JobService{
 	@Autowired
 	private CommonLogService commonLogService;
 	
+	@Autowired
+	private JobEntityRepository jobEntityRepository;
+	
     @Override
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-    	String message = "";
-    	BatchStatus status = BatchStatus.COMPLETED;
     	
-    	JobDataMap jobDataMap = context.getMergedJobDataMap();
-    	
-    	JobVO jsv = VartechUtils.jsonStringToObject(jobDataMap.getString("jobCustomVO"), JobVO.class);
-    	
-    	if(jsv == null) {
-    		throw new VarsqlRuntimeException(VarsqlAppCode.EC_SCHEDULER, "jobCustomVO not found : " + jsv);
-    	}
-    	
-    	if(logger.isDebugEnabled()) {
-    		logger.debug("jobCustomVO : {}", jsv);
-    	}
-    	
-    	long startTime = System.currentTimeMillis(); 
-    	
-    	JobResultVO jobResultVo;
-        try {
-        	jobResultVo= doExecute(context, jsv);
-        	message = jobResultVo.getMessage()==null? "" : jobResultVo.getMessage();
-        }catch (Throwable e) {
-        	status = BatchStatus.FAILED;
-        	message = e.getMessage();
-        	logger.error("executeInternal : {} ", message, e);
-        	jobResultVo = JobResultVO.builder().build();
-        }
-        
-        if(message != null) {
-        	message = message.length() > 1500 ? message.substring(0 , 1500) : message;
-        }
-        
-        String customInfo =null;
-        if(jobResultVo.getCustomInfo() != null) {
-        	customInfo = VartechUtils.objectToJsonString(jobResultVo.getCustomInfo());
-        }
-        
-        long endTime = System.currentTimeMillis(); 
-        
-		JobHistoryEntity jobHistoryEntity = JobHistoryEntity.builder()
-			.instanceId(context.getFireInstanceId())
-			.jobUid(jsv.getJobUid())
-			.startTime(ConvertUtils.longToTimestamp(startTime))
-			.endTime(ConvertUtils.longToTimestamp(endTime))
-			.runTime(TimeUnit.MILLISECONDS.toSeconds(endTime - startTime))
-			.runType(context.getTrigger().getKey().getGroup().startsWith(JOBServiceUtils.RUN_SIMPLE_TIGGER_GROUP_PREFIX) ? ExecuteType.NORMAL.name() : ExecuteType.BATCH.name())
-			.message(message)
-			.status(status.name())
-			.resultCount(jobResultVo.getResultCount())
-			.failCount(jobResultVo.getFailCount())
-			.customInfo(customInfo)
-			.build();
-		
-		if(!StringUtils.isBlank(jobResultVo.getLog())) {
-			commonLogService.saveJobHistory(jobHistoryEntity, JobHistoryLogEntity.builder()
-					.histSeq(jobHistoryEntity.getHistSeq())
-					.logType(jobResultVo.getJobType().name())
-					.log(jobResultVo.getLog())
-					.build());
-		}else {
-			commonLogService.saveJobHistory(jobHistoryEntity);
-		}
-		
+    	 try {
+    		 
+			ExecuteType executeType = context.getTrigger().getKey().getGroup().startsWith(JOBServiceUtils.RUN_SIMPLE_TIGGER_GROUP_PREFIX) ? ExecuteType.NORMAL : ExecuteType.BATCH;
+			ExecuteContextHolder.set(executeType, context.getJobDetail().getKey().getName());
+    	        
+	    	String message = "";
+	    	BatchStatus status = BatchStatus.COMPLETED;
+	    	
+	    	JobDataMap jobDataMap = context.getMergedJobDataMap();
+	    	
+	    	JobVO jsv = VartechUtils.jsonStringToObject(jobDataMap.getString("jobCustomVO"), JobVO.class);
+	    	
+	    	if(jsv == null) {
+	    		throw new VarsqlRuntimeException(VarsqlAppCode.EC_SCHEDULER, "jobCustomVO not found : " + jsv);
+	    	}
+	    	
+	    	if(logger.isDebugEnabled()) {
+	    		logger.debug("jobCustomVO : {}", jsv);
+	    	}
+	    	
+	    	long startTime = System.currentTimeMillis(); 
+	    	
+	    	JobResultVO jobResultVo;
+	    	
+	        try {
+	        	jobResultVo= doExecute(context, jsv);
+	        	message = jobResultVo.getMessage()==null? "" : jobResultVo.getMessage();
+	        }catch (Throwable e) {
+	        	status = BatchStatus.FAILED;
+	        	message = e.getMessage();
+	        	logger.error("executeInternal : {} ", message, e);
+	        	jobResultVo = JobResultVO.builder().build();
+	        }
+	        
+	        if(message != null) {
+	        	message = message.length() > 1500 ? message.substring(0 , 1500) : message;
+	        }
+	        
+	        String customInfo =null;
+	        if(jobResultVo.getCustomInfo() != null) {
+	        	customInfo = VartechUtils.objectToJsonString(jobResultVo.getCustomInfo());
+	        }
+	        
+	        long endTime = System.currentTimeMillis(); 
+	        
+			ExecutionHistoryEntity executionHistoryEntity = ExecutionHistoryEntity.builder()
+				.instanceId(context.getFireInstanceId())
+				.targetType(ExecuteType.BATCH)
+				.targetId(jsv.getJobUid())
+				.startTime(ConvertUtils.longToTimestamp(startTime))
+				.endTime(ConvertUtils.longToTimestamp(endTime))
+				.runTime(TimeUnit.MILLISECONDS.toSeconds(endTime - startTime))
+				.runType(executeType.name())
+				.message(message)
+				.status(status.name())
+				.resultCount(jobResultVo.getResultCount())
+				.failCount(jobResultVo.getFailCount())
+				.customInfo(customInfo)
+				.build();
+			
+			JobDetailDTO detailDto = jobEntityRepository.findJobDetailInfo(jsv.getJobUid());
+			
+			MessageDTO messageDTO = null;
+			if(detailDto != null) {
+				messageDTO = MessageDTO.builder()
+				.title(jsv.getJobName())
+				.recvIds(new String[] {detailDto.getRegId()})
+				.build();
+			}
+			
+			if(!StringUtils.isBlank(jobResultVo.getLog())) {
+				commonLogService.saveExecutionHistory(messageDTO, executionHistoryEntity, ExecutionHistoryLogEntity.builder()
+						.histSeq(executionHistoryEntity.getHistSeq())
+						.logType(jobResultVo.getJobType().name())
+						.log(jobResultVo.getLog())
+						.build());
+			}else {
+				commonLogService.saveExecutionHistory(messageDTO, executionHistoryEntity);
+			}
+	    }finally {
+	    	ExecuteContextHolder.clear();
+	    }
 		
     }
     

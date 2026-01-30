@@ -57,11 +57,13 @@
 									</td>
 									<td :title="item.cronExpression"><div class="text-ellipsis ellipsis0">{{item.cronExpression}}</div></td>
 									<td>
-										<div class="margin-bottom5 text-right"><button class="btn btn-sm btn-info" @click="jobCtrl(item, 'RUN')">Run</button></div>
-										<div>
-											<button class="btn btn-sm btn-default" @click="jobCtrl(item, 'PAUSE')">Pause</button>
-											<button class="btn btn-sm btn-default" @click="jobCtrl(item, 'RESUME')">Resume</button>
-										</div>
+										<template v-if="!item.deleteVconnid">
+											<div class="margin-bottom5 text-right"><button class="btn btn-sm btn-info" @click="jobCtrl(item, 'RUN')">Run</button></div>
+											<div>
+												<button class="btn btn-sm btn-default" @click="jobCtrl(item, 'PAUSE')">Pause</button>
+												<button class="btn btn-sm btn-default" @click="jobCtrl(item, 'RESUME')">Resume</button>
+											</div>
+										</template>
 									</td>
 									<td>
 										<button class="btn btn-sm btn-default" @click="historyView(1, item)">History</button>
@@ -477,9 +479,14 @@ VarsqlAPP.vueServiceBean( {
 
 			this.$ajax({
 				url : {type:VARSQL.uri.manager, url:'/dataBackup/schemaList'}
-				,loadSelector : '#schemaList'
+				,loadSelector : '.detail_area_wrapper'
 				,data : param
 				,success:function (resData){
+					if(resData.resultCode!=200){
+						VARSQLUI.toast.open(resData.message);
+						_self.schemaList=[];
+						return; 
+					}
 		    		_self.schemaList = resData.list;
 				}
 			});
@@ -509,6 +516,11 @@ VarsqlAPP.vueServiceBean( {
 				,loadSelector : '#backupList'
 				,data : param
 				,success:function (resData){
+					if(resData.resultCode!=200){
+						VARSQLUI.toast.open(resData.message);
+						_self.selectObj.setSourceItem([]);
+						return; 
+					}
 		    		_self.selectObj.setSourceItem(resData.list);
 				}
 			});

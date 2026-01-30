@@ -1,7 +1,6 @@
 package com.varsql.web.app.user.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.core.auth.AuthorityTypeImpl;
@@ -13,6 +12,8 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.crypto.EncryptDecryptException;
 import com.vartech.common.utils.VartechUtils;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  *
  * @FileName  : AdminServiceImpl.java
@@ -22,11 +23,11 @@ import com.vartech.common.utils.VartechUtils;
  * @프로그램 설명 :
  */
 @Service
+@RequiredArgsConstructor
 public class JoinServiceImpl{
 	private final Logger logger = LoggerFactory.getLogger(JoinServiceImpl.class);
 
-	@Autowired
-	private UserInfoRepository userInfoRepository;
+	private final UserInfoRepository userInfoRepository;
 
 	/**
 	 * @method  : saveUser

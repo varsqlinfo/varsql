@@ -79,8 +79,7 @@ public final class ConnectionFactory implements ConnectionContext {
     private ConnectionInfo createPool(String connid) throws ConnectionFactoryException {
         synchronized (getLock(connid)) {
             try {
-                ConnectionInfo connInfo =
-                    ConnectionInfoManager.getInstance().getConnectionInfo(connid);
+                ConnectionInfo connInfo = ConnectionInfoManager.getInstance().getConnectionInfo(connid);
 
                 if (connInfo.isCreateConnectionPool()) {
                     return connInfo;
@@ -124,13 +123,15 @@ public final class ConnectionFactory implements ConnectionContext {
                     return;
                 }
 
-                logger.info("db pool shutdown: {}", connid);
+                logger.info("db pool shutdown start: {}", connid);
 
                 if (ConnectionInfoManager.getInstance().exists(connid)) {
                     getPoolBean().poolShutdown(
                         ConnectionInfoManager.getInstance().getConnectionInfo(connid)
                     );
                 }
+                
+                logger.info("db pool shutdown end: {}", connid);
 
                 closeMetaDataSource(connid);
                 shutdownConnIds.add(connid);

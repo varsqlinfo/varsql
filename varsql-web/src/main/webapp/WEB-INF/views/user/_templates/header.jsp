@@ -78,19 +78,32 @@
 		    	</div>
 		    </div>
 		    <div class="col-xs-7 h100">
-		        <div style="height: 50%;" :style="tabInfo=='old'?'height:100%':'height:50%'">
-		        	<div style="padding: 0px 0px 5px;">
-			        	<div style="width: calc(50% - 5px);display: inline-block;"><spring:message code="send.user" text="보낸사람"/> : {{detailItem.regInfo.uname}} </div>
-			        </div>
-		        	<textarea style="height: calc(100% - 21px);" :value="detailItem.noteCont" disabled="disabled"></textarea>
+	    		<div style="padding: 0px 0px 5px;">
+		        	<div style="width: calc(50% - 5px);display: inline-block;"><spring:message code="send.user" text="보낸사람"/> : {{detailItem.regUserInfo}} </div>
 		        </div>
-		        <div style="height:50%;" v-if="tabInfo != 'old'">
-		        	<div style="padding: 5px 0px;">
-			        	<div style="width: calc(50% - 5px);display: inline-block;"><spring:message code="content" text="내용"/> </div>
-			        	<span style="width: 50%;text-align: right;display: inline-block;"><button type="button" :disabled="tabInfo=='old'?true:false" @click="resendNote()"><spring:message code="reply" text="답장"/></button></span>
-			        </div>
-		        	<textarea v-model="detailItem.reNoteCont" style="height: calc(100% - 34px);"></textarea>
-		        </div>
+		    	<template v-if="detailItem.noteType != 'NOTE' && detailItem.batchInfo">
+		    		<textarea style="height: calc(50% - 70px);" :value="detailItem.noteCont" disabled="disabled"></textarea>
+		    		<div style="padding:10px 0px 10px;" class="text-left" :class="detailItem.batchInfo.status =='FAILED'?'error':''" >
+		    			Name : {{detailItem.noteTitle}} 
+		    		</div>
+		    		<div style="height:50%;">
+		    			<div id="batchItemList" style="height:100%;"></div>
+		    		</div>
+		    	</template>
+		    	<template v-else>
+		    		<div style="height: calc(100% - 21px);">
+				        <div style="height: 50%;" :style="tabInfo=='old'?'height:100%':'height:50%'">
+				        	<textarea style="height: 100%" :value="detailItem.noteCont" disabled="disabled"></textarea>
+				        </div>
+				        <div style="height:50%;" v-if="tabInfo != 'old'">
+				        	<div style="padding: 5px 0px;">
+					        	<div style="width: calc(50% - 5px);display: inline-block;"><spring:message code="content" text="내용"/> </div>
+					        	<span style="width: 50%;text-align: right;display: inline-block;"><button type="button" :disabled="tabInfo=='old'?true:false" @click="resendNote()"><spring:message code="reply" text="답장"/></button></span>
+					        </div>
+				        	<textarea v-model="detailItem.reNoteCont" style="height: calc(100% - 34px);"></textarea>
+				        </div>
+				     </div>
+		        </template>
 		    </div>
 		</div>
 	</div>
@@ -111,6 +124,7 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 		,tabInfo :'new'
 		,alarmTimer :''
 		,alarmMsgAeraCls : ''
+		,batchDetailGrid:false
 	}
 	,created : function (){
 		this.setDetailItem();
@@ -143,9 +157,9 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 			this.tabInfo = 'new';
 			_this.allNoteIds = [];
 			this.$ajax({
-				url : {type : VARSQL.uri.user, url : '/message'},
+				url : {type : VARSQL.uri.user, url : '/note/message'},
 				data :{
-					messageType : 'new'
+					viewMode : 'new'
 				},
 				success : function(res) {
 					var items = res.list;
@@ -174,6 +188,36 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 		// more 더보기
 		,moreNote : function(){
 			VARSQLUI.popup.open(VARSQL.getContextPathUrl('/user/preferences/message'));
+		}
+		// 배치 상세 보기. 
+		,batchHistDetail(){
+			const detailItem = this.detailItem;
+			
+			this.$ajax({
+			    url:{type:VARSQL.uri.user, url:'/detail/batch/hist/'+detailItem.batchInfo.histSeq}
+				,method:'get'
+			    ,data : {}
+			    ,success:(resData)=>{
+			    	const batchInfo =resData.item;
+			    	const itemList = [];
+			    	for(let key in batchInfo){
+			    		itemList.push({key: key, value: batchInfo[key]})
+			    	}
+			    	
+			    	this.$nextTick(()=>{
+				    	this.batchDetailGrid = $.pubGrid('#batchItemList',{
+				    		headerOptions: {
+					            redraw: false
+					        },
+							tColItem : [
+								{label: VARSQL.message('key'), key: 'key', width: 80}
+					        	, {label: VARSQL.message('value'), key: 'value', width: 160}
+							],
+							tbodyItem :itemList
+						})
+			    	});
+				}
+			});
 		}
 		// note tab click
 		,tabView : function (tabInfo){
@@ -228,7 +272,19 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 			if(VARSQL.isUndefined(item)){
 				this.detailItem = {regInfo:{}};
 			}else{
-				this.detailItem = item;
+				if(this.batchDetailGrid && $.pubGrid('#batchItemList')) $.pubGrid('#batchItemList').destroy();
+				if(item.noteType != 'NOTE'){
+					let reItem = VARSQL.util.objectMerge(item);
+					reItem.batchInfo = JSON.parse(reItem.noteCont)
+					reItem.noteCont = VARSQLTemplate.render.html(VARSQLTemplate.format.noteBatch, reItem);
+					
+					this.detailItem = reItem;
+					if(reItem.batchInfo.status != 'COMPLETED'){
+						this.batchHistDetail();
+					}
+				}else{
+					this.detailItem = item;	
+				}
 			}
 		}
 		// note view
@@ -252,7 +308,7 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 			if (item.updDt == null) {
 				item.updDt = new Date();
 				VARSQL.req.ajax({
-					url : {type : VARSQL.uri.user,url : '/updMsgViewDt'},
+					url : {type : VARSQL.uri.user,url : '/note/updMsgViewDt'},
 					data : {noteId : item.noteId},
 					success : function(res) {
 
@@ -298,14 +354,17 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 				return ;
 			}
 
-			var params = VARSQL.util.copyObject(this.detailItem);
-
-			params.recvId = 'resend';
-
+			const param = VARSQL.util.copyObject(this.detailItem);
+			param.recvId = 'resend';
+			
 			this.$ajax({
-			    url:{type:VARSQL.uri.user, url:'/resendNote'}
-			    ,data:params
+			    url:{type:VARSQL.uri.user, url:'/note/resend'}
+			    ,data:param
 			    ,success:function (resData){
+			    	if(resData.resultCode != 200){
+			    		VARSQL.toastMessage(resData.message);
+			    		return; 
+			    	}
 			    	VARSQL.toastMessage('msg.save.success');
 				}
 			});
@@ -315,13 +374,13 @@ var userTopObj = VarsqlAPP.vueServiceBean( {
 
 			var param = {
 				pageNo : 1
-				,messageType : 'recv'
+				,viewMode : 'recv'
 				,rows: 20
 				,'searchVal':''
 			};
 
 			this.$ajax({
-				url : {type:VARSQL.uri.user, url:'/message'}
+				url : {type:VARSQL.uri.user, url:'/note/message'}
 				,data : param
 				,success: function(resData) {
 					_this.noteItems = resData.list;
@@ -336,13 +395,13 @@ function userConnect(){
 	VARSQL.socket.connect('topic', {uid : $varsqlConfig.viewId}, function (data){
 		var msgType = data.type;
 
-		if(msgType== 'NOTE'){
-			userTopObj.alarmFlag =true;
-		}else if(msgType == 'USER_BLOCK'){
+		if(msgType == 'USER_BLOCK'){
 			location.href=VARSQL.getContextPathUrl("/logout?viewPage=/error/blockingUser");
 		}else if(msgType == 'USER_DB_BLOCK'){
 			userMain.blockTab(data.item);
 			userTopObj.getConnectionInfo(false);
+		}else{
+			userTopObj.alarmFlag =true;
 		}
 	});	
 }

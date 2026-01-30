@@ -13,7 +13,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.io.LineIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.varsql.core.common.beans.ProgressInfo;
@@ -37,6 +36,8 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.FileUtils;
 import com.vartech.common.utils.HttpUtils;
 
+import lombok.RequiredArgsConstructor;
+
 /**
 *-----------------------------------------------------------------------------
 * @PROJECT	: varsql
@@ -51,11 +52,11 @@ import com.vartech.common.utils.HttpUtils;
 *-----------------------------------------------------------------------------
  */
 @Service
+@RequiredArgsConstructor
 public class FileImportExportServiceImpl{
 	private final Logger logger = LoggerFactory.getLogger(FileImportExportServiceImpl.class);
 
-	@Autowired
-	private FileInfoEntityRepository fileInfoEntityRepository;
+	private final FileInfoEntityRepository fileInfoEntityRepository;
 
 	/**
 	 *

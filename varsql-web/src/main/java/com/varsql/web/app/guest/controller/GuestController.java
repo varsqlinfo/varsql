@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -25,6 +24,8 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.constants.RequestResultCode;
 import com.vartech.common.utils.HttpUtils;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * -----------------------------------------------------------------------------
 * @fileName		: GuestController.java
@@ -39,12 +40,12 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/guest")
+@RequiredArgsConstructor
 public class GuestController extends AbstractController  {
 
 	private final Logger logger = LoggerFactory.getLogger(GuestController.class);
 
-	@Autowired
-	private UserPreferencesServiceImpl userPreferencesServiceImpl;
+	private final UserPreferencesServiceImpl userPreferencesServiceImpl;
 
 	@RequestMapping(value = {"","/","/main"}, method =RequestMethod.GET)
 	public ModelAndView mainpage(HttpServletRequest req, HttpServletResponse res,ModelAndView mav) throws Exception {

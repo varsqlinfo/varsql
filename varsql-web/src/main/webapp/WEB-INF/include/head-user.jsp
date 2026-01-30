@@ -30,6 +30,7 @@
 <script src="${pageContextPath}/webstatic/js/varsql.web.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/varsql.web.ui.js?version=${pubjs_ver}"></script>
 
+<script src="${pageContextPath}/webstatic/js/pub.grid.js?v=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/pub.tab.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/plugins/handlebars/handlebars.varsql.js?version=${pubjs_ver}"></script>
 <script src="${pageContextPath}/webstatic/js/vue.varsql.js?version=${pubjs_ver}"></script>

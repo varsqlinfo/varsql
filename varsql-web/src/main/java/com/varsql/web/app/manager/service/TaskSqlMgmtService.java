@@ -9,16 +9,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import com.varsql.core.common.code.VarsqlAppCode;
 import com.varsql.core.common.constants.ExecuteType;
 import com.varsql.core.exception.NotFoundException;
+import com.varsql.core.task.transfer.TaskResult;
+import com.varsql.web.dto.execution.ExecutionHistoryResponseDTO;
 import com.varsql.web.dto.task.TaskExecutionVO;
-import com.varsql.web.dto.task.TaskHistoryResponseDTO;
 import com.varsql.web.dto.task.TaskSqlRequestDTO;
 import com.varsql.web.dto.task.TaskSqlResponseDTO;
 import com.varsql.web.model.base.AbstractRegAuditorModel;
-import com.varsql.web.model.entity.scheduler.JobHistoryEntity;
+import com.varsql.web.model.entity.execution.ExecutionHistoryEntity;
 import com.varsql.web.model.entity.task.TaskSqlEntity;
-import com.varsql.web.repository.task.TaskHistoryEntityRepository;
+import com.varsql.web.repository.execution.ExecutionHistoryEntityRepository;
 import com.varsql.web.repository.task.TaskSqlRepository;
 import com.varsql.web.scheduler.task.SqlTaskRunner;
 import com.varsql.web.util.VarsqlBeanUtils;
@@ -40,11 +42,12 @@ import lombok.RequiredArgsConstructor;
 public class TaskSqlMgmtService {
 	private final static Logger logger = LoggerFactory.getLogger(TaskSqlMgmtService.class);
 	
-	final private TaskSqlRepository taskSqlRepository;
+	private final TaskSqlRepository taskSqlRepository;
 	
-	final private SqlTaskRunner sqlTaskService;
+	private final SqlTaskRunner sqlTaskService;
 	
-	final private TaskHistoryEntityRepository taskHistoryEntityRepository;
+	
+	private final ExecutionHistoryEntityRepository executionHistoryEntityRepository;
 	
 	/**
 	 * 목록 
@@ -135,7 +138,16 @@ public class TaskSqlMgmtService {
 	 */
 	public ResponseResult execute(String taskId, String requid) {
 		TaskExecutionVO vo = TaskExecutionVO.builder().taskId(taskId).requid(requid).runType(ExecuteType.NORMAL).build();
-		return sqlTaskService.run(vo).getCustomResult();
+		TaskResult taskResult;
+		ResponseResult result = new ResponseResult();
+		try {
+			taskResult = sqlTaskService.run(vo);
+		} catch (Exception e) {
+			result.setResultCode(VarsqlAppCode.EC_TASK);
+			result.setMessage(e.getMessage());
+		}
+		
+		return result; 
 	}
 	
 	/**
@@ -146,7 +158,7 @@ public class TaskSqlMgmtService {
 	 * @return
 	 */
 	public ResponseResult findHistory(String taskId, SearchParameter schParam) {
-		Page<TaskHistoryResponseDTO> result = taskHistoryEntityRepository.findByTaskId(taskId, VarsqlUtils.convertSearchInfoToPage(schParam, Sort.by(JobHistoryEntity.START_TIME).descending()));
+		Page<ExecutionHistoryResponseDTO> result = executionHistoryEntityRepository.findByTargetId(taskId, ExecuteType.TASK, VarsqlUtils.convertSearchInfoToPage(schParam, Sort.by(ExecutionHistoryEntity.START_TIME).descending()));
 		
 		return VarsqlUtils.getResponseResult(result.getContent(), result.getTotalElements(), schParam);
 	}

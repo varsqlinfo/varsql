@@ -20,13 +20,14 @@ public class TaskExecutionVO implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	private String taskId; 
+	private String taskName; 
 	private String requid; 
 	private ExecuteType runType; 
 	private ProgressInfo progressInfo; 
 	private Map params;
 	
 	@Builder
-	public TaskExecutionVO(String taskId, String requid, ExecuteType runType, Map params, ProgressInfo progressInfo){
+	public TaskExecutionVO(String taskId, String taskName, String requid, ExecuteType runType, Map params, ProgressInfo progressInfo){
 		this.taskId = taskId;
 		this.requid = requid;
 		this.runType = runType;

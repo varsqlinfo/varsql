@@ -3,6 +3,7 @@ package com.varsql.web.dto.user;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+import com.varsql.web.constants.MessageType;
 import com.varsql.web.model.entity.app.NoteEntity;
 
 import lombok.Getter;
@@ -31,6 +32,8 @@ import lombok.Setter;
 public class NoteRequestDTO{
 	private String noteId;
 	
+	private MessageType noteType;
+	
 	@NotEmpty
 	@Size(max=1000)
 	private String noteTitle;
@@ -46,10 +49,10 @@ public class NoteRequestDTO{
 	@NotEmpty
 	private String recvId;
 	
-	
 	public NoteEntity toEntity() {
 		return NoteEntity.builder()
 				.noteId(noteId)
+				.noteType(noteType)
 				.noteTitle(noteTitle)
 				.noteCont(noteCont)
 				.parentNoteId(parentNoteId)

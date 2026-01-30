@@ -47,7 +47,6 @@ import com.vartech.common.utils.StringUtils;
 public class AppSetupService{
 	private final static Logger logger = LoggerFactory.getLogger(AppSetupService.class);
 
-
 	public ResponseResult install(SetupConfigDTO setupConfigDTO) {
 		
 		logger.info("install start ");
@@ -95,7 +94,6 @@ public class AppSetupService{
 		resultObject.setItemOne("success");
 		return resultObject;
 	}
-
 
 	private void createTestDbInfo(SetupConfigDTO setupConfigDTO, DatabaseChangeExecutor mainDce) throws IOException, Exception {
 		
@@ -255,7 +253,7 @@ public class AppSetupService{
 			PropertyResource props = new PropertyResource(is);
 
 			props.replaceProperty("varsql.default.charset", StringUtils.isBlank(setupConfigDTO.getAppInfo().getCharset())? VarsqlConstants.CHAR_SET :setupConfigDTO.getAppInfo().getCharset());
-			props.replaceProperty("backup.expire.day", setupConfigDTO.getAppInfo().getFileRetentionPeriod()+"");
+			props.replaceProperty("backup.cleanup.retention.days", setupConfigDTO.getAppInfo().getFileRetentionPeriod()+"");
 			props.replaceProperty("file.upload.path", FileUtils.pathConcat(setupConfigDTO.getAppInfo().getDataPath(), Configuration.DEFAULT_UPLOAD_FOLDER));
 			
 			if(!isExsits) {

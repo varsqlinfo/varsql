@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
@@ -29,9 +28,9 @@ import com.varsql.web.app.database.service.PreferencesServiceImpl;
 import com.varsql.web.common.cache.CacheInfo;
 import com.varsql.web.common.cache.CacheUtils;
 import com.varsql.web.common.controller.AbstractController;
+import com.varsql.web.constants.HttpParamConstants;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.constants.VIEW_PAGE;
-import com.varsql.web.constants.HttpParamConstants;
 import com.varsql.web.dto.db.DBConnTabRequestDTO;
 import com.varsql.web.dto.db.DBMetadataRequestDTO;
 import com.varsql.web.dto.user.PreferencesRequestDTO;
@@ -43,6 +42,8 @@ import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.utils.HttpUtils;
+
+import lombok.RequiredArgsConstructor;
 
 
 
@@ -61,19 +62,17 @@ import com.vartech.common.utils.HttpUtils;
  */
 @Controller
 @RequestMapping("/database")
+@RequiredArgsConstructor
 public class DatabaseController extends AbstractController {
 
 	private final Logger logger = LoggerFactory.getLogger(DatabaseController.class);
 
-	@Autowired
-	private DatabaseServiceImpl databaseServiceImpl;
+	private final DatabaseServiceImpl databaseServiceImpl;
 
-	@Autowired
-	private PreferencesServiceImpl preferencesServiceImpl;
+	private final PreferencesServiceImpl preferencesServiceImpl;
 
-	@Autowired
 	@Qualifier(ResourceConfigConstants.CACHE_MANAGER)
-	private CacheManager cacheManager;
+	private final CacheManager cacheManager;
 	
 	@RequestMapping(value={"/","/main"}, method = RequestMethod.GET)
 	public ModelAndView mainpage(PreferencesRequestDTO preferencesInfo, ModelAndView mav, HttpServletRequest req) throws Exception {

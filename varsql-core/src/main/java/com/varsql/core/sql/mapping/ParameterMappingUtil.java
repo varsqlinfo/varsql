@@ -23,8 +23,8 @@ public class ParameterMappingUtil extends AbstractConverter {
 
 	final static TokenInfo BLOCK = new TokenInfo.Builder("/*", new String[] { "*/" }).setValueReturn(true).build();
 
-	final private static String SQL_PARAM_START_TOKEN = "#{";
-	final private static String SQL_PARAM2_START_TOKEN = "${";
+	private final static String SQL_PARAM_START_TOKEN = "#{";
+	private final static String SQL_PARAM2_START_TOKEN = "${";
 
 	final static TokenInfo SQL_PARAM = new TokenInfo.Builder(SQL_PARAM_START_TOKEN, new String[] { "}" }).build();
 	final static TokenInfo SQL_PARAM2 = new TokenInfo.Builder(SQL_PARAM2_START_TOKEN, new String[] { "}" }).build();

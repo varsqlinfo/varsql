@@ -19,16 +19,15 @@ import com.vartech.common.app.beans.ResponseResult;
 import com.vartech.common.app.beans.SearchParameter;
 import com.vartech.common.utils.HttpUtils;
 
+import lombok.RequiredArgsConstructor;
+
 @Controller
 @RequestMapping({ "/admin/driverMgmt" })
+@RequiredArgsConstructor
 public class DriverProvierMgmtController extends AbstractController {
 
-	private DriverProvierMgmtServiceImpl driverProvierMgmtServiceImpl;
+	private final DriverProvierMgmtServiceImpl driverProvierMgmtServiceImpl;
 	
-	public DriverProvierMgmtController(DriverProvierMgmtServiceImpl driverMgmtServiceImpl) {
-		this.driverProvierMgmtServiceImpl = driverMgmtServiceImpl; 
-	}
-
 	@RequestMapping(value = { "/list" }, method = { RequestMethod.POST })
 	@ResponseBody
 	public ResponseResult list(HttpServletRequest req) throws Exception {

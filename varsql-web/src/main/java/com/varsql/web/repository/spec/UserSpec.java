@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.varsql.core.auth.AuthorityType;
 import com.varsql.core.auth.AuthorityTypeImpl;
+import com.varsql.web.constants.SecurityConstants;
 import com.varsql.web.model.entity.user.UserEntity;
 
 /**
@@ -27,9 +28,9 @@ public class UserSpec extends DefaultSpec{
 	public static Specification<UserEntity> userRoleNotIn(boolean isAdmin) {
 		return (root, query, criteriaBuilder) -> {
 			if(isAdmin) {
-				return criteriaBuilder.not(root.get(UserEntity.USER_ROLE).in(AuthorityTypeImpl.ADMIN.name()));
+				return criteriaBuilder.not(root.get(UserEntity.USER_ROLE).in(AuthorityTypeImpl.ADMIN.name(), AuthorityTypeImpl.SYSTEM.name()));
 			}else {
-				return criteriaBuilder.not(root.get(UserEntity.USER_ROLE).in(AuthorityTypeImpl.ADMIN.name(), AuthorityTypeImpl.MANAGER.name()));
+				return criteriaBuilder.not(root.get(UserEntity.USER_ROLE).in(AuthorityTypeImpl.ADMIN.name(), AuthorityTypeImpl.MANAGER.name(), AuthorityTypeImpl.SYSTEM.name()));
 			}
 		};
 	}

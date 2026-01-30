@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -31,6 +30,8 @@ import com.varsql.web.dto.setup.SetupConfigDTO;
 import com.varsql.web.util.VarsqlUtils;
 import com.vartech.common.app.beans.ResponseResult;
 
+import lombok.RequiredArgsConstructor;
+
 
 
 /**
@@ -42,12 +43,12 @@ import com.vartech.common.app.beans.ResponseResult;
 @Controller
 @Conditional(AppSetupController.AppSetupControllerCondition.class)
 @RequestMapping("/setup")
+@RequiredArgsConstructor
 public class AppSetupController extends AbstractController {
 
 	private final Logger logger = LoggerFactory.getLogger(AppSetupController.class);
 	
-	@Autowired
-	private AppSetupService appSetupService;
+	private final AppSetupService appSetupService;
 
 	@GetMapping(value = {"","/"})
 	public ModelAndView setup(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) throws Exception {
