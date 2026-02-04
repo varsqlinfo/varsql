@@ -260,8 +260,6 @@ public class DriverProvierMgmtServiceImpl extends AbstractService {
 				resultObject.setMessage("driver null");
 				resultObject.setResultCode(VarsqlAppCode.ERROR);
 			}
-			
-			resultObject.setResultCode(VarsqlAppCode.SUCCESS);
 		} catch (ClassNotFoundException e) {
 			resultObject.setResultCode(VarsqlAppCode.ERROR);
 			resultObject.setMessage("class not found : " + dto.getDriverClass() + "\nerror message : "+e.getMessage());

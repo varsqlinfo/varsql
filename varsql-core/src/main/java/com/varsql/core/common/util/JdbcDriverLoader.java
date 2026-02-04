@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.varsql.core.connection.beans.JDBCDriverInfo;
+import com.varsql.core.exception.FileNotFoundException;
 import com.varsql.core.exception.JdbcDriverClassException;
 import com.vartech.common.app.beans.FileInfo;
 import com.vartech.common.io.Resource;
@@ -63,7 +64,7 @@ public final class JdbcDriverLoader {
 						urlList.add(resource.getURL());
 				}
 				if (urlList.size() > 0) {
-					DRIVER_CACHE.put(providerId, getJdbcDriver(jdbcDriverInfo));
+					DRIVER_CACHE.put(providerId, getJdbcDriver(jdbcDriverInfo, false));
 				}
 			}else {
 				DRIVER_CACHE.remove(providerId);
@@ -73,15 +74,22 @@ public final class JdbcDriverLoader {
 		return DRIVER_CACHE.getOrDefault(providerId, null);
 	}
 
-	private Driver getJdbcDriver(JDBCDriverInfo jdbcDriverInfo)throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+	private Driver getJdbcDriver(JDBCDriverInfo jdbcDriverInfo, boolean fileNotFoundExceptionCheck)throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
 		List<FileInfo> jdbcList = jdbcDriverInfo.getDriverFiles();
 		
 		if (jdbcList != null && jdbcList.size() > 0) {
 			List<URL> urlList = new ArrayList<>();
+			
 			for (FileInfo item : jdbcList) {
 				Resource resource = ResourceUtils.getResource(item.getPath());
-				if (resource != null)
+				if (resource != null) {
 					urlList.add(resource.getURL());
+				}else {
+					logger.warn("provider id : {}, driver class: {}, jdbc file not found : {}", jdbcDriverInfo.getDriverId(), jdbcDriverInfo.getDriverClass(), item.getPath());
+					if(fileNotFoundExceptionCheck) {
+						throw new FileNotFoundException("driver file not found : " + item.getPath());
+					}
+				}
 			}
 			if (urlList.size() > 0) {
 				
@@ -103,7 +111,7 @@ public final class JdbcDriverLoader {
 
 	public static Driver checkDriver(JDBCDriverInfo jdbcDriverInfo)
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
-		return getInstance().getJdbcDriver(jdbcDriverInfo);
+		return getInstance().getJdbcDriver(jdbcDriverInfo, true);
 	}
 	
 	public static void allDeregister() {

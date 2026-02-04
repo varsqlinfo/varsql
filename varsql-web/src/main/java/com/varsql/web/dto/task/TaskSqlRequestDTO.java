@@ -1,7 +1,6 @@
 package com.varsql.web.dto.task;
 import javax.validation.constraints.NotEmpty;
 
-import com.varsql.web.model.entity.db.DBConnectionViewEntity;
 import com.varsql.web.model.entity.task.TaskSqlEntity;
 
 import lombok.Getter;
