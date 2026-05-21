@@ -64,14 +64,14 @@ public abstract class JobBean extends QuartzJobBean implements JobService{
 	    	
 	    	JobDataMap jobDataMap = context.getMergedJobDataMap();
 	    	
-	    	JobVO jsv = VartechUtils.jsonStringToObject(jobDataMap.getString("jobCustomVO"), JobVO.class);
+	    	JobVO jsv = VartechUtils.jsonStringToObject(jobDataMap.getString(JOBServiceUtils.JOB_DATA_KEY), JobVO.class);
 	    	
 	    	if(jsv == null) {
-	    		throw new VarsqlRuntimeException(VarsqlAppCode.EC_SCHEDULER, "jobCustomVO not found : " + jsv);
+	    		throw new VarsqlRuntimeException(VarsqlAppCode.EC_SCHEDULER, "JobVO not found : " + jsv);
 	    	}
 	    	
 	    	if(logger.isDebugEnabled()) {
-	    		logger.debug("jobCustomVO : {}", jsv);
+	    		logger.debug("JobVO : {}", jsv);
 	    	}
 	    	
 	    	long startTime = System.currentTimeMillis(); 

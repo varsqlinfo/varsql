@@ -7,6 +7,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import com.varsql.web.dto.websocket.MessageDTO;
 import com.varsql.web.model.entity.app.NoteEntity;
 import com.varsql.web.model.entity.app.NoteMappingUserEntity;
 import com.varsql.web.model.entity.user.RegInfoEntity;
+import com.varsql.web.model.entity.user.UserEntity;
 import com.varsql.web.model.mapper.app.NoteMapper;
 import com.varsql.web.repository.app.NoteEntityRepository;
 import com.varsql.web.repository.app.NoteMappingUserEntityRepository;
@@ -127,12 +129,14 @@ public class UserNoteServiceImpl extends AbstractService{
 	public ResponseResult selectMessageInfo(String viewMode, SearchParameter searchParameter) {
 		List<NoteEntity> result =null;
 		long totalCount = 0;
+		
+		
 		if("recv".equals(viewMode)) {
-			Page<NoteEntity> pageData = noteEntityRepository.findAll(NoteSpec.recvMsg(SecurityUtil.userViewId(), ""), VarsqlUtils.convertSearchInfoToPage(searchParameter));
+			Page<NoteEntity> pageData = noteEntityRepository.findAll(NoteSpec.recvMsg(SecurityUtil.userViewId(), ""), VarsqlUtils.convertSearchInfoToPage(searchParameter, Sort.by(NoteEntity.REG_DT).descending()));
 			totalCount = pageData.getTotalElements();
 			result = pageData.getContent();
 		}else {
-			result = noteEntityRepository.findAll(NoteSpec.userNoteList(SecurityUtil.userViewId()));
+			result = noteEntityRepository.findAll(NoteSpec.userNoteList(SecurityUtil.userViewId()), Sort.by(NoteEntity.REG_DT).descending());
 			totalCount = result.size();
 		}
 		

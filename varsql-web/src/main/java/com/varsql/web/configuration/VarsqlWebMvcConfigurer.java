@@ -1,15 +1,11 @@
 package com.varsql.web.configuration;
 
-import java.io.File;
-
 import javax.annotation.PostConstruct;
-import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
-import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -22,7 +18,6 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
-import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
@@ -109,7 +104,7 @@ public class VarsqlWebMvcConfigurer extends VarsqlWebConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Static ressources from both WEB-INF and webjars
         registry
-            .addResourceHandler("/webstatic/**")
+            .addResourceHandler(SecurityConstants.WEB_RESOURCES)
                 .addResourceLocations("/webstatic/","classpath:/META-INF/resources/webstatic/")
                 .setCachePeriod(CACHE_PERIOD);
 

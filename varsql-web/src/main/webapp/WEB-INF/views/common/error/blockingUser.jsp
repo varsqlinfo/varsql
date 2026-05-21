@@ -19,7 +19,7 @@ if(top != window){
 		<tbody>
 			<tr>
 				<td style="text-align: center;">
-					<div><a href="${pageContext.request.contextPath}/logout">로그인 화면 가기</a></div>
+					<div><a href="${varsqlfn:logoutUrl(pageContext.request)}">로그인 화면 가기</a></div>
 					<div class="var-load-frame" style="font-size: 3em;">
 						<div><spring:message code="error.blocking.user" text="접근 금지 사용자 입니다"/></div>
 						<div><spring:message code="error.default.admin" text="관리자에게 문의하세요."/></div>

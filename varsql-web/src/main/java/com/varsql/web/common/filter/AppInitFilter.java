@@ -9,9 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.varsql.web.util.SpringUtils;
 
 /**
  * -----------------------------------------------------------------------------
@@ -30,9 +31,7 @@ public class AppInitFilter extends OncePerRequestFilter {
 	private final Logger logger = LoggerFactory.getLogger(AppInitFilter.class);
 	
 	private OrRequestMatcher setupMatcher = new OrRequestMatcher(
-		 new AntPathRequestMatcher("/setup")
-		, new AntPathRequestMatcher("/i18nMessage")
-		, new AntPathRequestMatcher("/setup/**")
+		SpringUtils.toAntPathMatchers("/setup","/i18nMessage","/setup/**")
 	);
 
 	@Override

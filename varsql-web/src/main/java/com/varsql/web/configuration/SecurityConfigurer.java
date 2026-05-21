@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -26,7 +25,6 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
@@ -55,6 +53,7 @@ import com.varsql.web.security.VarsqlAuthenticationSuccessHandler;
 import com.varsql.web.security.VarsqlBasicAuthenticationEntryPoint;
 import com.varsql.web.security.rememberme.RememberMeTokenRepository;
 import com.varsql.web.security.rememberme.RememberMeUserService;
+import com.varsql.web.util.SpringUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -77,7 +76,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	private final String CSRF_TOKEN_NAME = "varsql_ct";
 	
-	public static final String WEB_RESOURCES = "/webstatic/**";
+	private static final String LOGOUT_URL = SecurityConstants.LOGOUT_URL;
 
 	private final VarsqlBasicAuthenticationEntryPoint varsqlBasicAuthenticationEntryPoint;
 
@@ -93,33 +92,30 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 	
 	// web static resource path
 	private OrRequestMatcher staticRequestMatcher = new OrRequestMatcher(
-		new AntPathRequestMatcher(WEB_RESOURCES)
-		, new AntPathRequestMatcher("/error/**")
-		, new AntPathRequestMatcher("/**/favicon.ico")
-		, new AntPathRequestMatcher("/favicon.ico")
+		SpringUtils.toAntPathMatchers(SecurityConstants.WEB_RESOURCES
+			, "/i18nMessage", "/error/**", "/**/favicon.ico", "/favicon.ico"
+		)
 	);
 	
 	private OrRequestMatcher csrfIgnoreRequestMatcher = new OrRequestMatcher(
-		 new AntPathRequestMatcher("/ws/**")
-		, new AntPathRequestMatcher("/login/**")
-		, new AntPathRequestMatcher("/logout")
+		SpringUtils.toAntPathMatchers("/ws/**","/login/**",LOGOUT_URL)
 	);
 	
 	// ajax header matcher
 	private RequestMatcher ajaxRequestMatcher = new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest");
 
-	@Override
-    public void configure(WebSecurity web) throws Exception {
-
-		// 404 error 처리 하기위해서 추가.
-		StrictHttpFirewall firewall = new StrictHttpFirewall();
-		firewall.setAllowUrlEncodedDoubleSlash(true);
-
-        web.ignoring()
-            .requestMatchers(staticRequestMatcher)
-         .and().httpFirewall(firewall);
-
-    }
+//	@Override
+//    public void configure(WebSecurity web) throws Exception {
+//
+//		// 404 error 처리 하기위해서 추가.
+//		StrictHttpFirewall firewall = new StrictHttpFirewall();
+//		firewall.setAllowUrlEncodedDoubleSlash(false);
+//
+//        web.ignoring()
+//            .requestMatchers(staticRequestMatcher)
+//         .and().httpFirewall(firewall);
+//
+//    }
 
 	@Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -160,7 +156,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 		.and() // login
 			.formLogin()
 	        .loginPage("/login")
-	        .loginProcessingUrl("/login_check")
+	        .loginProcessingUrl(SecurityConstants.LOGIN_PROCESSING_URL)
 	        .usernameParameter("vsql_login_id")
 	        .passwordParameter("vsql_login_password")
 	        .successHandler(varsqlAuthenticationSuccessHandler)
@@ -168,14 +164,14 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 	        .permitAll()
 	    .and() // auth
 		    .authorizeRequests()
-		    .antMatchers("/sso/proc").permitAll()
-     		.antMatchers("/admin/**").hasAuthority(AuthorityTypeImpl.ADMIN.name())
-     		.antMatchers("/manager/**").hasAnyAuthority(AuthorityTypeImpl.ADMIN.name(),AuthorityTypeImpl.MANAGER.name())
-     		.antMatchers("/user/**","/database/**").hasAnyAuthority(AuthorityTypeImpl.ADMIN.name(),AuthorityTypeImpl.MANAGER.name(),AuthorityTypeImpl.USER.name())
-     		.antMatchers("/guest/**").hasAuthority(AuthorityTypeImpl.GUEST.name())
-     		.antMatchers("/login","/join/**","/lostPassword","/resetPassword").anonymous()
-     		.antMatchers("/i18nMessage","/login_check","/index.jsp","/progress/**").permitAll()
-     		.antMatchers("/**").authenticated()
+		    .requestMatchers(staticRequestMatcher).permitAll()
+     		.requestMatchers(SpringUtils.toAntPathMatchers("/i18nMessage",SecurityConstants.LOGIN_PROCESSING_URL,"/index.jsp","/progress/**")).permitAll()
+		    .requestMatchers(SpringUtils.toAntPathMatchers("/sso/proc")).permitAll()
+     		.requestMatchers(SpringUtils.toAntPathMatchers("/admin/**")).hasAuthority(AuthorityTypeImpl.ADMIN.name())
+     		.requestMatchers(SpringUtils.toAntPathMatchers("/manager/**")).hasAnyAuthority(AuthorityTypeImpl.ADMIN.name(),AuthorityTypeImpl.MANAGER.name())
+     		.requestMatchers(SpringUtils.toAntPathMatchers("/user/**","/database/**")).hasAnyAuthority(AuthorityTypeImpl.ADMIN.name(),AuthorityTypeImpl.MANAGER.name(),AuthorityTypeImpl.USER.name())
+     		.requestMatchers(SpringUtils.toAntPathMatchers("/guest/**")).hasAuthority(AuthorityTypeImpl.GUEST.name())
+     		.requestMatchers(SpringUtils.toAntPathMatchers("/login","/join/**","/lostPassword","/resetPassword")).anonymous()
      		.anyRequest().authenticated()
      	.and()
      		.exceptionHandling()
@@ -184,12 +180,12 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
      		.accessDeniedHandler(accessDeniedHandler())
      	.and() //log out
 	     	.logout()
-	        .logoutUrl("/logout")
+	        .logoutUrl(LOGOUT_URL)
+	        .logoutRequestMatcher(new AntPathRequestMatcher(LOGOUT_URL,"GET"))
 	        .addLogoutHandler(varsqlAuthenticationLogoutHandler)
 	        .logoutSuccessHandler(varsqlAuthenticationLogoutSuccessHandler)
 	        .invalidateHttpSession(true)
 	        .deleteCookies(SecurityConstants.JSESSION_ID_COOKIE_NAME, SecurityConstants.REMEMBERME_COOKIENAME).permitAll()
-	        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 
 		.and()
 			.httpBasic()

@@ -12,6 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -78,7 +83,40 @@ public class DownloadController extends AbstractController {
 	}
 	
 	@RequestMapping("/imageView/{fileId}")
-    public void imgView(@PathVariable("fileId") String fileId 
+    public ResponseEntity<Resource> imgView(@PathVariable("fileId") String fileId 
+    		, @RequestParam(name = "div", defaultValue = "boardContent") String div
+    		, HttpServletRequest req ,HttpServletResponse res) throws FileNotFoundException, java.io.FileNotFoundException, IOException {
+    	
+		if(logger.isDebugEnabled()) {
+			logger.debug("imageView div: {}, fileId :{}", div,fileId);
+		}
+		
+		String yyyy = fileId.substring(0, 4);
+		String mm = fileId.substring(4, 6);
+		String id = fileId.substring(6);
+		
+		String path = String.format("%s/%s/%s/%s", UploadFileType.BOARD_CONTENT_IMAGE.getSavePathRoot(), yyyy, mm, id) ;
+		
+		FileBaseEntity fbe = new FileBaseEntity();
+		
+		fbe.setFilePath(path);
+		
+		File file = FileServiceUtils.getFileInfoToFile(fbe);
+		
+		if (file.isFile()) {
+			Resource resource = new FileSystemResource(file.getAbsolutePath());
+
+		    return ResponseEntity.ok()
+		            .header(HttpHeaders.CONTENT_DISPOSITION,
+		                    "attachment; filename=\"" + resource.getFilename() + "\"")
+		            .body(resource);
+		}
+		
+	    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+	
+	@RequestMapping("/imgViewStream/{fileId}")
+    public void imgViewStream(@PathVariable("fileId") String fileId 
     		, @RequestParam(name = "div", defaultValue = "boardContent") String div
     		, HttpServletRequest req ,HttpServletResponse res) throws FileNotFoundException, java.io.FileNotFoundException, IOException {
     	

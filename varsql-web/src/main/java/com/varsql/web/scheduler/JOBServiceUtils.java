@@ -24,6 +24,7 @@ import com.vartech.common.utils.VartechUtils;
 
 public class JOBServiceUtils {
 	
+	final public static String JOB_DATA_KEY = "jobCustomVO";
 	final public static String JOB_UID = "jobUid";
 	
 	final public static String RUN_SIMPLE_TIGGER_GROUP_PREFIX = "simpleRun"; 
@@ -70,10 +71,9 @@ public class JOBServiceUtils {
 		CronTrigger cronTrigger  = TriggerBuilder.newTrigger().withIdentity(jobName, jobGroup)
                 .withSchedule(CronScheduleBuilder.cronSchedule(vo.getCronExpression()))
                 .withDescription(StringUtils.isBlank(vo.getJobDescription())? vo.getJobName() : vo.getJobDescription())
+                .usingJobData(JOB_DATA_KEY, VartechUtils.objectToJsonString(vo))
                 .build();
         
-		cronTrigger.getJobDataMap().put("jobCustomVO", VartechUtils.objectToJsonString(vo));
-		
 		scheduler.scheduleJob(jobDetail, cronTrigger);
 	}
 
@@ -90,17 +90,30 @@ public class JOBServiceUtils {
 	private static void updateJobInfo(Scheduler scheduler, Class<? extends Job> jobServiceClass, JobVO vo) throws SchedulerException {
 		
 		TriggerKey triggerKey = TriggerKey.triggerKey(vo.getJobUid(), vo.getJobGroup());
+		
+		// 기존 상태 확인
+	    Trigger.TriggerState prevState = scheduler.getTriggerState(triggerKey);
+		
+		CronTrigger oldTrigger = (CronTrigger) scheduler.getTrigger(triggerKey);
 
-		CronTrigger cronTrigger = (CronTrigger) scheduler.getTrigger(triggerKey);
 		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(vo.getCronExpression());
-		cronTrigger = cronTrigger.getTriggerBuilder().withIdentity(triggerKey).withSchedule(cronScheduleBuilder)
+		
+		CronTrigger newTrigger = oldTrigger.getTriggerBuilder()
+				.withIdentity(triggerKey)
+				.withSchedule(cronScheduleBuilder)
 				.withDescription(
 						StringUtils.isBlank(vo.getJobDescription()) ? vo.getJobName() : vo.getJobDescription())
+				.usingJobData(JOB_DATA_KEY, VartechUtils.objectToJsonString(vo))
 				.build();
 		
-		cronTrigger.getJobDataMap().put("jobCustomVO", VartechUtils.objectToJsonString(vo));
-
-		scheduler.rescheduleJob(triggerKey, cronTrigger);
+		
+		scheduler.rescheduleJob(triggerKey, newTrigger);
+		
+		// 이전 상태 복원
+	    if (prevState == Trigger.TriggerState.PAUSED) {
+	    	JobKey jobKey = JobKey.jobKey(vo.getJobUid(), vo.getJobGroup());
+			scheduler.pauseJob(jobKey);
+	    }
 		
 	}
 
@@ -137,10 +150,9 @@ public class JOBServiceUtils {
                 .withDescription("simple run")
                 .startAt(Date.from(Instant.now().plusSeconds(5)))
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule().withMisfireHandlingInstructionFireNow())
+                .usingJobData(JOB_DATA_KEY, VartechUtils.objectToJsonString(vo))
                 .build();
         
-        
-        trigger.getJobDataMap().put("jobCustomVO", VartechUtils.objectToJsonString(vo));
         
         /*
         Trigger trigger = TriggerBuilder.newTrigger()

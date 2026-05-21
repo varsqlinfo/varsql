@@ -396,7 +396,7 @@ function userConnect(){
 		var msgType = data.type;
 
 		if(msgType == 'USER_BLOCK'){
-			location.href=VARSQL.getContextPathUrl("/logout?viewPage=/error/blockingUser");
+			location.href=$varsqlConfig.logoutUrl+"?viewPage=/error/blockingUser";
 		}else if(msgType == 'USER_DB_BLOCK'){
 			userMain.blockTab(data.item);
 			userTopObj.getConnectionInfo(false);

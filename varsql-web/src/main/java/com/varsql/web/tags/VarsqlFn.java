@@ -8,6 +8,7 @@ import com.varsql.core.common.constants.LocaleConstants;
 import com.varsql.core.common.constants.VarsqlConstants;
 import com.varsql.core.common.util.VarsqlDateUtils;
 import com.varsql.core.configuration.Configuration;
+import com.varsql.web.constants.SecurityConstants;
 import com.varsql.web.constants.WebStaticResourceVersion;
 import com.varsql.web.util.SecurityUtil;
 import com.varsql.web.util.VarsqlUtils;
@@ -72,11 +73,11 @@ public final class VarsqlFn{
 	}
 
 	public static String loginUrl(HttpServletRequest request) {
-		return request.getContextPath()+"/login_check";
+		return request.getContextPath()+SecurityConstants.LOGIN_PROCESSING_URL;
 	}
 
 	public static String logoutUrl(HttpServletRequest request) {
-		return request.getContextPath()+"/logout";
+		return request.getContextPath()+SecurityConstants.LOGOUT_URL;
 	}
 	
 	public static boolean isPasswordResetModeManager() {

@@ -46,7 +46,7 @@ public interface JobEntityRepository extends DefaultJpaRepository, JpaRepository
 				.leftJoin(dBConnectionViewEntity).on(jobScheduleEntity.jobDBConnection.vconnid.eq(dBConnectionViewEntity.vconnid))
 				.select(Projections.constructor(JobScheduleResultVO.class,jobScheduleEntity, dBConnectionViewEntity, triggersEntity))
 				.where(jobScheduleEntity.jobUid.eq(jobUid))
-				.orderBy(triggersEntity.startTime.desc())
+				.orderBy(triggersEntity.triggerType.asc() ,triggersEntity.startTime.desc())
 				.fetch();
 			
 			boolean firstFlag = true; 
