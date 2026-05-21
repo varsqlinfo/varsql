@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.varsql.web.configuration.SecurityConfigurer;
+import com.varsql.web.constants.SecurityConstants;
 import com.varsql.web.util.SpringUtils;
 
 /**
@@ -31,8 +33,9 @@ public class AppInitFilter extends OncePerRequestFilter {
 	private final Logger logger = LoggerFactory.getLogger(AppInitFilter.class);
 	
 	private OrRequestMatcher setupMatcher = new OrRequestMatcher(
-		SpringUtils.toAntPathMatchers("/setup","/i18nMessage","/setup/**")
+		SpringUtils.toAntPathMatchers(SecurityConstants.WEB_RESOURCES,"/setup","/i18nMessage","/setup/**")
 	);
+	
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
