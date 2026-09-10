@@ -95,7 +95,7 @@
 								<div class="col-sm-6 col-md-6">
 									<input type="password" name="password_fake" value="" style="display:none;" autocomplete="new-password"/>
 									<input v-model="dbInfo.pw" name="password" type="password" autocomplete="new-password" class="form-control" placeholder="Password" ref="password"  style="margin-bottom:5px;">
-									<input v-model="dbInfo.confirmPw" type="password" class="form-control" autocomplete="false" placeholder="Password, Again" data-vv-as="password" ref="password_confirmation">
+									<input v-model="dbInfo.confirmPw" type="password" class="form-control" autocomplete="off" placeholder="Password, Again" data-vv-as="password" ref="password_confirmation">
 								</div>
 							</div>
 						</template>

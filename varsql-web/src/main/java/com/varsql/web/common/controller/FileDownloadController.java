@@ -92,6 +92,7 @@ public class FileDownloadController {
 		
 		if(!(SecurityUtil.isManager() || SecurityUtil.isAdmin())) {
 			fileErrorMessage(req, res, VarsqlAppCode.SECURITY_AUTH_ERROR);
+			return ;
 		}
 		
 		ExecutionHistoryEntity she =null;

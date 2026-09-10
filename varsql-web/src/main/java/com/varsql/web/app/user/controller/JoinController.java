@@ -73,6 +73,7 @@ public class JoinController extends AbstractController {
 
 		if(idCheck > 0){
 			resultObject.setResultCode(RequestResultCode.DUPLICATES);
+			return resultObject;
 		}
 
 		resultObject.setItemOne(joinServiceImpl.saveUser(joinForm));

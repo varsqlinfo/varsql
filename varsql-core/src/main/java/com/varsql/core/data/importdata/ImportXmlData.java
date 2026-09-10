@@ -36,6 +36,9 @@ public class ImportXmlData extends AbstractImportData{
 
 		XMLStreamReader xmlreader =null;
 		XMLInputFactory factory= XMLInputFactory.newInstance();
+		// XXE 방지
+		factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+		factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
 
 		try (FileReader reader = new FileReader(importFile)) {
 			// xmlreader 생성

@@ -10,7 +10,7 @@
 	<div>
 		<div class="col-xs-6">
 			<div class="panel">
-				<input type="text" id="recv_user_search" style="margin-bottom:5px;" name="recv_user_search" autocomplete="false" class="form-control" placeholder="<spring:message code="msg.sendmsg.recv.txt.holder" />">
+				<input type="text" id="recv_user_search" style="margin-bottom:5px;" name="recv_user_search" autocomplete="off" class="form-control" placeholder="<spring:message code="msg.sendmsg.recv.txt.holder" />">
 				<div id="recvIdArr"></div>
 			</div>
 			<!-- /.panel -->

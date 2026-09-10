@@ -261,6 +261,8 @@ VarsqlAPP.vueServiceBean( {
 			var _self = this;
 			var param = {
 				'searchVal':''
+				,pageNo: 1
+				,countPerPage : 10000
 			};
 
 			this.$ajax({

@@ -19,6 +19,7 @@ import com.varsql.web.common.service.AbstractService;
 import com.varsql.web.constants.MessageType;
 import com.varsql.web.constants.ResourceConfigConstants;
 import com.varsql.web.dto.websocket.MessageDTO;
+import com.varsql.web.exception.VarsqlAccessDeniedException;
 import com.varsql.web.exception.VarsqlAppException;
 import com.varsql.web.model.entity.db.DBBlockingUserEntity;
 import com.varsql.web.model.entity.user.UserEntity;
@@ -117,10 +118,15 @@ public class UserMgmtServiceImpl extends AbstractService{
 	public ResponseResult updateAccept(String acceptyn, String selectItem) {
 		String[] viewidArr = StringUtils.split(selectItem,",");
 		AuthorityType role = "Y".equals(acceptyn)?AuthorityTypeImpl.USER:AuthorityTypeImpl.GUEST;
-		
+
 		log.info("user: {}, acceptyn: {}, view ids: {}", SecurityUtil.userViewId(), acceptyn, selectItem);
 
-		List<UserEntity> users= userMgmtRepository.findByViewidIn(Arrays.asList(viewidArr)).stream().map(item -> {
+		List<UserEntity> targets = userMgmtRepository.findByViewidIn(Arrays.asList(viewidArr));
+
+		// 요청자보다 상위 권한 계정이 대상에 섞여 있으면 한 건도 변경하지 않는다.
+		checkModifiableTargets(targets, "updateAccept");
+
+		List<UserEntity> users= targets.stream().map(item -> {
 			item.setUserRole(role.getName());
 			item.setAcceptYn("Y".equals(acceptyn)?true:false);
 			return item;
@@ -129,6 +135,54 @@ public class UserMgmtServiceImpl extends AbstractService{
 		userMgmtRepository.saveAll(users);
 
 		return VarsqlUtils.getResponseResultItemOne(1);
+	}
+
+	/**
+	 * @method  : checkModifiableTargets
+	 * @desc : 사용자 변경 대상이 모두 요청자보다 하위 권한인지 확인한다. 하나라도 아니면 예외.
+	 * @param targets 변경 대상
+	 * @param action 거부 로그에 남길 기능 이름
+	 */
+	private void checkModifiableTargets(List<UserEntity> targets, String action) {
+		for(UserEntity target : targets) {
+			if(!isModifiableTarget(target)) {
+				log.warn("{} denied. request user: {}, target user: {}, target role: {}"
+					, action, SecurityUtil.userViewId()
+					, target == null ? null : target.getViewid()
+					, target == null ? null : target.getUserRole());
+
+				throw new VarsqlAccessDeniedException(RequestResultCode.FORBIDDEN.name());
+			}
+		}
+	}
+
+	/**
+	 * @method  : isModifiableTarget
+	 * @desc : 로그인한 사용자가 대상 계정을 변경할 수 있는지 확인한다.
+	 *         요청자보다 우선순위가 같거나 높은 계정과 SYSTEM 계정은 대상이 될 수 없다.
+	 *         (updateBlockYn 이 쓰던 검사를 다른 사용자 변경 기능에서도 공유한다)
+	 * @param target 변경 대상
+	 * @return 변경 가능 여부
+	 */
+	private boolean isModifiableTarget(UserEntity target) {
+		if(target == null) {
+			return false;
+		}
+
+		AuthorityType targetRole;
+		try {
+			targetRole = AuthorityTypeImpl.valueOf(target.getUserRole());
+		}catch(IllegalArgumentException | NullPointerException e) {
+			log.warn("unknown user role. viewid: {}, role: {}", target.getViewid(), target.getUserRole());
+			return false;
+		}
+
+		// SYSTEM 은 priority 가 -999 라 우선순위 비교만으로는 걸러지지 않는다.
+		if(AuthorityTypeImpl.SYSTEM.equals(targetRole)) {
+			return false;
+		}
+
+		return SecurityUtil.loginInfo().getTopAuthority().getPriority() > targetRole.getPriority();
 	}
 
 	/**
@@ -149,10 +203,15 @@ public class UserMgmtServiceImpl extends AbstractService{
 		}
 		
 		log.info("init password user: {}, user id: {}", SecurityUtil.userViewId(), viewid);
-		
-		String passwordInfo = PasswordUtil.createPassword(Configuration.getInstance().passwordType(), Configuration.getInstance().passwordInitSize());
 
 		UserEntity entity= userMgmtRepository.findByViewid(viewid);
+
+		// 요청자보다 상위 권한 계정의 비밀번호는 초기화할 수 없다.
+		// (초기화된 비밀번호가 응답으로 돌아가므로 검사가 없으면 곧바로 계정 탈취가 된다)
+		checkModifiableTargets(Arrays.asList(entity), "initPassword");
+
+		String passwordInfo = PasswordUtil.createPassword(Configuration.getInstance().passwordType(), Configuration.getInstance().passwordInitSize());
+
 		entity.setUpw(passwordInfo);
 		entity = userMgmtRepository.save(entity);
 
